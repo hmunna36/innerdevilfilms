@@ -2,3 +2,4 @@
 
 - 2026-10-19 (Mac, by hand) film 01 TOMORROW | He Kept Saying It, 2:32, uploaded through Studio, public 19 Oct 20:00 IST (0GEqZ5t3Ci8)
 - 2026-10-20 (Mac, by hand) Short 01 tomorrow-hook built and checked (33.4 s), uploaded from the Mac as 3p3Q0i_lav0, public 20 Oct 20:00 IST
+- 2026-10-20 (cloud routine) Short 02 tomorrow-mom built (30.9 s), QA: 3 stills rounds + 3 video rounds, uploaded as yoFCfTP_k4g, public 21 Oct 20:00 IST; fixed a quoting bug in bin/cloud-setup.sh that stopped preflight

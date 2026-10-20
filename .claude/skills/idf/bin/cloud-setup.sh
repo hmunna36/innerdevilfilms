@@ -27,5 +27,5 @@ ok=1; line() { printf '  %-10s %s\n' "$1" "$2"; }
 command -v ffmpeg >/dev/null && line ffmpeg "$(ffmpeg -hide_banner -version 2>/dev/null | head -1 | cut -c1-50)" || { [ "$(uname -s)" = "Linux" ] && { line ffmpeg MISSING; ok=0; }; }
 "$PYTHON" -c "import numpy, PIL" 2>/dev/null && line python "$("$PYTHON" -V 2>&1) + numpy, pillow" || { line python "MISSING numpy/pillow"; ok=0; }
 [ -d "$IDF_ANIM/node_modules/remotion" ] && line remotion "$(node -p "require('$IDF_ANIM/node_modules/remotion/package.json').version")" || { line remotion MISSING; ok=0; }
-line browser "${IDF_CHROME:-remotion's own headless shell}"
+line browser "${IDF_CHROME:-the Remotion headless shell}"
 [ $ok = 1 ] && say "toolchain ready" || { say "toolchain INCOMPLETE; last lines of $LOG:"; tail -20 "$LOG"; exit 1; }

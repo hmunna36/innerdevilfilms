@@ -1,0 +1,9 @@
+node_modules/
+anim/out/
+anim/public/audio/*.wav
+.work/
+*.log
+.DS_Store
+# full-size renders of Shorts and new films stay on YouTube; the small *_phone.mp4 copies are committed
+shorts/*/short[0-9][0-9].mp4
+films/*/film[0-9][0-9].mp4

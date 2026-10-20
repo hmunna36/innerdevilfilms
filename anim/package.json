@@ -1,0 +1,25 @@
+{
+  "name": "new-channel-anim",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Rig and films for the new channel (Owen and the Pull). Remotion.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render:rigtest": "remotion render src/index.ts RigTest out/rig_test.mp4 --codec h264 --crf 16",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@fontsource/kalam": "^5.3.0",
+    "@fontsource/nunito-sans": "^5.3.0",
+    "@remotion/cli": "4.0.529",
+    "@remotion/fonts": "^4.0.529",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "remotion": "4.0.529"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "typescript": "^5.8.3"
+  }
+}

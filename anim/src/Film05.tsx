@@ -564,7 +564,7 @@ const S_MEM_DESK = bed((t) => {
   if (back > 0) pose = poseAt([{ t: 2.3, pose: SEAT_LOOKBACK }, { t: 2.7, pose: SEAT_WRITE }], u);
   const sh: V2 = [632, 655];
   return atDesk(t, { ...MONT(102), clock: "7:30", screen: "quiz67", ts: 0 }, "mem", pose,
-    ex("determined", t, { blink: false, lx: back > 0.5 ? 4 : 6, talk: (u > 0.45 && u < 0.85) || (u > 1.85 && u < 2.55) }), {
+    ex(u < 1.45 ? "worried" : "determined", t, { blink: false, lx: back > 0.5 ? 4 : 6, talk: (u > 0.45 && u < 0.85) || (u > 1.85 && u < 2.55) }), {
       chairX: BX - 46 * up * (1 - down),
       before: devil > 0.01 ? <g opacity={devil}><DevilFig id="memd" pose={DEVIL_LEAN} x={400} y={FY} s={1.65} lean={16} t={t} face="manipulative" /></g> : null,
       after: devil > 0.01 ? <DevilHand x={sh[0]} y={sh[1]} from={[430, 720]} s={0.7} grip={0.4} op={devil} /> : null,
@@ -876,7 +876,7 @@ const STY: Record<Who, React.CSSProperties> = {
   angel: { fontFamily: "Chalkboard SE", fontWeight: 700, fontSize: 70, color: "#ffd27a", textShadow: "0 4px 10px rgba(0,0,0,0.9)", ...OUTLINE },
   devil: { fontFamily: "Chalkboard SE", fontWeight: 700, fontSize: 84, color: "#ff4a3a", textShadow: "0 4px 10px rgba(0,0,0,0.9), 0 0 26px rgba(255,40,20,0.7)", ...OUTLINE },
   bean: { fontFamily: "Chalkboard SE", fontWeight: 700, fontSize: 72, color: "#ffffff", textShadow: "0 4px 10px rgba(0,0,0,0.9)", ...OUTLINE },
-  dad: { fontFamily: "Avenir Next", fontWeight: 700, fontSize: 58, color: "#1d2433" },
+  dad: { fontFamily: "Avenir Next", fontWeight: 700, fontSize: 70, color: "#1d2433" },
 };
 const CapView: React.FC<{ l: Cap; t: number }> = ({ l, t }) => {
   const op = k(t, [l.t0, l.t0 + 0.18, l.t1 - 0.25, l.t1], [0, 1, 1, 0]);
@@ -887,7 +887,7 @@ const CapView: React.FC<{ l: Cap; t: number }> = ({ l, t }) => {
   const st = white ? STY.bean : STY[l.who];
   if (l.who === "dad") return (
     // Dad's voice from the phone: a white speech bubble with a phone icon, its tail toward the phone
-    <div style={{ position: "absolute", left: l.x - 560, width: 1120, top: l.y, display: "flex", justifyContent: "center", opacity: op }}>
+    <div style={{ position: "absolute", left: l.x - 760, width: 1520, top: l.y, display: "flex", justifyContent: "center", opacity: op }}>
       <div style={{ position: "relative", background: "#f4f6fa", borderRadius: 40, padding: "22px 40px 24px 96px", boxShadow: "0 10px 40px rgba(0,0,0,0.6)", ...st }}>
         <svg width={52} height={52} viewBox="0 0 24 24" style={{ position: "absolute", left: 28, top: 24 }}><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1C10.6 21 3 13.4 3 4c0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z" fill="#2f6fe0" /></svg>
         {l.text}
@@ -903,13 +903,13 @@ const CAPS: Cap[] = [
   { t0: 23.7, t1: 25.4, who: "angel", text: "Take a little break.", x: 960, y: 120 },
   { t0: 28.5, t1: 29.8, who: "angel", text: "Just one more.", x: 1180, y: 150, size: 80 },
   { t0: 39.95, t1: 41.55, who: "angel", text: "Shh. Rest.", x: 1480, y: 300, size: 76 },
-  { t0: 62.3, t1: 64.75, who: "angel", text: "It's okay. You still have three days.", x: 960, y: 110, size: 64 },
+  { t0: 62.3, t1: 64.75, who: "angel", text: "It's okay. You still have three days.", x: 960, y: 100, size: 72 },
   { t0: 66.75, t1: 68.1, who: "bean", text: "Just one more.", x: 960, y: 120, size: 80 },
   { t0: 79.4, t1: 81.7, who: "devil", text: "Put it down.", x: 1300, y: 820, size: 104 },
   { t0: 92.2, t1: 93.95, who: "devil", text: "One more page.", x: 960, y: 140, size: 88 },
-  { t0: 101.5, t1: 102.8, who: "bean", text: "Dad?", x: 1060, y: 170, size: 64 },
+  { t0: 101.5, t1: 102.8, who: "bean", text: "Dad?", x: 1060, y: 160, size: 80 },
   { t0: 103.8, t1: 105.4, who: "devil", text: "One more page.", x: 1180, y: 150, size: 88 },
-  { t0: 142.05, t1: 143.25, who: "bean", text: "Dad?", x: 1000, y: 150, size: 64 },
+  { t0: 142.05, t1: 143.25, who: "bean", text: "Dad?", x: 1000, y: 96, size: 80 },
   { t0: 143.3, t1: 144.5, who: "bean", text: "One more page.", x: 1100, y: 150, size: 80 },
   { t0: 154.7, t1: 156.6, who: "bean", text: "Dad? I passed.", x: 960, y: 110, size: 76 },
   { t0: 156.8, t1: 159.5, who: "dad", text: "So tonight is my last night shift.", x: 900, y: 80 },
@@ -993,8 +993,8 @@ export const Film05: React.FC<{ qa?: number[] }> = ({ qa }) => {
             <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: 4, opacity: 0.9 }}>EXAM IN</div>
             <div style={{ fontSize: 78, fontWeight: 900, lineHeight: 1, transform: `translateY(${t < 3.95 ? Math.sin(t * 60) * 3 : 0}px)` }}>{days} <span style={{ fontSize: 40, fontWeight: 800 }}>DAYS</span></div>
           </div>
-          <div style={{ position: "absolute", left: 0, right: 0, top: 650, textAlign: "center", fontFamily: "Avenir Next", fontWeight: 700, fontSize: 40, letterSpacing: 12, color: "#c9c4b8",
-            opacity: k(t, [3.5, 3.7, 4.2, 4.45], [0, 1, 1, 0]) }}>4 DAYS EARLIER</div>
+          <div style={{ position: "absolute", left: 0, right: 0, top: 650, textAlign: "center", fontFamily: "Avenir Next", fontWeight: 700, fontSize: 70, letterSpacing: 12, color: "#c9c4b8",
+            opacity: k(t, [3.35, 3.5, 4.5, 4.6], [0, 1, 1, 0]) }}>4 DAYS EARLIER</div>
         </AbsoluteFill>
       )}
       {slam && (

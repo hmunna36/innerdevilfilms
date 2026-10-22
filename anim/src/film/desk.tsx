@@ -9,14 +9,14 @@ import { BC } from "../rig/bean";
 const DEG = Math.PI / 180;
 // the foreground props are drawn with a slight top-down camera: world x right, y up, z toward the camera
 export const TILT = 12 * DEG;
-const CT = Math.cos(TILT), STL = Math.sin(TILT);
-type V3 = [number, number, number];
+export const CT = Math.cos(TILT), STL = Math.sin(TILT);
+export type V3 = [number, number, number];
 const add3 = (a: V3, b: V3): V3 => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
 const mul3 = (a: V3, s: number): V3 => [a[0] * s, a[1] * s, a[2] * s];
-const pj = (o: V2, p: V3): V2 => [o[0] + p[0], o[1] - p[1] * CT + p[2] * STL];
-const poly = (o: V2, ps: V3[]) => ps.map((p) => pj(o, p).map((q) => q.toFixed(1)).join(",")).join(" ");
+export const pj = (o: V2, p: V3): V2 => [o[0] + p[0], o[1] - p[1] * CT + p[2] * STL];
+export const poly = (o: V2, ps: V3[]) => ps.map((p) => pj(o, p).map((q) => q.toFixed(1)).join(",")).join(" ");
 // affine map from local (u, v) on a plane (du, dv = world vectors per local unit) at world point p0
-const plane = (o: V2, p0: V3, du: V3, dv: V3) => {
+export const plane = (o: V2, p0: V3, du: V3, dv: V3) => {
   const P0 = pj(o, p0);
   return `matrix(${du[0].toFixed(4)} ${(-du[1] * CT + du[2] * STL).toFixed(4)} ${dv[0].toFixed(4)} ${(-dv[1] * CT + dv[2] * STL).toFixed(4)} ${P0[0].toFixed(1)} ${P0[1].toFixed(1)})`;
 };
@@ -33,7 +33,7 @@ export const LAPTOP_HINGE: V2 = [846, DK.y - 45 * STL];    // screen point of th
 export const SCREEN_XY: V2 = [858, 642];                   // middle of the laptop screen (lid open)
 
 // ------------------------------------------------------------------ the screen's contents (a 320 x 200 virtual display)
-export type ScreenKind = "off" | "form" | "sent" | "rejected" | "inbox" | "gigs" | "paid";
+export type ScreenKind = "off" | "form" | "sent" | "rejected" | "inbox" | "gigs" | "paid" | "pass" | `quiz${number}`;
 const UI = { bg: "#0f1522", bar: "#1b2436", field: "#243049", text: "#e9eef7", dim: "#8a97ad", blue: "#3b82f6", green: "#22c55e", red: "#ef4444" };
 export const ScreenUI: React.FC<{ kind: ScreenKind; t: number; ts?: number }> = ({ kind, t, ts = 0 }) => {
   const dt = t - ts;
@@ -134,6 +134,40 @@ export const ScreenUI: React.FC<{ kind: ScreenKind; t: number; ts?: number }> = 
             <text x={253} y={22} textAnchor="middle" fill="#fff" fontFamily={F} fontWeight={800} fontSize={10}>ACCEPT</text>
           </g>
         ))}
+      </g>
+    );
+  } else if (kind.startsWith("quiz")) {
+    // a practice test's score, counting up; red, then amber, then green at the pass mark (80%)
+    const sc = parseInt(kind.slice(4), 10) || 0;
+    const shown = Math.round(sc * sm(dt / 0.55));
+    const col = shown >= 80 ? UI.green : shown >= 60 ? "#f5a524" : UI.red;
+    body = (
+      <g>
+        {bar("practice test")}
+        <text x={160} y={52} textAnchor="middle" fill={UI.dim} fontFamily={F} fontWeight={700} fontSize={11} letterSpacing={1}>YOUR SCORE</text>
+        <text x={160} y={118} textAnchor="middle" fill={col} fontFamily={F} fontWeight={900} fontSize={64}>{shown}%</text>
+        <rect x={40} y={140} width={240} height={12} rx={6} fill={UI.field} />
+        <rect x={40} y={140} width={240 * shown / 100} height={12} rx={6} fill={col} />
+        <rect x={40 + 240 * 0.8 - 1} y={134} width={2} height={24} fill="#fff" opacity={0.8} />
+        <text x={160} y={178} textAnchor="middle" fill={UI.text} fontFamily={F} fontWeight={700} fontSize={12}>You need 80% to pass</text>
+      </g>
+    );
+  } else if (kind === "pass") {
+    const p = pop(dt);
+    body = (
+      <g>
+        {bar("inbox")}
+        <text x={20} y={44} fill={UI.dim} fontFamily={F} fontWeight={600} fontSize={9}>From: University</text>
+        <text x={20} y={60} fill={UI.text} fontFamily={F} fontWeight={800} fontSize={13}>Your results are ready</text>
+        <rect x={20} y={67} width={280} height={1} fill="#2b3550" />
+        <text x={160} y={88} textAnchor="middle" fill={UI.text} fontFamily={F} fontWeight={800} fontSize={13}>FINAL EXAM</text>
+        <g transform={`translate(160,124) scale(${p})`}>
+          <rect x={-120} y={-28} width={240} height={56} rx={12} fill="#123222" stroke={UI.green} strokeWidth={2.5} />
+          <circle cx={-88} cy={0} r={17} fill={UI.green} />
+          <path d="M-97,0 L-91,6 L-79,-7" fill="none" stroke="#fff" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" />
+          <text x={16} y={11} textAnchor="middle" fill="#5be08a" fontFamily={F} fontWeight={900} fontSize={30}>86% PASSED</text>
+        </g>
+        <text x={160} y={178} textAnchor="middle" fill={UI.dim} fontFamily={F} fontWeight={600} fontSize={11}>Congratulations. You have passed the year.</text>
       </g>
     );
   } else if (kind === "paid") {
@@ -272,17 +306,21 @@ const Bills: React.FC = () => {
   };
   return <g>{sheet(944, 46, -8, 0)}{sheet(956, 58, 10, 1)}</g>;
 };
-export const DeskTop: React.FC<{ t: number; clock: string; lid?: number; screen?: ScreenKind; ts?: number; on?: number; bills?: boolean }> = ({
-  t, clock, lid = 0, screen = "off", ts = 0, on = 1, bills = true }) => {
+// photo: what stands on the desk (Mom's photo by default); under / over: things drawn behind / in front of the laptop
+export const DeskTop: React.FC<{ t: number; clock: string; lid?: number; screen?: ScreenKind; ts?: number; on?: number; bills?: boolean;
+  photo?: React.ReactNode; under?: React.ReactNode; over?: React.ReactNode }> = ({
+  t, clock, lid = 0, screen = "off", ts = 0, on = 1, bills = true, photo, under, over }) => {
   const yb = DK.y - DK.zb * STL, yf = DESK_FRONT_Y;
   return (
     <g>
       <polygon points={`${DK.x0},${yf} ${DK.x1},${yf} ${DK.x1},${yb} ${DK.x0},${yb}`} fill="url(#deskTop)" stroke="#120c08" strokeWidth={2.5} strokeLinejoin="round" />
       <line x1={DK.x0 + 4} y1={yb + 1.5} x2={DK.x1 - 4} y2={yb + 1.5} stroke="#6a4c35" strokeWidth={1.5} opacity={0.6} />
       {bills && <Bills />}
-      <MomPhoto x={1000} y={DK.y - 40 * STL - 31} />
+      {photo === undefined ? <MomPhoto x={1000} y={DK.y - 40 * STL - 31} /> : photo}
       <DeskClock clock={clock} />
+      {under}
       <Laptop id="desk" x={LAPTOP_HINGE[0]} y={LAPTOP_HINGE[1]} lid={lid} screen={screen} t={t} ts={ts} on={on} />
+      {over}
     </g>
   );
 };

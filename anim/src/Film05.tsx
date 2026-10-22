@@ -474,7 +474,7 @@ const S_STEPOVER: Scene = { set: "set_door", dark: 0.3, draw: (t) => <>
 // 8 · the exam (Friday): a hard-lit school corridor; beside his shadow walks a horned one
 const floorShadow = (pose: Pose, x: number, y: number, horns: boolean, op: number, id: string) => (
   // lying on the floor away from the windows on the left: the figure's "up" maps to the right and a little back
-  <Silhouette pose={pose} id={id} horns={horns ? 1 : 0} fill="#130d0b" op={op} tf={`matrix(0.42,0.12,-1.05,0.2,${x},${y})`} />
+  <Silhouette pose={pose} id={id} horns={horns ? 1.8 : 0} fill="#130d0b" op={op} tf={`matrix(0.42,0.12,-1.05,0.2,${x},${y})`} />
 );
 const S_CORRIDOR: Scene = { set: "set_corridor", dark: 0, red: () => 0.1,
   draw: (t) => {
@@ -626,7 +626,7 @@ export const CUTS: Cut[] = [
   { t0: 34.0, t1: 34.6, scene: S_CLOCK2, cam: () => CLK },
   { t0: 34.6, t1: 35.3, scene: S_LAPSE2, cam: c(2.2, 770, 630) },
   { t0: 35.3, t1: 36.0, scene: S_CLOCK3, cam: () => CLK },
-  { t0: 36.0, t1: 37.4, scene: S_NOD3, cam: (t) => [mix(1.7, 1.85, (t - 36) / 1.4), OV.x, OV.y + 110] },
+  { t0: 36.0, t1: 37.4, scene: S_NOD3, cam: (t) => [mix(1.65, 1.78, (t - 36) / 1.4), OV.x + 60, OV.y + 110] },
   { t0: 37.4, t1: 37.9, scene: S_POVDARK, cam: c(1.1, 960, 540) },
   { t0: 37.9, t1: 39.0, scene: S_NOD3, cam: c(1.95, OV.x, OV.y + 90), shake: (t) => 5 * Math.exp(-(t - 37.9) * 6) },
   { t0: 39.0, t1: 39.8, scene: S_MORNING, cam: c(1.5, OV.x, OV.y + 160) },
@@ -918,7 +918,7 @@ const CAPS: Cap[] = [
 
 // ------------------------------------------------------------------ counters, flashes, the letterbox
 // the days (steps, not a slide): the rewind 3 -> 7 in the black after the cold open, the crosses, Tuesday 4 AM, ...
-const DAYS: [number, number][] = [[0, 3], [3.4, 4], [3.56, 5], [3.72, 6], [3.88, 7], [44.1, 6], [44.4, 5], [44.7, 4], [47.8, 3], [94.0, 2], [99.0, 1], [111.25, 0]];
+const DAYS: [number, number][] = [[0, 3], [3.26, 4], [3.33, 5], [3.4, 6], [3.47, 7], [44.1, 6], [44.4, 5], [44.7, 4], [47.8, 3], [94.0, 2], [99.0, 1], [111.25, 0]];
 export const daysAt = (t: number) => { let v = DAYS[0][1]; for (const [a, d] of DAYS) if (t >= a) v = d; return v; };
 const PAGES: [number, number][] = [[0, 12], [90.3, 12], [91.1, 48], [96.3, 48], [97.1, 210], [108.6, 210], [109.4, 455], [112.5, 455], [113.2, 600]];
 export const pageAt = (t: number) => Math.round(k(t, PAGES.map((d) => d[0]), PAGES.map((d) => d[1])));
@@ -991,10 +991,10 @@ export const Film05: React.FC<{ qa?: number[] }> = ({ qa }) => {
           <div style={{ position: "absolute", left: mix(960, 60 + 125, fly), top: mix(470, 30 + 60, fly), transform: `translate(-50%, -50%) scale(${mix(2.2, 1, fly)})`, opacity: 1 - sm((t - 4.5) / 0.1),
             fontFamily: "Avenir Next", color: "#f1ece2", textAlign: "center", textShadow: "0 2px 8px #000" }}>
             <div style={{ fontSize: 24, fontWeight: 800, letterSpacing: 4, opacity: 0.9 }}>EXAM IN</div>
-            <div style={{ fontSize: 78, fontWeight: 900, lineHeight: 1, transform: `translateY(${t < 3.95 ? Math.sin(t * 60) * 3 : 0}px)` }}>{days} <span style={{ fontSize: 40, fontWeight: 800 }}>DAYS</span></div>
+            <div style={{ fontSize: 78, fontWeight: 900, lineHeight: 1, transform: `translateY(${t < 3.5 ? Math.sin(t * 60) * 3 : 0}px)` }}>{days} <span style={{ fontSize: 40, fontWeight: 800 }}>DAYS</span></div>
           </div>
           <div style={{ position: "absolute", left: 0, right: 0, top: 650, textAlign: "center", fontFamily: "Avenir Next", fontWeight: 700, fontSize: 70, letterSpacing: 12, color: "#c9c4b8",
-            opacity: k(t, [3.35, 3.5, 4.5, 4.6], [0, 1, 1, 0]) }}>4 DAYS EARLIER</div>
+            opacity: k(t, [3.4, 3.5, 4.52, 4.6], [0, 1, 1, 0]) }}>4 DAYS EARLIER</div>
         </AbsoluteFill>
       )}
       {slam && (

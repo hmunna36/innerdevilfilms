@@ -9,3 +9,13 @@ From film 01 TOMORROW (https://youtu.be/0GEqZ5t3Ci8), planned 20 Oct 2026. Film-
 - [ ] 05 tomorrow-montage: Devil Mode at full speed (the drop to the paid screen), the counter rising
 - [ ] 06 tomorrow-cost: what it took (the cost section and the drawer), held in silence
 - [ ] 07 tomorrow-reveal: the voice was his own (the reveal) and the last line
+
+From film 02 JUST ONE MORE (https://youtu.be/YTID_PENDING), planned 22 Oct 2026. Film-time ranges refer to `Film05`.
+
+- [ ] 08 justonemore-hook: the whole story in 30 s: the phone at 1% dies, his reflection's eyes ignite, "Put it down.", 4 DAYS EARLIER, Dad's "Pass the exam. I can't do one more year of night shifts.", the Angel's "Just one more.", the plug drops, silence, DEVIL MODE, the note under the door, end card (0.0-4.6, 7.6-11.2, 28.4-29.8, 81.7-87.5, 126.9-131.1)
+- [ ] 09 justonemore-dad: the stake: Dad's chats (the night shifts, "I'll pass it. I promise."), his photo, the banner at 3 AM, "Sorry, Dad" typed and deleted, the lie "Yes. Almost done.", "Proud of you.", the phone face down on his chest, end card (7.6-14.8, 47.8-62.2)
+- [ ] 10 justonemore-angel: the Angel's comfort that costs him: "You worked so hard today.", "Take a little break.", "Just one more.", the autoplay nights (12:41 to 3:30, the flare), "Shh. Rest." on the alarm, "Practice exam: missed", 9 h 41 min a day, "It's okay. You still have three days.", end card (17.2-47.8, 62.2-64.8)
+- [ ] 11 justonemore-entry: the Devil's entry beat by beat: "Just one more." from his own mouth, the screen dies, the ember pushes the plug, his reflection grows horns, the eyes ignite, the smoke, "Put it down.", the plug drops, silence, DEVIL MODE, the drawer slam, end card (64.8-88.9)
+- [ ] 12 justonemore-montage: Devil Mode at full speed: PAGE 48 to 600, his hand drifting to the drawer clamped ("One more page."), 42% to 81%, the X through the cake, EXAM DAY, the corridor, 86% PASSED, end card (88.9-99.9, 108.6-123.3)
+- [ ] 13 justonemore-door: the cost, held in silence: the three knocks, "Dad?", the Devil presses him back down, the note under the door, his feet over it, the note picked up: "It's my birthday. I just wanted to see you. -Dad", the X through the cake, end card (99.9-108.6, 114.3-116.1, 124.9-133.9)
+- [ ] 14 justonemore-reveal: the voice was his own: the door opens and the light erases the Devil, his hornless shadow, the memories lose the Angel and the Devil to his own hands and his own "One more page.", the swipe past "Next video", the call ("Dad? I passed." / "So tonight is my last night shift." / "Happy birthday, Dad."), the last overhead, end card (133.9-166.5)

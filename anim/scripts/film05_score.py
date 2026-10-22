@@ -348,7 +348,7 @@ add(reverse_swell(0.7, 0.35), 2.5)
 add(hit(0.9, 1.4), 3.2); add(cymbal(1.2, 0.2), 3.2)
 rw = np.arange(int(SR * 0.7)) / SR
 add(noise_band(len(rw), 300, 5000)[::-1] * (rw / 0.7) ** 2 * 0.14, 3.25)    # the counter rewinding
-for tt in (3.4, 3.56, 3.72, 3.88): add(tick(0.3), tt); add(bell(1760 + (tt - 3.4) * 900, 0.05, 0.4), tt)
+for tt in (3.26, 3.33, 3.4, 3.47): add(tick(0.3), tt); add(bell(1760 + (tt - 3.26) * 2000, 0.05, 0.4), tt)
 add(whoosh(0.4, 0.12), 4.2)
 
 # ================= THE WANT (4.6-17.2) =================

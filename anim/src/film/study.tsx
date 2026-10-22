@@ -206,7 +206,7 @@ export const CalendarInsert: React.FC<{ t: number; circle?: number; crossed?: nu
   const C = 2 * Math.PI * 70;
   const wr = write ?? circle;
   const tipA = -Math.PI / 2 + circle * 2 * Math.PI * 1.08;
-  let tip: V2 = circle < 1 ? [ccx + Math.cos(tipA) * 84, ccy + Math.sin(tipA) * 64] : [ccx - 190 + 540 * sm(wr), ccy + 166];
+  let tip: V2 = circle < 1 ? [ccx + Math.cos(tipA) * 84, ccy + Math.sin(tipA) * 64] : [ccx - 190 + 680 * sm(wr), ccy + 166];
   const xs = (d: number, u: number) => {
     // the two strokes of a cross, drawn one after the other
     const [x, y] = cell(d);
@@ -236,12 +236,12 @@ export const CalendarInsert: React.FC<{ t: number; circle?: number; crossed?: nu
             <text x={x + 14} y={y + 42} fill="#3b3428" fontFamily={F} fontWeight={800} fontSize={34}>{d}</text>
             {cake && d === 14 && (
               // Dad's birthday, in Bean's blue pen: a small cake with a candle, and "DAD"
-              <g transform={`translate(${x + CW / 2 + 16},${y + 74})`} stroke="#2349a8" strokeWidth={4} fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <g transform={`translate(${x + CW / 2 + 30},${y + 74})`} stroke="#2349a8" strokeWidth={4} fill="none" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M-30,18 L-30,-2 L30,-2 L30,18 Z" />
                 <path d="M-30,6 C-20,12 -10,0 0,6 C10,12 20,0 30,6" />
                 <path d="M0,-2 L0,-16" />
                 <path d="M0,-30 C6,-24 4,-18 0,-17 C-4,-18 -6,-24 0,-30 Z" fill="#ff9f0a" stroke="#d0281c" strokeWidth={2.5} />
-                <text x={-52} y={-26} stroke="none" fill="#2349a8" fontFamily={HAND} fontWeight={700} fontSize={26}>DAD</text>
+                <text x={-94} y={8} stroke="none" fill="#2349a8" fontFamily={HAND} fontWeight={700} fontSize={26}>DAD</text>
               </g>
             )}
             {d >= 8 && d < 8 + crossed && (
@@ -255,7 +255,7 @@ export const CalendarInsert: React.FC<{ t: number; circle?: number; crossed?: nu
       <ellipse cx={ccx} cy={ccy} rx={84} ry={64} fill="none" stroke="#d0281c" strokeWidth={10} strokeLinecap="round"
         strokeDasharray={`${C * 1.08 * circle} ${C * 2}`} transform={`rotate(-90 ${ccx} ${ccy})`} />
       <g opacity={k(wr, [0, 0.05], [0, 1])}>
-        <clipPath id="calWrite"><rect x={ccx - 200} y={ccy + 90} width={560 * sm(wr) + 1} height={140} /></clipPath>
+        <clipPath id="calWrite"><rect x={ccx - 200} y={ccy + 90} width={720 * sm(wr) + 1} height={140} /></clipPath>
         <text x={ccx - 190} y={ccy + 186} fill="#d0281c" stroke="#f2ecdf" strokeWidth={10} paintOrder="stroke" fontFamily={HAND} fontWeight={700} fontSize={70} clipPath="url(#calWrite)">FINAL EXAM 9 AM</text>
       </g>
       {marker && (

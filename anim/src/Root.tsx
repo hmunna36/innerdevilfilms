@@ -9,6 +9,7 @@ import { Film03, FILM3_SECONDS } from "./Film03";
 import { Film04, FILM4_SECONDS } from "./Film04";
 import { IDBanner, IDLogo } from "./Brand";
 import { ThumbA, ThumbB } from "./Thumb";
+import { Thumb05A, Thumb05B } from "./Thumb05";
 import { SHORT1_FRAMES, ShortTomorrow } from "./ShortTomorrow";
 import { SHORT2_FRAMES, Short02 } from "./Short02";
 import { SHORT3_FRAMES, Short03 } from "./Short03";
@@ -34,6 +35,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Film05Sheet" component={Film05} durationInFrames={MIDS5.length} fps={30} width={1920} height={1080} defaultProps={{ qa: MIDS5 }} />
     <Composition id="ThumbA" component={ThumbA} durationInFrames={1} fps={30} width={1920} height={1080} />
     <Composition id="ThumbB" component={ThumbB} durationInFrames={1} fps={30} width={1920} height={1080} />
+    <Composition id="Thumb05A" component={Thumb05A} durationInFrames={1} fps={30} width={1920} height={1080} />
+    <Composition id="Thumb05B" component={Thumb05B} durationInFrames={1} fps={30} width={1920} height={1080} />
     <Composition id="IDLogo" component={IDLogo} durationInFrames={1} fps={30} width={800} height={800} />
     <Composition id="IDBanner" component={IDBanner} durationInFrames={1} fps={30} width={2560} height={1440} />
     <Composition id="Film03" component={Film03} durationInFrames={FILM3_SECONDS * 30} fps={30} width={1920} height={1080} />

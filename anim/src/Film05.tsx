@@ -179,7 +179,7 @@ const S_COLD_BED = over((t) => CLIMAX(t), "cold", () => 0.5);
 const S_POVDARK: Scene = { set: "set_bedroom", dark: 0.82, blur: 12, red: (t) => (t < 1.0 ? 0 : 0.45), draw: () => null };
 
 // 1 · the want: the calendar; Dad's texts and photo; the book
-const S_CAL1 = insert((t) => <CalendarInsert t={t} circle={sm((t - 4.75) / 0.9)} write={sm((t - 5.7) / 0.9)} marker={t < 6.75} />);
+const S_CAL1 = insert((t) => <CalendarInsert t={t} circle={sm((t - 4.7) / 0.8)} write={sm((t - 5.55) / 0.7)} marker={t < 6.3} />);
 const S_DESK1 = bed((t) => {
   const putDown = sm((t - 14.95) / 0.35);
   const pose = t < 14.9 ? SEAT_PHONE : poseAt([{ t: 14.9, pose: SEAT_PHONE }, { t: 15.25, pose: SEAT_GRAB }, { t: 15.5, pose: SEAT_TYPE }], t);
@@ -453,7 +453,7 @@ const knockDesk = (t: number, T: number, id: string) => {
   return atDesk(t, { ...MONT(102), clock: "7:30", screen: "quiz67", ts: 0 }, id, pose, e, {
     typing: t < T - 0.2 || back > 0.9, chairX,
     before: lean > 0.01 ? <DevilFig id={`${id}d`} pose={DEVIL_LEAN} x={mix(300, 400, lean)} y={FY} s={1.65} lean={16} t={t} face="manipulative" /> : null,
-    after: lean > 0.5 ? <DevilHand x={sh[0]} y={sh[1]} from={[380, 470]} s={0.7} grip={0.4} /> : null,
+    after: lean > 0.5 ? <DevilHand x={sh[0]} y={sh[1]} from={[430, 720]} s={0.7} grip={0.4} /> : null,
   });
 };
 const S_KNOCKDESK = bed((t) => knockDesk(t, 101.6, "kd"), 0.5, () => 0.3);
@@ -481,8 +481,8 @@ const S_CORRIDOR: Scene = { set: "set_corridor", dark: 0, red: () => 0.1,
     const X = mix(260, 1500, (t - 116.1) / 2.6);
     const p = walk((t - 116.1) * 11.5, SIDE, 1.45);
     return <>
-      {floorShadow(p, X + 10, 1010, false, 0.42, "csb")}
-      {floorShadow(p, X + 70, 960, true, 0.55, "csd")}
+      {floorShadow(p, X + 10, 1010, false, 0.55, "csb")}
+      {floorShadow(p, X + 70, 960, true, 0.68, "csd")}
       <Char id="cor" pose={p} e={{ ...ex("determined", t, { blink: false }), bags: 1, lid: 0.55 }} x={X} y={1012} s={1.35} t={t} />
     </>;
   } };
@@ -567,7 +567,7 @@ const S_MEM_DESK = bed((t) => {
     ex("determined", t, { blink: false, lx: back > 0.5 ? 4 : 6, talk: (u > 0.45 && u < 0.85) || (u > 1.85 && u < 2.55) }), {
       chairX: BX - 46 * up * (1 - down),
       before: devil > 0.01 ? <g opacity={devil}><DevilFig id="memd" pose={DEVIL_LEAN} x={400} y={FY} s={1.65} lean={16} t={t} face="manipulative" /></g> : null,
-      after: devil > 0.01 ? <DevilHand x={sh[0]} y={sh[1]} from={[380, 470]} s={0.7} grip={0.4} op={devil} /> : null,
+      after: devil > 0.01 ? <DevilHand x={sh[0]} y={sh[1]} from={[430, 720]} s={0.7} grip={0.4} op={devil} /> : null,
     });
 }, 0.45);
 const S_MEM_DOOR: Scene = { set: "set_door", dark: 0.15, draw: (t) => <BootShadows t={t} t0={130} t1={144.6} /> };
@@ -747,7 +747,7 @@ export const CutView: React.FC<{ cut: Cut; t: number; W?: number; H?: number }> 
 };
 
 // ================================================================== the phone shots (overlays over the blurred room)
-const C_STUDY: Clip = { t0: 26.2, kind: "study", user: "@studyhacks", caption: "HOW TO STUDY 600 PAGES\nIN ONE NIGHT", likes: "880K" };
+const C_STUDY: Clip = { t0: 26.2, kind: "study", user: "@studyhacks", caption: "HOW TO STUDY\n600 PAGES\nIN ONE NIGHT", likes: "880K" };
 const C_DOG: Clip = { t0: 29.8, kind: "dog", user: "@goodboys", caption: "WAIT FOR IT…", likes: "2.4M" };
 const C_DOM: Clip = { t0: 36.0, kind: "dominoes", user: "@satisfying", caption: "SO SATISFYING", likes: "3.1M" };
 const C_SLIME: Clip = { t0: 47.8, kind: "slime", user: "@satisfying", caption: "WATCH TILL THE END", likes: "1.1M" };
@@ -907,10 +907,10 @@ const CAPS: Cap[] = [
   { t0: 66.75, t1: 68.1, who: "bean", text: "Just one more.", x: 960, y: 120, size: 80 },
   { t0: 79.4, t1: 81.7, who: "devil", text: "Put it down.", x: 1300, y: 820, size: 104 },
   { t0: 92.2, t1: 93.95, who: "devil", text: "One more page.", x: 960, y: 140, size: 88 },
-  { t0: 101.6, t1: 102.55, who: "bean", text: "Dad?", x: 1060, y: 170, size: 64 },
+  { t0: 101.5, t1: 102.8, who: "bean", text: "Dad?", x: 1060, y: 170, size: 64 },
   { t0: 103.8, t1: 105.4, who: "devil", text: "One more page.", x: 1180, y: 150, size: 88 },
-  { t0: 142.15, t1: 142.95, who: "bean", text: "Dad?", x: 1000, y: 150, size: 64 },
-  { t0: 143.55, t1: 144.5, who: "bean", text: "One more page.", x: 1100, y: 150, size: 80 },
+  { t0: 142.05, t1: 143.25, who: "bean", text: "Dad?", x: 1000, y: 150, size: 64 },
+  { t0: 143.3, t1: 144.5, who: "bean", text: "One more page.", x: 1100, y: 150, size: 80 },
   { t0: 154.7, t1: 156.6, who: "bean", text: "Dad? I passed.", x: 960, y: 110, size: 76 },
   { t0: 156.8, t1: 159.5, who: "dad", text: "So tonight is my last night shift.", x: 900, y: 80 },
   { t0: 159.7, t1: 161.5, who: "bean", text: "Happy birthday, Dad.", x: 960, y: 110, size: 76 },

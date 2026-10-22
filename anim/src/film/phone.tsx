@@ -302,8 +302,8 @@ export const Feed: React.FC<{ t: number; clips: Clip[]; clock: string; battery?:
       <StatusBar clock={clock} battery={battery} />
       {/* the video's caption, big, in the middle of the top */}
       {cur.caption.split("\n").map((ln, i, a) => (
-        <text key={i} x={254} y={(a.length > 1 ? 150 : 200) + i * 50} textAnchor="middle" fill="#fff" stroke="#000" strokeWidth={8} paintOrder="stroke" fontFamily={F} fontWeight={900}
-          fontSize={Math.min(a.length > 1 ? 36 : 46, 700 / Math.max(...a.map((x) => x.length)))}>{ln}</text>
+        <text key={i} x={254} y={(a.length > 1 ? 136 : 200) + i * 58} textAnchor="middle" fill="#fff" stroke="#000" strokeWidth={8} paintOrder="stroke" fontFamily={F} fontWeight={900}
+          fontSize={Math.min(46, 700 / Math.max(...a.map((x) => x.length)))}>{ln}</text>
       ))}
       {/* the buttons on the right */}
       <Heart x={452} y={640} on={liked >= 0 && t > liked} />

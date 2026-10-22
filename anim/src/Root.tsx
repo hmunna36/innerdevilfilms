@@ -12,6 +12,10 @@ import { ThumbA, ThumbB } from "./Thumb";
 import { SHORT1_FRAMES, ShortTomorrow } from "./ShortTomorrow";
 import { SHORT2_FRAMES, Short02 } from "./Short02";
 import { SHORT3_FRAMES, Short03 } from "./Short03";
+import { Lab05 } from "./Lab05";
+import { CUTS as CUTS5, Film05, FILM5_SECONDS } from "./Film05";
+// one frame from the middle of every cut of film 02, for contact sheets
+const MIDS5 = CUTS5.map((c) => Math.round(((c.t0 + c.t1) / 2) * 30));
 
 export const RemotionRoot: React.FC = () => (
   <>
@@ -23,6 +27,10 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Short02QA" component={Short02} durationInFrames={120} fps={30} width={1080} height={1920} defaultProps={{ qa: [0] }} />
     <Composition id="Short03" component={Short03} durationInFrames={SHORT3_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="Short03QA" component={Short03} durationInFrames={120} fps={30} width={1080} height={1920} defaultProps={{ qa: [0] }} />
+    <Composition id="Film05" component={Film05} durationInFrames={FILM5_SECONDS * 30} fps={30} width={1920} height={1080} />
+    <Composition id="Film05QA" component={Film05} durationInFrames={900} fps={30} width={1920} height={1080} defaultProps={{ qa: [0] }} />
+    <Composition id="Film05Sheet" component={Film05} durationInFrames={MIDS5.length} fps={30} width={1920} height={1080} defaultProps={{ qa: MIDS5 }} />
+    <Composition id="Lab05" component={Lab05} durationInFrames={480} fps={30} width={1920} height={1080} />
     <Composition id="ThumbA" component={ThumbA} durationInFrames={1} fps={30} width={1920} height={1080} />
     <Composition id="ThumbB" component={ThumbB} durationInFrames={1} fps={30} width={1920} height={1080} />
     <Composition id="IDLogo" component={IDLogo} durationInFrames={1} fps={30} width={800} height={800} />

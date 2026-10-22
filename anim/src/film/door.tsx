@@ -54,7 +54,8 @@ export const letterPt = (s: LetterState, i: number, j: number): V2 => {
   const c = Math.cos(s.rot * DEG), sn = Math.sin(s.rot * DEG);
   return fp(s.u + lx * c - ly * sn, h, s.v + lx * sn + ly * c);
 };
-export const FloorLetter: React.FC<{ s: LetterState; id: string; clipGap?: boolean; title?: string }> = ({ s, id, clipGap = true }) => {
+// note = a handwritten note (lined paper, blue ink) instead of the printed notice
+export const FloorLetter: React.FC<{ s: LetterState; id: string; clipGap?: boolean; title?: string; note?: boolean }> = ({ s, id, clipGap = true, note = false }) => {
   const q = (i: number, j: number) => letterPt(s, i, j);
   const quad = (i0: number, i1: number, j0: number, j1: number) => `${P(q(i0, j0))} ${P(q(i1, j0))} ${P(q(i1, j1))} ${P(q(i0, j1))}`;
   const ys = [q(-1, -1), q(1, -1), q(1, 1), q(-1, 1)].map((p) => p[1]);
@@ -73,9 +74,15 @@ export const FloorLetter: React.FC<{ s: LetterState; id: string; clipGap?: boole
       </defs>
       {flat && <polygon points={quad(-1.03, 1.03, -0.98, 1.06)} fill="#000" opacity={0.55} filter="url(#bb3)" transform="translate(0,3)" />}
       <polygon points={quad(-1, 1, -1, 1)} fill={`url(#lg${id})`} stroke="#5b5144" strokeWidth={1.4} strokeLinejoin="round" />
-      <polygon points={quad(-0.8, 0.8, 0.66, 0.86)} fill="#c0392b" />
-      {[0.42, 0.26, 0.1, -0.06, -0.22, -0.38].map((j, k) => (
+      {!note && <polygon points={quad(-0.8, 0.8, 0.66, 0.86)} fill="#c0392b" />}
+      {!note && [0.42, 0.26, 0.1, -0.06, -0.22, -0.38].map((j, k) => (
         <polygon key={k} points={quad(-0.8, k === 5 ? 0.3 : 0.8, j - 0.045, j)} fill="#8f877a" opacity={0.85} />
+      ))}
+      {note && [0.7, 0.5, 0.3, 0.1, -0.1, -0.3, -0.5].map((j, k) => (
+        <polygon key={k} points={quad(-0.86, 0.86, j - 0.012, j)} fill="#9fb6dc" opacity={0.8} />
+      ))}
+      {note && [0.62, 0.42, 0.22, 0.02, -0.18].map((j, k) => (
+        <polygon key={`i${k}`} points={quad(-0.72, k === 4 ? 0.1 : 0.66 - 0.1 * (k % 2), j - 0.05, j)} fill="#2349a8" opacity={0.75} />
       ))}
       <polyline points={`${P(q(-1, 0.02))} ${P(q(1, 0.02))}`} stroke="#a59a88" strokeWidth={1.2} opacity={0.6} />
       {flat && lit > 0.05 && <polyline points={`${P(q(-1, -1))} ${P(q(1, -1))}`} stroke="#ffb35a" strokeWidth={2.2} opacity={lit} />}

@@ -10,7 +10,7 @@ From film 01 TOMORROW (https://youtu.be/0GEqZ5t3Ci8), planned 20 Oct 2026. Film-
 - [ ] 06 tomorrow-cost: what it took (the cost section and the drawer), held in silence
 - [ ] 07 tomorrow-reveal: the voice was his own (the reveal) and the last line
 
-From film 02 JUST ONE MORE (https://youtu.be/YTID_PENDING), planned 22 Oct 2026. Film-time ranges refer to `Film05`.
+From film 02 JUST ONE MORE (https://youtu.be/GVoVv5A5kOE), planned 22 Oct 2026. Film-time ranges refer to `Film05`.
 
 - [ ] 08 justonemore-hook: the whole story in 30 s: the phone at 1% dies, his reflection's eyes ignite, "Put it down.", 4 DAYS EARLIER, Dad's "Pass the exam. I can't do one more year of night shifts.", the Angel's "Just one more.", the plug drops, silence, DEVIL MODE, the note under the door, end card (0.0-4.6, 7.6-11.2, 28.4-29.8, 81.7-87.5, 126.9-131.1)
 - [ ] 09 justonemore-dad: the stake: Dad's chats (the night shifts, "I'll pass it. I promise."), his photo, the banner at 3 AM, "Sorry, Dad" typed and deleted, the lie "Yes. Almost done.", "Proud of you.", the phone face down on his chest, end card (7.6-14.8, 47.8-62.2)

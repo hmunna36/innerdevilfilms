@@ -114,9 +114,9 @@ export const LyingBean: React.FC<{ id: string; t: number; e: BeanExpr; pose?: Po
 );
 
 // the phone in his two hands, its back to the camera; h = how high he holds it (1 = up near the camera, over his face)
-export const HeldPhone: React.FC<{ t: number; lit: number; h?: number; x?: number; y?: number; rot?: number; hands?: boolean; dead?: boolean; oneHand?: boolean }> = ({
-  t, lit, h = 0, x = OV_PHONE[0], y = OV_PHONE[1], rot = -6, hands = true, dead = false, oneHand = false }) => {
-  const s = 1 + 0.9 * h;                       // nearer the camera = bigger
+export const HeldPhone: React.FC<{ t: number; lit: number; h?: number; x?: number; y?: number; rot?: number; hands?: boolean; dead?: boolean; oneHand?: boolean; sc?: number }> = ({
+  t, lit, h = 0, x = OV_PHONE[0], y = OV_PHONE[1], rot = -6, hands = true, dead = false, oneHand = false, sc = 1 }) => {
+  const s = (1 + 0.9 * h) * sc;                // nearer the camera = bigger
   const yy = mix(y, OV.y + 30, h);             // held up, it is over his face
   const jit = Math.sin(t * 2.1) * 2;
   return (

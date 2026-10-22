@@ -81,7 +81,7 @@ export const StatusBar: React.FC<{ clock: string; battery?: number; light?: bool
 };
 
 // ------------------------------------------------------------------ the feed: short videos, drawn in code
-export type ClipKind = "cat" | "dominoes" | "slime" | "skate" | "study";
+export type ClipKind = "cat" | "dominoes" | "slime" | "skate" | "study" | "dog";
 export type Clip = { t0: number; kind: ClipKind; user: string; caption: string; likes: string };
 const Cat: React.FC<{ u: number }> = ({ u }) => {
   // a cat taps a mug along the counter until it falls off ("WAIT FOR IT…")
@@ -201,7 +201,49 @@ const Study: React.FC<{ u: number }> = ({ u }) => {
     </g>
   );
 };
-const CLIPS: Record<ClipKind, React.FC<{ u: number }>> = { cat: Cat, dominoes: Dominoes, slime: Slime, skate: Skate, study: Study };
+const Dog: React.FC<{ u: number }> = ({ u }) => {
+  // a dog sits staring at the front door ("WAIT FOR IT…"); it opens, light pours in, and the dog bursts into happy spins
+  const open = sm((u - 1.15) / 0.35);
+  const spin = u > 1.35 ? (u - 1.35) * 900 : 0;
+  const hop = u > 1.35 ? Math.abs(Math.sin((u - 1.35) * 9)) * 60 : 0;
+  const wag = Math.sin(u * (u > 1.3 ? 40 : 14)) * (u > 1.3 ? 30 : 12);
+  return (
+    <g>
+      <rect width={SW} height={SH} fill="#d9c7a8" />
+      <rect y={760} width={SW} height={SH - 760} fill="#8c6a4a" />
+      <rect y={760} width={SW} height={14} fill="#6e5238" />
+      {/* the front door on the right, opening inward */}
+      <rect x={300} y={330} width={180} height={430} fill={open > 0.02 ? "#fff3cf" : "#5b3d26"} />
+      {open > 0.02 && <polygon points={`300,760 480,760 ${560 + 200 * open},${SH} ${200 - 200 * open},${SH}`} fill="#fff3cf" opacity={0.5 * open} />}
+      <polygon points={`300,330 ${300 + 180 * (1 - open)},${330 - 20 * open} ${300 + 180 * (1 - open)},${760 + 30 * open} 300,760`} fill="#7a5233" stroke="#3b2516" strokeWidth={5} />
+      <circle cx={300 + 160 * (1 - open)} cy={560} r={9} fill="#e8c46a" opacity={1 - open} />
+      {/* the dog */}
+      <g transform={`translate(190,${800 - hop}) rotate(${spin})`}>
+        <path d={`M40,-10 C80,-30 ${90 + wag},-70 ${84 + wag},-90`} stroke="#2a2a2a" strokeWidth={22} strokeLinecap="round" fill="none" />
+        <path d={`M40,-10 C80,-30 ${90 + wag},-70 ${84 + wag},-90`} stroke="#c98a4b" strokeWidth={14} strokeLinecap="round" fill="none" />
+        <ellipse cx={0} cy={-40} rx={70} ry={58} fill="#c98a4b" stroke="#2a2a2a" strokeWidth={6} />
+        <circle cx={0} cy={-120} r={52} fill="#c98a4b" stroke="#2a2a2a" strokeWidth={6} />
+        <path d="M-46,-150 C-80,-140 -78,-90 -56,-82 C-44,-100 -40,-126 -46,-150 Z M46,-150 C80,-140 78,-90 56,-82 C44,-100 40,-126 46,-150 Z" fill="#8a5a30" stroke="#2a2a2a" strokeWidth={5} />
+        {u > 1.3 && <path d="M-14,-96 Q0,-80 14,-96" fill="#e5483b" stroke="#2a2a2a" strokeWidth={3} />}
+      </g>
+    </g>
+  );
+};
+const CLIPS: Record<ClipKind, React.FC<{ u: number }>> = { cat: Cat, dominoes: Dominoes, slime: Slime, skate: Skate, study: Study, dog: Dog };
+// the autoplay ring small in a corner (it leaves the video's title readable)
+export const CornerRing: React.FC<{ t: number; t0: number; t1: number }> = ({ t, t0, t1 }) => {
+  const a = sm((t - t0) / 0.2);
+  if (a <= 0) return null;
+  const left = Math.max(0, t1 - t), frac = clamp01(left / (t1 - t0)), C = 2 * Math.PI * 34;
+  return (
+    <g opacity={a} transform="translate(410,980)">
+      <circle r={52} fill="#000" opacity={0.55} />
+      <circle r={34} fill="none" stroke="#fff" strokeOpacity={0.3} strokeWidth={8} />
+      <circle r={34} fill="none" stroke="#fff" strokeWidth={8} strokeDasharray={`${C * frac} ${C}`} transform="rotate(-90)" strokeLinecap="round" />
+      <text y={12} textAnchor="middle" fill="#fff" fontFamily={F} fontWeight={900} fontSize={32}>{Math.max(1, Math.ceil(left - 1e-6))}</text>
+    </g>
+  );
+};
 const Heart: React.FC<{ x: number; y: number; on?: boolean }> = ({ x, y, on }) => (
   <path transform={`translate(${x},${y}) scale(1.5)`} d="M0,8 C-14,-2 -20,-10 -12,-17 C-7,-21 -2,-18 0,-14 C2,-18 7,-21 12,-17 C20,-10 14,-2 0,8 Z" fill={on ? "#ff3d5a" : "#fff"} stroke="#000" strokeOpacity={0.3} strokeWidth={1} />
 );
@@ -241,8 +283,8 @@ export const Banner: React.FC<{ t: number; t0: number; t1: number; from: string;
   );
 };
 // low1 = the time the "1% battery" card comes up over the video
-export const Feed: React.FC<{ t: number; clips: Clip[]; clock: string; battery?: number; ring?: [number, number]; liked?: number; low1?: number; children?: React.ReactNode }> = ({
-  t, clips, clock, battery = 0.55, ring, liked = -1, low1, children }) => {
+export const Feed: React.FC<{ t: number; clips: Clip[]; clock: string; battery?: number; ring?: [number, number]; ringCorner?: boolean; liked?: number; low1?: number; flare?: number; children?: React.ReactNode }> = ({
+  t, clips, clock, battery = 0.55, ring, ringCorner = false, liked = -1, low1, flare = 0, children }) => {
   const cur = [...clips].reverse().find((c) => t >= c.t0) ?? clips[0];
   const u = t - cur.t0;
   const C = CLIPS[cur.kind];
@@ -260,7 +302,8 @@ export const Feed: React.FC<{ t: number; clips: Clip[]; clock: string; battery?:
       <StatusBar clock={clock} battery={battery} />
       {/* the video's caption, big, in the middle of the top */}
       {cur.caption.split("\n").map((ln, i, a) => (
-        <text key={i} x={254} y={(a.length > 1 ? 150 : 200) + i * 50} textAnchor="middle" fill="#fff" stroke="#000" strokeWidth={8} paintOrder="stroke" fontFamily={F} fontWeight={900} fontSize={a.length > 1 ? 36 : 46}>{ln}</text>
+        <text key={i} x={254} y={(a.length > 1 ? 150 : 200) + i * 50} textAnchor="middle" fill="#fff" stroke="#000" strokeWidth={8} paintOrder="stroke" fontFamily={F} fontWeight={900}
+          fontSize={Math.min(a.length > 1 ? 36 : 46, 700 / Math.max(...a.map((x) => x.length)))}>{ln}</text>
       ))}
       {/* the buttons on the right */}
       <Heart x={452} y={640} on={liked >= 0 && t > liked} />
@@ -270,7 +313,8 @@ export const Feed: React.FC<{ t: number; clips: Clip[]; clock: string; battery?:
       <text x={36} y={SH - 128} fill="#fff" fontFamily={F} fontWeight={800} fontSize={30}>{cur.user}</text>
       <rect x={0} y={SH - 8} width={SW} height={8} fill="#fff" opacity={0.25} />
       <rect x={0} y={SH - 8} width={SW * clamp01(u / dur)} height={8} fill="#fff" />
-      {ring && <AutoRing t={t} t0={ring[0]} t1={ring[1]} />}
+      {ring && (ringCorner ? <CornerRing t={t} t0={ring[0]} t1={ring[1]} /> : <AutoRing t={t} t0={ring[0]} t1={ring[1]} />)}
+      {flare > 0.01 && <rect width={SW} height={SH} fill="#fffaf0" opacity={flare} />}
       {low1 !== undefined && t >= low1 && (() => {
         const a = sm((t - low1) / 0.18);
         return (
@@ -484,5 +528,21 @@ export const Call: React.FC<{ t: number; name: string; t0: number; connect: numb
       <circle cx={254} cy={970} r={58} fill="#ff3b30" />
       <path d="M222,972 c20,-14 44,-14 64,0" stroke="#fff" strokeWidth={14} strokeLinecap="round" fill="none" />
     </svg>
+  );
+};
+
+// a bleary, half-awake view: the edges of his eyelids at the top and bottom of the frame, closing and opening
+export const Eyelids: React.FC<{ t: number; amount?: number }> = ({ t, amount = 1 }) => {
+  const blink = Math.max(0, Math.sin(t * 2.6)) ** 6;           // a slow, heavy blink now and then
+  const lid = (0.32 + 0.5 * blink) * amount;
+  const top = 540 * lid, bot = 1080 - 540 * lid * 0.8;
+  return (
+    <AbsoluteFill>
+      <svg width={1920} height={1080} style={{ position: "absolute", left: 0, top: 0 }}>
+        <defs><filter id="lidBlur" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="28" /></filter></defs>
+        <path d={`M-100,-100 L2020,-100 L2020,${top - 120} Q960,${top + 140} -100,${top - 120} Z`} fill="#050403" filter="url(#lidBlur)" />
+        <path d={`M-100,1180 L2020,1180 L2020,${bot + 120} Q960,${bot - 120} -100,${bot + 120} Z`} fill="#050403" filter="url(#lidBlur)" />
+      </svg>
+    </AbsoluteFill>
   );
 };

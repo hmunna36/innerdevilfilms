@@ -195,8 +195,9 @@ export const BookInsert: React.FC<{ t: number; page: number; hl?: number; flip?:
 // ------------------------------------------------------------------ the wall calendar (an insert): May, Friday the
 // 15th circled in red marker, "FINAL EXAM 9 AM"; crossed = the days already crossed off (from the 8th)
 // xDay = a day being crossed out right now (u = 0..1 of the two strokes); the marker follows whatever is being drawn
-export const CalendarInsert: React.FC<{ t: number; circle?: number; crossed?: number; marker?: boolean; write?: number; xDay?: { day: number; u: number }; cake?: boolean }> = ({
-  t, circle = 1, crossed = 0, marker = false, write, xDay, cake = true }) => {
+// dim = the room at night, lit only by the laptop's glow from the left
+export const CalendarInsert: React.FC<{ t: number; circle?: number; crossed?: number; marker?: boolean; write?: number; xDay?: { day: number; u: number }; cake?: boolean; dim?: number }> = ({
+  t, circle = 1, crossed = 0, marker = false, write, xDay, cake = true, dim = 0 }) => {
   const X0 = 420, Y0 = 250, CW = 154, CH = 118;
   const days = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
   const cell = (d: number): V2 => { const i = d + 3; return [X0 + (i % 7) * CW, Y0 + 60 + Math.floor(i / 7) * CH]; }; // the 1st is a Friday
@@ -270,6 +271,10 @@ export const CalendarInsert: React.FC<{ t: number; circle?: number; crossed?: nu
           </g>
         </g>
       )}
+      {dim > 0.01 && <>
+        <rect x={-400} y={-300} width={2720} height={1680} fill="#04060c" opacity={0.55 * dim} />
+        <ellipse cx={700} cy={560} rx={900} ry={600} fill="#8fb0ff" opacity={0.12 * dim} filter="url(#bb30)" style={{ mixBlendMode: "screen" }} />
+      </>}
       <rect x={-400} y={-300} width={2720} height={1680} fill="url(#topVig)" />
     </g>
   );

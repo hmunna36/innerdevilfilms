@@ -157,7 +157,7 @@ export const ScreenUI: React.FC<{ kind: ScreenKind; t: number; ts?: number }> = 
     body = (
       <g>
         {bar("inbox")}
-        <text x={20} y={44} fill={UI.dim} fontFamily={F} fontWeight={600} fontSize={9}>From: University</text>
+        <text x={20} y={44} fill={UI.dim} fontFamily={F} fontWeight={600} fontSize={9}>From: School</text>
         <text x={20} y={60} fill={UI.text} fontFamily={F} fontWeight={800} fontSize={13}>Your results are ready</text>
         <rect x={20} y={67} width={280} height={1} fill="#2b3550" />
         <text x={160} y={88} textAnchor="middle" fill={UI.text} fontFamily={F} fontWeight={800} fontSize={13}>FINAL EXAM</text>

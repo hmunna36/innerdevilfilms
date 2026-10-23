@@ -6,3 +6,4 @@
 - 2026-10-21 (cloud routine) Short 03 tomorrow-angel built (32.3 s), QA: 2 stills rounds + 3 video rounds, uploaded as nf6S4VqzhOk, public 22 Oct 20:00 IST
 - 2026-10-22 (cloud routine) Short 04 tomorrow-entry built (27.8 s), QA: 3 stills rounds + 2 video rounds, uploaded as v6ZoBWR4Mnc, public 23 Oct 20:00 IST
 - 2026-10-22 (cloud routine) film 02 JUST ONE MORE | The Phone Ate His Nights built (2:54), story locked after 3 critic rounds, QA: 3 stills rounds + 3 video rounds, uploaded as GVoVv5A5kOE, public 26 Oct 2026 04:30 IST (Sun 25 Oct 19:00 New York); Shorts 08-14 planned
+- 2026-10-23 (cloud routine) Short 05 tomorrow-montage built (33.2 s), QA: 3 stills rounds + 2 video rounds, uploaded as JKkwepT_5LI, public 24 Oct 2026 20:00 IST

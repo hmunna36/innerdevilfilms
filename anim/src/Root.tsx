@@ -16,6 +16,7 @@ import { SHORT3_FRAMES, Short03 } from "./Short03";
 import { SHORT4_FRAMES, Short04 } from "./Short04";
 import { SHORT5_FRAMES, Short05 } from "./Short05";
 import { SHORT6_FRAMES, Short06 } from "./Short06";
+import { SHORT7_FRAMES, Short07 } from "./Short07";
 import { CUTS as CUTS5, Film05, FILM5_SECONDS } from "./Film05";
 // one frame from the middle of every cut of film 02, for contact sheets
 const MIDS5 = CUTS5.map((c) => Math.round(((c.t0 + c.t1) / 2) * 30));
@@ -36,6 +37,8 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="Short05QA" component={Short05} durationInFrames={120} fps={30} width={1080} height={1920} defaultProps={{ qa: [0] }} />
     <Composition id="Short06" component={Short06} durationInFrames={SHORT6_FRAMES} fps={30} width={1080} height={1920} />
     <Composition id="Short06QA" component={Short06} durationInFrames={120} fps={30} width={1080} height={1920} defaultProps={{ qa: [0] }} />
+    <Composition id="Short07" component={Short07} durationInFrames={SHORT7_FRAMES} fps={30} width={1080} height={1920} />
+    <Composition id="Short07QA" component={Short07} durationInFrames={120} fps={30} width={1080} height={1920} defaultProps={{ qa: [0] }} />
     <Composition id="Film05" component={Film05} durationInFrames={FILM5_SECONDS * 30} fps={30} width={1920} height={1080} />
     <Composition id="Film05QA" component={Film05} durationInFrames={900} fps={30} width={1920} height={1080} defaultProps={{ qa: [0] }} />
     <Composition id="Film05Sheet" component={Film05} durationInFrames={MIDS5.length} fps={30} width={1920} height={1080} defaultProps={{ qa: MIDS5 }} />

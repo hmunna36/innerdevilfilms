@@ -786,7 +786,7 @@ const SnoozeAngel: React.FC<{ t: number; t0: number; op: number }> = ({ t, t0, o
   const a = sm((t - t0 - 0.15) / 0.3) * op;
   return a > 0.01 ? <g opacity={a} transform="translate(1140,630) scale(-1,1)"><Angel x={0} y={Math.sin(t * 3) * 6} s={0.9} t={t} reach={k(t, [t0 + 0.55, t0 + 0.8, t0 + 1.2, t0 + 1.5], [0, 1, 1, 0])} /></g> : null;
 };
-const Phones: React.FC<{ t: number }> = ({ t }) => {
+export const Phones: React.FC<{ t: number }> = ({ t }) => {
   // cold open: the lit feed at 1%, then the black glass and the eyes
   if (t < 1.9) return (
     <PhoneView t={t} s={0.95} y={40} glow={t < 1.0 ? 1 : 0}>
@@ -1026,7 +1026,7 @@ export const Film05: React.FC<{ qa?: number[] }> = ({ qa }) => {
 };
 
 // Dad's birthday note, held in his hands, with the same cake he drew on the calendar
-const NoteBirthday: React.FC<{ t: number }> = ({ t }) => {
+export const NoteBirthday: React.FC<{ t: number }> = ({ t }) => {
   const op = k(t, [126.9, 127.15, 130.8, 131.1], [0, 1, 1, 0]);
   const rise = sm((t - 126.9) / 0.35);
   return (

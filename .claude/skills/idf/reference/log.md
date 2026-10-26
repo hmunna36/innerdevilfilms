@@ -9,3 +9,4 @@
 - 2026-10-23 (cloud routine) Short 05 tomorrow-montage built (33.2 s), QA: 3 stills rounds + 2 video rounds, uploaded as JKkwepT_5LI, public 24 Oct 2026 20:00 IST
 - 2026-10-24 (cloud routine) Short 06 tomorrow-cost built (29.8 s), QA: 2 stills rounds + 1 video round, uploaded as AFRXVKjlg44, public 25 Oct 2026 20:00 IST
 - 2026-10-25 (cloud routine) Short 07 tomorrow-reveal built (27.0 s), QA: 2 stills rounds + 1 video round, uploaded as Jk-nWjbnfCs, public 26 Oct 2026 20:00 IST; film 01's seven Shorts are done
+- 2026-10-26 (cloud routine) Short 08 justonemore-hook built (34.4 s), QA: 3 stills rounds + 1 video round, uploaded as 3ypMOEbWDmY, public 27 Oct 2026 20:00 IST; first Short of film 02

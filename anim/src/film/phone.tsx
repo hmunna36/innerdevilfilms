@@ -390,7 +390,7 @@ export const draftAt = (t: number, drafts: Draft[], sentAt = 1e9) => {
   return cur.mode === "del" ? cur.text.slice(0, cur.text.length - n) : cur.text.slice(0, n);
 };
 // Dad's avatar: his orange work vest
-const VestIcon: React.FC<{ size: number }> = ({ size }) => (
+export const VestIcon: React.FC<{ size: number }> = ({ size }) => (
   <svg width={size} height={size} viewBox="0 0 74 74">
     <circle cx={37} cy={37} r={37} fill="#4a5a73" />
     <path d="M18,74 L18,40 C18,30 26,26 30,24 L37,40 L44,24 C48,26 56,30 56,40 L56,74 Z" fill="#f07a24" stroke="#1a1a1a" strokeWidth={2.5} />

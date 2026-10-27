@@ -5,8 +5,8 @@ Animated horror short films about the habits that feed on us in the dark: youtub
 film someone finally stops feeding it. No narration: an extreme score, the devil's words on screen, a story told in
 pictures. The model film is LUST | It Watches Back (`films/03-lust`).
 
-Everything is drawn in code on the channel's canvas engine and made by two Claude cloud routines (PAUSED since
-27 Oct 2026 until the owner switches them back on):
+Everything is drawn in code on the channel's canvas engine and made by two Claude cloud routines (back on since
+27 Oct 2026, with the LUST-style pipeline):
 
 | Routine | When (IST) | Does |
 |---|---|---|

@@ -20,7 +20,7 @@
   ],
   "cover": "thumb.jpg",
   "youtube": {
-    "publishAt": "2026-10-28T20:00:00+05:30",
+    "publishAt": "2026-10-27T22:30:00+05:30",
     "privacy": "private",
     "categoryId": "1",
     "language": "en",
@@ -30,6 +30,7 @@
     "id": "aqiuimf3dCg",
     "url": "https://youtu.be/aqiuimf3dCg",
     "uploaded": "2026-10-27T15:01:23.797Z",
-    "thumbnailSet": true
+    "thumbnailSet": true,
+    "rescheduled": "27 Oct 2026 21:21 IST, at the user's request (was 2026-10-28T20:00:00+05:30)"
   }
 }

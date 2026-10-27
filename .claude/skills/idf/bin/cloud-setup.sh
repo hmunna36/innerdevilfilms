@@ -21,7 +21,9 @@ fi
 works() { IDF_CHROME="$1" timeout 90 node "$IDF_ENGINE/render.mjs" stills film films/03-lust --at 1.2 --out "$IDF_HOME/probe" >>"$LOG" 2>&1; }
 if [ "$(uname -s)" = "Linux" ] && { [ ! -s "$IDF_HOME/chrome-path" ] || ! works "$(cat "$IDF_HOME/chrome-path")"; }; then
   : >"$IDF_HOME/chrome-path"; found=""
-  for c in /opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell /opt/pw-browsers/chromium-*/chrome-linux/chrome /opt/pw-browsers/chromium/chrome-linux/chrome "$(command -v chromium || true)" "$(command -v google-chrome || true)"; do
+  # the image's Playwright browsers, whatever their folder layout (seen 27 Oct 2026: chromium_headless_shell-1243/
+  # chrome-headless-shell-linux64/chrome-headless-shell and chromium-1243/chrome-linux64/chrome, /opt/pw-browsers/chromium a link)
+  for c in $(find /opt/pw-browsers -maxdepth 4 \( -type f -o -type l \) \( -name chrome-headless-shell -o -name headless_shell -o -name chrome -o -name chromium \) 2>/dev/null | sort) "$(command -v chromium || true)" "$(command -v google-chrome || true)"; do
     [ -n "$c" ] && [ -x "$c" ] && works "$c" && { found="$c"; break; }
   done
   if [ -z "$found" ]; then

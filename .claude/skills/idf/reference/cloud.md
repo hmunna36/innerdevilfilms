@@ -1,11 +1,12 @@
 # The cloud machine (a Claude cloud routine run)
 
 - A fresh Ubuntu x86_64 VM every run (4 CPUs, 16 GB RAM, about 30 GB disk, no GPU), running as root, with a full clone
-  of this repo at `/home/user/innerdevilfilms`. Node 22, Python 3.11 and ffmpeg 6.1 are there. **Nothing survives
+  of this repo at `/home/user/innerdevilfilms` (a fresh clone takes about 2 minutes: the old films' masters are in it). Node 22, Python 3.11 and ffmpeg 6.1 are there. **Nothing survives
   except what is pushed.**
 - `bin/preflight.sh short|film` runs `bin/cloud-setup.sh`: a Python venv in `~/.cache/idf` (numpy, scipy, soundfile,
-  pillow), `npm ci` in `engine/` (playwright-core), and a Chromium that really renders the engine (the image's own in
-  `/opt/pw-browsers` first; else Remotion's headless shell through `anim/`; else Chrome for Testing's), saved in
+  pillow), `npm ci` in `engine/` (playwright-core), and a Chromium that really renders the engine (the image's own Playwright
+  browsers in `/opt/pw-browsers` first, whatever their folder layout; else Remotion's headless shell through `anim/`;
+  else Chrome for Testing's), saved in
   `~/.cache/idf/chrome-path`. Then `. bin/env.sh` before any manual command: it sets `PYTHON`, `FFMPEG`,
   `PLAYWRIGHT_MODULE`, `IDF_CHROME` and `RENDER_JOBS`.
 - The fonts are bundled (`engine/fonts`, Inter and Gelasio): the Mac and the cloud draw the same letters. Never name a

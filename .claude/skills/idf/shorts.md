@@ -13,9 +13,14 @@ From film 01 TOMORROW (https://youtu.be/0GEqZ5t3Ci8), planned 20 Oct 2026. Film-
 From film 02 JUST ONE MORE (https://youtu.be/GVoVv5A5kOE), planned 22 Oct 2026. Film-time ranges refer to `Film05`.
 
 - [x] 08 justonemore-hook: the whole story: the phone at 1% dies, his reflection's eyes ignite, "Put it down.", 4 DAYS EARLIER, Dad's "Pass the exam. I can't do one more year of night shifts." / "I'll pass it. I promise.", the Angel's "Just one more.", the nights slip, his own "Just one more." at 3 days, "Put it down.", the plug drops, silence, DEVIL MODE, the drawer, KNOCK x3, the note under the door, "It's my birthday. I just wanted to see you. - Dad", end card; `shorts/08-justonemore-hook/`, composition `Short08` (34.4 s); YT 3ypMOEbWDmY, public 27 Oct 2026 20:00 IST (uploaded from the cloud routine 26 Oct)
-- [ ] 09 justonemore-dad: the stake: Dad's chats (the night shifts, "I'll pass it. I promise."), his photo, the banner at 3 AM, "Sorry, Dad" typed and deleted, the lie "Yes. Almost done.", "Proud of you.", the phone face down on his chest, end card (7.6-14.8, 47.8-62.2)
-- [ ] 10 justonemore-angel: the Angel's comfort that costs him: "You worked so hard today.", "Take a little break.", "Just one more.", the autoplay nights (12:41 to 3:30, the flare), "Shh. Rest." on the alarm, "Practice exam: missed", 9 h 41 min a day, "It's okay. You still have three days.", end card (17.2-47.8, 62.2-64.8)
-- [ ] 11 justonemore-entry: the Devil's entry beat by beat: "Just one more." from his own mouth, the screen dies, the ember pushes the plug, his reflection grows horns, the eyes ignite, the smoke, "Put it down.", the plug drops, silence, DEVIL MODE, the drawer slam, end card (64.8-88.9)
-- [ ] 12 justonemore-montage: Devil Mode at full speed: PAGE 48 to 600, his hand drifting to the drawer clamped ("One more page."), 42% to 81%, the X through the cake, EXAM DAY, the corridor, 86% PASSED, end card (88.9-99.9, 108.6-123.3)
-- [ ] 13 justonemore-door: the cost, held in silence: the three knocks, "Dad?", the Devil presses him back down, the note under the door, his feet over it, the note picked up: "It's my birthday. I just wanted to see you. -Dad", the X through the cake, end card (99.9-108.6, 114.3-116.1, 124.9-133.9)
-- [ ] 14 justonemore-reveal: the voice was his own: the door opens and the light erases the Devil, his hornless shadow, the memories lose the Angel and the Devil to his own hands and his own "One more page.", the swipe past "Next video", the call ("Dad? I passed." / "So tonight is my last night shift." / "Happy birthday, Dad."), the last overhead, end card (133.9-166.5)
+Dropped 27 Oct 2026: Shorts 09-14 (cuts of JUST ONE MORE). The user made every earlier video private and restarted the channel with LUST.
+
+From film 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg, public 28 Oct 2026 20:00 IST), planned 27 Oct 2026. Times refer to the film (110.5 s).
+
+- [ ] 15 lust-hook: the cold line, its eyes opening in the window, the four nights with it closer each time, the black screen and "I WAS NEVER IN THE PHONE.", end card (0-4, 4-14, 14-43, 43-46.5)
+- [ ] 16 lust-reveal: the black glass, "I WAS ALWAYS... IN YOU.", it steps into the room, "NOW YOU'RE MINE.", the phone smashed against the wall, the scream, end card (43-60.6)
+- [ ] 17 lust-closer: one shot per night, window, foot of the bed, beside him, behind him with its claws, set to the horror score, end card (4-40)
+- [ ] 18 lust-comeback: the music turns at 6:00 AM: push-ups, the shower, the run, pull-ups, squats, curls, his face, end card (60.6-78.8)
+- [ ] 19 lust-jumpscare: 9:30 PM, "XXX: New videos for you", the jump scare, he deletes the app, it shrieks, end card (82.4-89.4)
+- [ ] 20 lust-cost: what it took: Mom's calls, the work warning, Maya's message, each swiped away, his face emptier each night, end card (9.6-11.2, 14.8-16.4, 22.8-24.4, 30.8-32.4, 40-43)
+- [ ] 21 lust-mirror: weeks later, the mirror, its eyes in the doorway, "I'LL WAIT.", "YOU THINK YOU'RE ALONE... YOU'RE NOT.", end card (95.5-108)

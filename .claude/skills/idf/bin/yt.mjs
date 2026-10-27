@@ -7,6 +7,8 @@
 //   node yt.mjs next-free short|film      the next free slot (ISO time)
 //   node yt.mjs reschedule <videoId> <ISO time>
 //   node yt.mjs status <videoId>...
+//   node yt.mjs list                      every video on the channel: privacy, schedule, kind, title
+//   node yt.mjs private <videoId>...      make videos private (cancels a schedule); other status fields are kept
 //   node yt.mjs latest-film               the newest PUBLIC film (id, title, url): the Shorts link to it
 //   node yt.mjs demand "<query>"...       read-only: what YouTube ranks first for a query (about 100 quota units each, 4 max)
 //   node yt.mjs auth                      (the Mac only) one-time consent; writes ~/.config/idf/youtube-token.json
@@ -228,6 +230,24 @@ async function reschedule(id, when) {
   console.log(`${id}: now scheduled for ${u.status?.publishAt} (${istTime(Date.parse(u.status?.publishAt))})`);
 }
 
+
+async function listAll() {
+  for (const v of await channelVideos())
+    console.log(`${v.id}  ${v.privacy.padEnd(8)}${v.scheduled ? ` scheduled ${istTime(Date.parse(v.when))}` : ''}  ${v.kind.padEnd(5)}  ${v.title}`);
+}
+// private, with any schedule cancelled; every other writable status field is sent back as it was
+async function makePrivate(ids) {
+  if (!ids.length) die('usage: yt.mjs private <videoId>...');
+  const r = await (await api('GET', `${API}/videos?part=status&id=${ids.join(',')}`)).json();
+  for (const v of r.items ?? []) {
+    const cur = v.status;
+    const status = {privacyStatus: 'private', license: cur.license, embeddable: cur.embeddable, publicStatsViewable: cur.publicStatsViewable, selfDeclaredMadeForKids: cur.selfDeclaredMadeForKids ?? cur.madeForKids ?? false, containsSyntheticMedia: cur.containsSyntheticMedia ?? false};
+    const u = await (await api('PUT', `${API}/videos?part=status`, {json: {id: v.id, status}})).json();
+    console.log(`${v.id}: ${cur.privacyStatus}${cur.publishAt ? ' (was scheduled)' : ''} -> ${u.status?.privacyStatus}${u.status?.publishAt ? ' (still scheduled!)' : ''}`);
+  }
+  if ((r.items ?? []).length < ids.length) console.log(`${ids.length - (r.items ?? []).length} id(s) not found on this channel`);
+}
+
 // ---- upload -----------------------------------------------------------------------------------------------------
 const checkText = (spec) => {
   const y = spec.youtube ?? {};
@@ -411,6 +431,8 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
     else if (cmd === 'latest-film') await latestFilm();
     else if (cmd === 'reschedule') await reschedule(args[0], args[1]);
     else if (cmd === 'status') await status(args);
+    else if (cmd === 'list') await listAll();
+    else if (cmd === 'private') await makePrivate(args);
     else if (cmd === 'demand') await demand(args);
     else console.log('usage: yt.mjs auth | whoami | upcoming | next-free | reschedule <id> <time> | upload <publish.json> [--dry-run] [--schedule=auto] | status <videoId>... | demand "<question>"...');
   } catch (e) {

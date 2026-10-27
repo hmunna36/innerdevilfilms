@@ -4,9 +4,9 @@ One struggle per film, the word he says to himself, and the hook idea. Edit free
 
 - [x] 01 TOMORROW | He Kept Saying It: rent due in 30 days, Mom's medicine; YT 0GEqZ5t3Ci8, public 19 Oct 2026 20:00 IST
 - [x] 02 JUST ONE MORE | The Phone Ate His Nights: one more video at 3 AM, Dad's night shifts and the exam; YT GVoVv5A5kOE, public 26 Oct 2026 04:30 IST (Sun 25 Oct 19:00 New York)
-- [x] 03 LUST | It Watches Back: the first film in the new style (a visible devil that gets closer every night, no narration, an extreme score, its words on screen); YT aqiuimf3dCg, public 28 Oct 2026 20:00 IST
+- [x] 03 LUST | It Watches Back: the first film in the new style (a visible devil that gets closer every night, no narration, an extreme score, its words on screen); YT aqiuimf3dCg, public 27 Oct 2026 22:30 IST
 
-Since 27 Oct 2026 every film is made in the LUST style: one vice that feeds on him, the devil closer each night, the black-screen reveal, he fights back as the music turns, the devil's last line. Extreme topics, never graphic, no real brands.
+Since 27 Oct 2026 every film is made in the LUST style (`reference/film.md`, "The spine"): one vice that feeds on him, the devil closer each night, the black-screen reveal, he fights back as the music turns, the devil's last line. Extreme topics, never graphic, no real brands. Each film is built on the engine (`engine/`, `reference/engine.md`).
 
 - [ ] 04 GAMBLING | The House Always Wins: a betting app at 3 AM; it deals the cards behind him; it takes the rent, his mother's gold chain and his sister's fees; the reveal in a dark screen full of zeros; he deletes the app and works double shifts; its last line: "Double or nothing?"
 - [ ] 05 DOOMSCROLLING | It Eats Your Hours: the feed never ends; a clock on the wall spins through months; in the black glass his reflection has aged; the phone goes in a drawer, then the run, the gym, a book; its last line: "Just scroll."

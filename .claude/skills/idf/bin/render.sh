@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
-# Render one composition:  render.sh <Composition> <out.mp4> [extra remotion flags]   (stills: render.sh still <Comp> <out.png> <frame>)
-# Long renders: run it in the background with a log (reference/cloud.md).
+# The engine's renderer with the toolchain found (bin/env.sh): the same arguments as engine/render.mjs, e.g.
+#   render.sh short shorts/15-lust-hook          render.sh film films/04-gambling
+#   render.sh sheet short shorts/15-lust-hook --every 1 --cols 8 --width 240 --safe --out /tmp/sheet.jpg
+#   render.sh stills film films/04-gambling --at 3,12.5 --out /tmp/st      render.sh thumb films/04-gambling
+# Long renders: in the background with a log (reference/cloud.md).
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"; . "$HERE/env.sh"
-abs() { case "$1" in /*) echo "$1";; *) echo "$PWD/$1";; esac; }   # an output path is relative to where you call from
-BROWSER=(); [ -n "${IDF_CHROME:-}" ] && BROWSER=(--browser-executable="$IDF_CHROME")
-if [ "$1" = "still" ]; then OUT="$(abs "$3")"; cd "$IDF_ANIM"; exec npx remotion still src/index.ts "$2" "$OUT" --frame="$4" "${BROWSER[@]}" --log=error; fi
-COMP="$1"; OUT="$(abs "$2")"; shift 2
-cd "$IDF_ANIM"
-exec npx remotion render src/index.ts "$COMP" "$OUT" --codec h264 --crf 18 --concurrency="$RENDER_JOBS" "${BROWSER[@]}" "$@"
+exec node "$IDF_ENGINE/render.mjs" "$@"

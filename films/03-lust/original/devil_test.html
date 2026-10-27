@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUST — motion preview</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #050506; color: #e9e4da;
+    font: 14px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; min-height: 100vh; }
+  #stage, #ui { width: min(100%, calc((100vh - 150px) * 16 / 9)); }
+  #stage { aspect-ratio: 16 / 9; background: #000; box-shadow: 0 20px 60px rgba(0, 0, 0, .6); }
+  canvas { width: 100%; height: 100%; display: block; }
+  #ui { display: grid; grid-template-columns: auto 1fr auto; gap: 10px 14px; align-items: center; }
+  button { background: #16171b; color: #e9e4da; border: 1px solid #2a2b31; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; }
+  button:hover { border-color: #4a4b52; }
+  button.on { background: #e9a948; color: #120c06; border-color: #e9a948; }
+  #play { width: 46px; }
+  input[type=range] { width: 100%; accent-color: #e9a948; }
+  #time { font-variant-numeric: tabular-nums; min-width: 96px; text-align: right; color: #a9a49b; }
+  #phases { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  #phases label { margin-left: auto; color: #a9a49b; display: flex; gap: 6px; align-items: center; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas></div>
+<div id="ui">
+  <button id="play" title="Play / pause (space)">▶</button>
+  <input id="scrub" type="range" min="0" max="160" step="0.01" value="0" aria-label="Timeline">
+  <span id="time">0:00 / 2:40</span>
+  <div id="phases"></div>
+</div>
+<script>
+'use strict';
+// LUST: code-drawn motion graphics. Every frame is a pure function of time t (seconds),
+// so scrubbing is exact and frames can be exported one by one with renderAt(t).
+const W = 1920, H = 1080, DUR = 160;
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+
+// ---------- maths ----------
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, k) => a + (b - a) * k;
+const inv = (a, b, v) => clamp((v - a) / (b - a));
+const E = {
+  io: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
+  out: k => 1 - Math.pow(1 - k, 3),
+  sine: k => -(Math.cos(Math.PI * k) - 1) / 2,
+  lin: k => k
+};
+// 1 inside [a, b] with eased fades of fi / fo seconds, 0 outside
+const win = (t, a, b, fi = .6, fo = .6) => t < a || t > b ? 0 :
+  Math.min(fi > 0 ? E.sine(inv(a, a + fi, t)) : 1, fo > 0 ? E.sine(inv(b, b - fo, t)) : 1);
+const rnd = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const mix = (c1, c2, k) => [lerp(c1[0], c2[0], k), lerp(c1[1], c2[1], k), lerp(c1[2], c2[2], k)];
+const rgba = (c, a = 1) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a)})`;
+// eased lookup over [[t, v1, v2…], …]; values may be numbers or colours
+function keys(list, t, f = E.sine, j = 1) {
+  if (t <= list[0][0]) return list[0][j];
+  for (let i = 1; i < list.length; i++) {
+    if (t <= list[i][0]) {
+      const k = f(inv(list[i - 1][0], list[i][0], t)), a = list[i - 1][j], b = list[i][j];
+      return Array.isArray(a) ? mix(a, b, k) : lerp(a, b, k);
+    }
+  }
+  return list[list.length - 1][j];
+}
+
+// ---------- look ----------
+const C = {
+  black: [4, 4, 6], night: [8, 9, 14], cream: [238, 230, 214], red: [232, 44, 52], blood: [110, 10, 18],
+  blue: [150, 185, 255], amber: [255, 168, 70], gold: [255, 212, 140], grey: [150, 150, 156]
+};
+const HAND = '"Bradley Hand", "Segoe Print", "Noteworthy", "Marker Felt", cursive';
+const SANS = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+const SERIF = 'Georgia, "Times New Roman", serif';
+
+// ---------- story data (times match LUST_screenplay.md) ----------
+const PHASES = [
+  { name: 'Question', a: 0, b: 4.2 },
+  { name: 'Stagnation', a: 4.2, b: 46 },
+  { name: 'Spark', a: 46, b: 62 },
+  { name: 'Momentum', a: 62, b: 130 },
+  { name: 'Triumph', a: 130, b: 160 }
+];
+// voiceover: ids match the screenplay and the ElevenLabs take files (VO01.mp3 …)
+const VO = [
+  { id: 'VO01', t: .3, d: 3.2, text: 'How many more years… will you give it?' },
+  { id: 'VO02', t: 6.4, d: 3.4, text: 'Nobody ever saw it. That was the problem.' },
+  { id: 'VO03', t: 10.8, d: 4.2, text: 'It always started small. One look. One tab. Five minutes.' },
+  { id: 'VO04', t: 15.2, d: 3.4, text: 'Then it was four AM… and I just felt empty.' },
+  { id: 'VO05', t: 20, d: 2.2, text: 'Every morning, I made a promise.' },
+  { id: 'VO06', t: 24.2, d: 2.2, text: 'Every night… it won.' },
+  { id: 'VO07', t: 28, d: 4, text: 'It took my nights. My mornings. My focus.' },
+  { id: 'VO08', t: 35.6, d: 2.6, text: 'The way I looked at people.' },
+  { id: 'VO09', t: 39.2, d: 4.6, text: 'One night the screen went black… and I saw who was holding it.' },
+  { id: 'VO10', t: 47, d: 3, text: 'I’d been saying “one day” for three years.' },
+  { id: 'VO11', t: 50.5, d: 4, text: 'That night, I stopped waiting… and wrote Day One.' },
+  { id: 'VO12', t: 56.8, d: 4, text: 'Not because I felt strong. Because I was tired of losing.' },
+  { id: 'VO13', t: 63.6, d: 2.6, text: 'The first week was loud.' },
+  { id: 'VO14', t: 70.2, d: 4.2, text: 'Every urge felt like forever. None of them lasted.' },
+  { id: 'VO15', t: 81.8, d: 3.6, text: 'Day twelve, I almost broke… I didn’t.' },
+  { id: 'VO16', t: 89, d: 4.6, text: 'The quiet stopped feeling empty. It started feeling like mine.' },
+  { id: 'VO17', t: 106.6, d: 4.8, text: 'I got my mornings back. Then my focus. Then the people.' },
+  { id: 'VO18', t: 131.5, d: 4.6, text: 'It promised me everything… and left me with less every time.' },
+  { id: 'VO19', t: 137, d: 5.2, text: 'Ninety days in, I’m not a different person. I’m finally just… me.' },
+  { id: 'VO20', t: 143.4, d: 3.8, text: 'It still knocks. I just don’t open the door.' },
+  { id: 'VO21', t: 149.4, d: 5.2, text: 'So… how many more years will you give it? Or is tonight… Day One?' }
+];
+const DAYNOTES = [
+  { t: 63, txt: 'DAY 3 — the phone sleeps in the kitchen now.' },
+  { t: 69, txt: 'DAY 6 — 1:12 AM. it came. push-ups till it left.' },
+  { t: 75, txt: 'DAY 9 — cold shower. hated it. did it again.' },
+  { t: 81, txt: 'DAY 12 — I almost broke.' },
+  { t: 88, txt: 'DAY 17 — called Mom back.' },
+  { t: 94, txt: 'DAY 21 — finished the book.' },
+  { t: 100, txt: 'DAY 30 — the gym bag left the door.' },
+  { t: 106, txt: 'DAY 45 — I run before the city wakes up.' },
+  { t: 112, txt: 'DAY 60 — I looked her in the eyes. and listened.' },
+  { t: 118, txt: 'DAY 74 — I forgot to count.' }
+];
+const DAYKEYS = [[62, 1], [63, 3], [69, 6], [75, 9], [81, 12], [88, 17], [94, 21], [100, 30], [106, 45],
+  [112, 60], [118, 74], [129.5, 89]];
+// moments that hit: each one shakes the frame briefly
+const SLAMS = [.25, 1.7, 20, 22.9, 24.3, 25.6, 26.8, 27.3, 35.5, 49.6, 52.4, 81, 82.8, 130.6, 151.6, 155.2];
+// glitch tears: [start, end, strength]
+const GLITCH = [[3.55, 4.2, 1], [18.75, 19.15, .8], [60.1, 60.6, .6], [82.8, 83.9, .5]];
+
+// ---------- glow sprites, stamped with additive blending ----------
+function sprite(c, size = 128) {
+  const s = document.createElement('canvas'); s.width = s.height = size;
+  const g = s.getContext('2d'), r = size / 2, grd = g.createRadialGradient(r, r, 0, r, r, r);
+  grd.addColorStop(0, rgba(c, 1)); grd.addColorStop(.28, rgba(c, .5)); grd.addColorStop(1, rgba(c, 0));
+  g.fillStyle = grd; g.fillRect(0, 0, size, size);
+  return s;
+}
+const SPR = {};
+for (const k of ['red', 'amber', 'gold', 'grey', 'blue', 'cream']) SPR[k] = sprite(C[k]);
+function glow(spr, x, y, r, a) {
+  if (a <= .003 || r <= 0) return;
+  const g0 = ctx.globalAlpha;
+  ctx.globalAlpha = g0 * Math.min(1, a);
+  ctx.drawImage(spr, x - r, y - r, r * 2, r * 2);
+  ctx.globalAlpha = g0;
+}
+function additive(fn) {
+  const o = ctx.globalCompositeOperation;
+  ctx.globalCompositeOperation = 'lighter'; fn(); ctx.globalCompositeOperation = o;
+}
+
+// ---------- camera: framings are hard cuts; slams shake the frame ----------
+let SHX = 0, SHY = 0;
+function setShake(t) {
+  let a = 0;
+  for (const s of SLAMS) if (t >= s && t < s + .4) a = Math.max(a, 16 * (1 - inv(s, s + .4, t)));
+  SHX = a ? Math.sin(t * 91) * a : 0; SHY = a ? Math.cos(t * 77) * a * .7 : 0;
+}
+function cam(z = 1, cx = W / 2, cy = H / 2) { ctx.setTransform(z, 0, 0, z, W / 2 - cx * z + SHX, H / 2 - cy * z + SHY); }
+function screen() { ctx.setTransform(1, 0, 0, 1, SHX, SHY); }
+// the framing in force at time t, from [[start, z, cx, cy], …]
+function shotAt(list, t) { let s = list[0]; for (const x of list) if (t >= x[0]) s = x; return s; }
+function glitch(t, extra = 0) {     // horizontal tears across the frame
+  let amt = extra;
+  for (const [a, b, s] of GLITCH) if (t >= a && t <= b) amt = Math.max(amt, s * Math.sin(Math.PI * inv(a, b, t)));
+  if (amt <= .02) return;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const seed = Math.floor(t * 24);
+  for (let i = 0; i < 9; i++) {
+    const y = rnd(seed * 13 + i) * H, h = 8 + rnd(seed * 7 + i) * 60, dx = (rnd(seed * 3 + i) - .5) * 160 * amt;
+    ctx.drawImage(cv, 0, y, W, h, dx, y, W, h);
+  }
+  ctx.fillStyle = rgba(C.red, .08 * amt); ctx.fillRect(0, 0, W, H);
+}
+
+// ---------- shapes and type ----------
+function line(x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+function rrect(x, y, w, h, r) {
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, Math.max(0, h), Math.max(0, Math.min(r, w / 2, Math.abs(h) / 2)));
+  else ctx.rect(x, y, w, h);
+}
+function font(size, fam = SANS, weight = '400', style = 'normal') { ctx.font = `${style} ${weight} ${size}px ${fam}`; }
+// handwriting that writes itself on: k 0→1 reveals the letters left to right; returns the full width
+function hand(txt, x, y, size, col, a, k = 1, align = 'left', glowA = 0) {
+  font(size, HAND);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  const full = ctx.measureText(txt).width;
+  if (a <= .003 || k <= 0) return full;
+  const x0 = align === 'center' ? x - full / 2 : align === 'right' ? x - full : x;
+  const f = txt.length * clamp(k), n = Math.floor(f), shown = txt.slice(0, n);
+  if (glowA > 0) { ctx.shadowColor = rgba(col, glowA * a); ctx.shadowBlur = size * .5; }
+  ctx.fillStyle = rgba(col, a);
+  ctx.fillText(shown, x0, y);
+  if (n < txt.length) { ctx.fillStyle = rgba(col, a * (f - n)); ctx.fillText(txt[n], x0 + ctx.measureText(shown).width, y); }
+  ctx.shadowBlur = 0;
+  return full;
+}
+// tracked capitals centred on x; returns the width
+function spaced(txt, x, y, size, col, a, track = 0, weight = '800', glowA = 0, fam = SANS) {
+  font(size, fam, weight);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  const chars = [...txt], ws = chars.map(ch => ctx.measureText(ch).width);
+  const total = ws.reduce((s, w) => s + w, 0) + track * (chars.length - 1);
+  if (a <= .003) return total;
+  let cx = x - total / 2;
+  if (glowA > 0) { ctx.shadowColor = rgba(col, glowA * a); ctx.shadowBlur = size * .35; }
+  ctx.fillStyle = rgba(col, a);
+  chars.forEach((ch, i) => { ctx.fillText(ch, cx, y); cx += ws[i] + track; });
+  ctx.shadowBlur = 0;
+  return total;
+}
+
+// a line of capitals that slams in at t0: oversized, then snaps to size in .15 s
+function slam(txt, x, y, size, col, a, t0, t, track = 8, weight = '800', glowA = 0) {
+  if (t < t0 || a <= .003) return 0;
+  const sc = 1 + .28 * (1 - E.out(inv(t0, t0 + .15, t)));
+  ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
+  const w = spaced(txt, 0, 0, size, col, a * inv(t0, t0 + .06, t), track, weight, glowA);
+  ctx.restore();
+  return w;
+}
+
+// ---------- the man: a silhouette made of round-capped strokes ----------
+function limb(pts, w) {
+  ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.stroke();
+}
+// rim light: the same shape a little larger, nudged toward the light, drawn first in the light's colour
+function drawPerson(P, fill, rim, rimA, lx = 0, ly = -1) {
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const pass = (dx, dy, col, extra) => {
+    ctx.strokeStyle = col; ctx.fillStyle = col;
+    for (const [pts, w] of P.parts) limb(pts.map(p => [p[0] + dx, p[1] + dy]), w + extra);
+    ctx.beginPath(); ctx.arc(P.head[0] + dx, P.head[1] + dy, P.head[2] + extra / 2, 0, Math.PI * 2); ctx.fill();
+  };
+  if (rimA > .003) pass(lx * 5, ly * 5, rgba(rim, rimA), 4);
+  pass(0, 0, rgba(fill), 0);
+}
+// sitting on the bed edge, facing right; h = hunch (0 upright … 1 folded over the phone)
+function poseSit(x, y, s, h) {
+  const sh = [x + (16 + 46 * h) * s, y - (168 - 44 * h) * s];
+  const hd = [sh[0] + (20 + 44 * h) * s, sh[1] - (64 - 38 * h) * s];
+  const knee = [x + 108 * s, y - 4 * s], foot = [x + 120 * s, y + 92 * s];
+  const elbow = [sh[0] + (34 + 14 * h) * s, sh[1] + (70 - 10 * h) * s];
+  const hand = [x + (100 + 8 * h) * s, y - (50 + 12 * (1 - h)) * s];
+  return {
+    head: [hd[0], hd[1], 40 * s], hand,
+    parts: [
+      [[[x, y], [x + (4 - 10 * h) * s, y - 90 * s], sh], 58 * s],
+      [[[x - 10 * s, y + 4 * s], [knee[0] - 16 * s, knee[1] + 8 * s], [foot[0] - 24 * s, foot[1]]], 36 * s],
+      [[[x, y], knee, foot], 40 * s],
+      [[sh, elbow, hand], 24 * s]
+    ]
+  };
+}
+// standing, seen from behind; y = hip height, feet at y + 188·s; turn moves the head to the right
+function poseStand(x, y, s, turn = 0, breathe = 0) {
+  const sh = y - 186 * s - breathe * 3 * s;
+  return {
+    head: [x + turn * 16 * s, sh - 66 * s, 40 * s],
+    parts: [
+      [[[x, y - 8 * s], [x, sh + 10 * s]], 74 * s],
+      [[[x - 40 * s, sh + 8 * s], [x + 40 * s, sh + 8 * s]], 34 * s],
+      [[[x - 20 * s, y], [x - 26 * s, y + 188 * s]], 34 * s],
+      [[[x + 20 * s, y], [x + 26 * s, y + 188 * s]], 34 * s],
+      [[[x - 46 * s, sh + 14 * s], [x - 58 * s, sh + 100 * s], [x - 60 * s, sh + 176 * s]], 22 * s],
+      [[[x + 46 * s, sh + 14 * s], [x + 58 * s, sh + 100 * s], [x + 60 * s, sh + 176 * s]], 22 * s]
+    ]
+  };
+}
+// walking / running in profile toward the right; ph = stride phase (radians), y = ground line
+function poseWalk(x, y, s, ph, run = 0) {
+  const amp = .42 + .3 * run, lean = .06 + .2 * run, L = 98 * s;
+  const leg = p => {
+    const th = Math.sin(p) * amp, bend = .12 + (.55 + .6 * run) * Math.max(0, Math.cos(p));
+    const knee = [Math.sin(th) * L, Math.cos(th) * L];
+    return [knee, [knee[0] + Math.sin(th - bend) * L, knee[1] + Math.cos(th - bend) * L]];
+  };
+  const A = leg(ph), B = leg(ph + Math.PI);
+  const hip = [x, y - Math.max(A[1][1], B[1][1])];          // the lower foot touches the ground
+  const at = p => [hip[0] + p[0], hip[1] + p[1]];
+  const sh = [hip[0] + Math.sin(lean) * 168 * s, hip[1] - Math.cos(lean) * 168 * s];
+  const hd = [sh[0] + Math.sin(lean * 1.3) * 64 * s, sh[1] - Math.cos(lean * 1.3) * 64 * s];
+  const arm = p => {
+    const ua = -Math.sin(p) * amp * .9, fb = .35 + .9 * run;
+    const el = [sh[0] + Math.sin(ua) * 78 * s, sh[1] + Math.cos(ua) * 78 * s];
+    return [sh, el, [el[0] + Math.sin(ua + fb) * 70 * s, el[1] + Math.cos(ua + fb) * 70 * s]];
+  };
+  return {
+    head: [hd[0], hd[1], 36 * s],
+    parts: [
+      [[hip, at(B[0]), at(B[1])], 32 * s], [arm(ph + Math.PI), 20 * s],
+      [[hip, sh], 54 * s],
+      [[hip, at(A[0]), at(A[1])], 32 * s], [arm(ph), 20 * s]
+    ]
+  };
+}
+
+// ---------- the bedroom, in thin lines ----------
+const BED = { x0: 600, x1: 1250, y: 760 };
+const SIT = { x: 860, y: 760, s: 1.1 };
+function drawWindow(m, a) {          // m: 0 night … 1 grey morning
+  if (a <= .003) return;
+  const x = 300, y = 220, w = 260, h = 290, v = Math.min(1, a * 4);
+  ctx.fillStyle = rgba(mix([26, 34, 64], [176, 182, 192], m), (.12 + .4 * m) * v);
+  ctx.fillRect(x, y, w, h);
+  if (m > .01) {
+    ctx.fillStyle = rgba([196, 200, 210], .06 * m * v);
+    ctx.beginPath(); ctx.moveTo(x, 860); ctx.lineTo(x + w, 860); ctx.lineTo(x + w + 380, H); ctx.lineTo(x + 220, H); ctx.closePath(); ctx.fill();
+  }
+  ctx.strokeStyle = rgba(C.cream, Math.min(1, a * 1.6)); ctx.lineWidth = 3;
+  ctx.strokeRect(x, y, w, h); line(x + w / 2, y, x + w / 2, y + h); line(x, y + h / 2, x + w, y + h / 2);
+}
+function drawRoom(a, col) {
+  if (a <= .003) return;
+  ctx.strokeStyle = rgba(col, a); ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  line(0, 860, W, 860);                                                  // floor
+  ctx.strokeRect(BED.x0, BED.y, BED.x1 - BED.x0, 64);                    // mattress
+  line(BED.x0 + 14, BED.y + 64, BED.x0 + 14, 860); line(BED.x1 - 14, BED.y + 64, BED.x1 - 14, 860);
+  rrect(BED.x0 - 26, BED.y - 160, 26, 224, 10); ctx.stroke();            // headboard
+  ctx.strokeRect(1590, 330, 180, 530);                                   // door
+  ctx.beginPath(); ctx.arc(1612, 610, 7, 0, Math.PI * 2); ctx.stroke();
+  rrect(1462, 806, 104, 54, 16); ctx.stroke();                           // gym bag
+  ctx.beginPath(); ctx.moveTo(1488, 806); ctx.quadraticCurveTo(1514, 770, 1540, 806); ctx.stroke();
+  line(110, 650, 450, 650); line(130, 650, 130, 860); line(430, 650, 430, 860);   // desk
+  ctx.strokeRect(240, 632, 96, 18);                                      // the book
+}
+
+// ---------- background, vignette, captions ----------
+const SKY = [
+  [0, C.black, C.black], [4.2, C.black, C.black], [4.25, C.night, [12, 12, 20]], [18.8, C.night, [14, 12, 22]],
+  [19.6, [34, 36, 42], [44, 46, 52]], [27.6, [34, 36, 42], [44, 46, 52]], [28.4, [12, 13, 17], [16, 16, 20]],
+  [38, [9, 9, 12], [11, 11, 15]], [39, C.black, C.black], [55, C.black, C.black],
+  [57, [18, 12, 9], [26, 17, 11]], [61.5, [18, 12, 9], [26, 17, 11]], [64, [10, 14, 30], [28, 24, 46]],
+  [95, [24, 22, 54], [96, 54, 72]], [128, [70, 54, 98], [236, 142, 94]], [160, [70, 54, 98], [236, 142, 94]]
+];
+function drawSky(t) {
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, rgba(keys(SKY, t, E.sine, 1))); g.addColorStop(1, rgba(keys(SKY, t, E.sine, 2)));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+function drawVignette(t) {
+  const beat = t > 41.5 && t < 49 ? .14 * Math.pow(Math.max(0, Math.sin(t * Math.PI * 2)), 12) : 0;   // slow heartbeat
+  const v = keys([[0, .7], [39, .85], [61, .75], [95, .5], [128, .4], [150, .45], [155, .75]], t) + beat;
+  const g = ctx.createRadialGradient(W / 2, H / 2, H * .3, W / 2, H / 2, H * 1.02);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${clamp(v)})`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const fb = inv(158.6, 160, t);
+  if (fb > 0) { ctx.fillStyle = `rgba(0,0,0,${fb})`; ctx.fillRect(0, 0, W, H); }
+}
+let showCaps = true;
+function drawCaptions(t) {
+  if (!showCaps) return;
+  const c = VO.find(v => t >= v.t && t <= v.t + v.d);
+  if (!c) return;
+  const a = win(t, c.t, c.t + c.d, .25, .35);
+  font(18, SANS, '700'); const idW = ctx.measureText(c.id).width + 16;
+  font(30, SANS, '400', 'italic'); const tw = ctx.measureText(c.text).width;
+  const w = idW + tw + 48, x = W / 2 - w / 2, y = H - 98;
+  ctx.fillStyle = `rgba(0,0,0,${.5 * a})`; rrect(x, y, w, 56, 28); ctx.fill();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  font(18, SANS, '700'); ctx.fillStyle = rgba(C.amber, .9 * a); ctx.fillText(c.id, x + 24, y + 29);
+  font(30, SANS, '400', 'italic'); ctx.fillStyle = rgba(C.cream, .95 * a); ctx.fillText(c.text, x + 24 + idW, y + 29);
+}
+
+// ---------- the hero's face: cream features on the dark head ----------
+const EXPR = {
+  glazed:  { lid: .45, brow: 0, browH: 0, smile: 0, open: 0, grit: 0, gx: .3, gy: .6, tear: 0, sweat: 0 },
+  tired:   { lid: .66, brow: .45, browH: -.04, smile: -.3, open: 0, grit: 0, gx: .2, gy: .7, tear: 0, sweat: 0 },
+  empty:   { lid: .5, brow: .8, browH: .06, smile: -.55, open: 0, grit: 0, gx: 0, gy: .9, tear: .6, sweat: 0 },
+  ashamed: { lid: .55, brow: .85, browH: .06, smile: -.6, open: 0, grit: 0, gx: -.8, gy: .7, tear: 0, sweat: 0 },
+  shock:   { lid: 0, brow: .7, browH: .2, smile: -.25, open: .45, grit: 0, gx: 0, gy: 0, tear: 0, sweat: 0 },
+  resolve: { lid: .18, brow: -.75, browH: -.04, smile: -.15, open: 0, grit: 0, gx: .5, gy: 0, tear: 0, sweat: 0 },
+  strain:  { lid: .8, brow: -1, browH: -.08, smile: -.45, open: .35, grit: 1, gx: 0, gy: 0, tear: 0, sweat: 1 },
+  focus:   { lid: .22, brow: -.4, browH: 0, smile: 0, open: 0, grit: 0, gx: .7, gy: 0, tear: 0, sweat: 0 },
+  calm:    { lid: .32, brow: .15, browH: .04, smile: .45, open: 0, grit: 0, gx: .6, gy: -.1, tear: 0, sweat: 0 },
+  smile:   { lid: .38, brow: .25, browH: .06, smile: .85, open: .12, grit: 0, gx: .5, gy: -.15, tear: 0, sweat: 0 }
+};
+const EXPR_KEYS = [[0, 'glazed'], [14.6, 'tired'], [18.8, 'empty'], [27.6, 'ashamed'], [41.6, 'shock'], [44.4, 'empty'],
+  [46.2, 'resolve'], [62, 'focus'], [68.6, 'strain'], [73.8, 'focus'], [80.4, 'strain'], [86.8, 'resolve'],
+  [100, 'focus'], [112, 'calm'], [118, 'resolve'], [130, 'calm'], [137, 'smile']];
+function exprAt(t) {                // blends into each new expression over .35 s, and blinks now and then
+  let i = 0;
+  while (i + 1 < EXPR_KEYS.length && t >= EXPR_KEYS[i + 1][0]) i++;
+  const cur = EXPR[EXPR_KEYS[i][1]], prev = EXPR[EXPR_KEYS[Math.max(0, i - 1)][1]];
+  const k = i ? E.sine(inv(EXPR_KEYS[i][0], EXPR_KEYS[i][0] + .35, t)) : 1, out = {};
+  for (const f in cur) out[f] = lerp(prev[f], cur[f], k);
+  const ph = t % 3.7;
+  if (out.open < .4 && ph < .13) out.lid = Math.max(out.lid, 1 - Math.abs(ph - .065) / .065);
+  return out;
+}
+// turn 0 = facing us, 1 = three-quarters to the right; o.light tints the side the light falls on
+function face(x, y, r, ex, o = {}) {
+  const turn = o.turn ?? .9, fa = o.featA ?? .92, col = C.cream;
+  if (o.light) {
+    ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.clip();
+    const lc = o.lc || [.5, .5], lx = x + lc[0] * r, ly = y + lc[1] * r;
+    const g = ctx.createRadialGradient(lx, ly, 0, lx, ly, r * 1.4);
+    g.addColorStop(0, rgba(o.light, o.la ?? .3)); g.addColorStop(1, rgba(o.light, 0));
+    ctx.fillStyle = g; ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+    ctx.restore();
+  }
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const ey = y - .05 * r, open = Math.max(.04, 1 - ex.lid);
+  const eyeList = [[x + r * lerp(-.36, .27, turn), .22 * r, 1], [x + r * lerp(.36, .7, turn), .22 * r * lerp(1, .7, turn), -1]];
+  for (const [cx, ew, side] of eyeList) {
+    const eh = .13 * r * open, px = cx + ex.gx * ew * .22, py = ey + ex.gy * eh * .35;
+    ctx.save();
+    ctx.beginPath(); ctx.ellipse(cx, ey, ew / 2, eh / 2 + .002 * r, 0, 0, Math.PI * 2);
+    ctx.fillStyle = rgba(col, fa * .95); ctx.fill(); ctx.clip();
+    ctx.fillStyle = rgba([14, 11, 13], Math.min(1, fa * 1.1));
+    ctx.beginPath(); ctx.arc(px, py, .06 * r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = rgba([255, 255, 255], fa * .9);
+    ctx.beginPath(); ctx.arc(px + .025 * r, py - .025 * r, .016 * r, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = rgba(col, fa); ctx.lineWidth = .03 * r;            // upper lid
+    ctx.beginPath(); ctx.ellipse(cx, ey, ew / 2 + .01 * r, eh / 2 + .01 * r, 0, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+    if (ex.lid > .5) {                                                     // tired bags
+      ctx.strokeStyle = rgba(col, fa * .3); ctx.lineWidth = .018 * r;
+      ctx.beginPath(); ctx.arc(cx, ey + .06 * r, ew * .45, .15 * Math.PI, .85 * Math.PI); ctx.stroke();
+    }
+    // brow: side 1 is the near eye (inner end on its right), -1 the far eye
+    const by = ey - .2 * r - ex.browH * r, inner = cx + side * ew * .55, outer = cx - side * ew * .62;
+    ctx.strokeStyle = rgba(col, fa); ctx.lineWidth = .04 * r;
+    line(outer, by + ex.brow * .03 * r, inner, by - ex.brow * .08 * r);
+  }
+  const nx = x + r * lerp(0, .58, turn);                                   // nose
+  ctx.strokeStyle = rgba(col, fa * .5); ctx.lineWidth = .022 * r;
+  ctx.beginPath(); ctx.moveTo(nx, y + .02 * r); ctx.lineTo(nx + .06 * r * turn, y + .2 * r); ctx.lineTo(nx - .02 * r, y + .23 * r); ctx.stroke();
+  const mx = x + r * lerp(0, .46, turn), my = y + .45 * r, mw = .32 * r * lerp(1, .8, turn);   // mouth
+  const cy = my - ex.smile * .05 * r, dip = my + ex.smile * .1 * r;
+  if (ex.open > .05) {
+    const lo = ex.open * .16 * r;
+    ctx.fillStyle = rgba([14, 9, 11], Math.min(1, fa * 1.1));
+    ctx.beginPath(); ctx.moveTo(mx - mw / 2, cy); ctx.quadraticCurveTo(mx, dip - lo * .2, mx + mw / 2, cy);
+    ctx.quadraticCurveTo(mx, dip + lo, mx - mw / 2, cy); ctx.fill();
+    if (ex.grit > .05) { ctx.fillStyle = rgba(col, fa * .85 * ex.grit); ctx.fillRect(mx - mw * .38, (cy + dip) / 2 - .012 * r, mw * .76, .05 * r); }
+  }
+  ctx.strokeStyle = rgba(col, fa); ctx.lineWidth = .032 * r;
+  ctx.beginPath(); ctx.moveTo(mx - mw / 2, cy); ctx.quadraticCurveTo(mx, dip, mx + mw / 2, cy); ctx.stroke();
+  if (ex.tear > .02) {
+    ctx.fillStyle = rgba(col, fa * .7 * ex.tear);
+    ctx.beginPath(); ctx.arc(eyeList[0][0] + .04 * r, ey + .12 * r + ex.tear * .1 * r, .025 * r, 0, Math.PI * 2); ctx.fill();
+  }
+  if (ex.sweat > .02) {
+    ctx.fillStyle = rgba(col, fa * .6 * ex.sweat);
+    for (const [dx, dy] of [[-.25, -.62], [.42, -.55]]) { ctx.beginPath(); ctx.ellipse(x + dx * r, y + dy * r, .02 * r, .035 * r, 0, 0, Math.PI * 2); ctx.fill(); }
+  }
+}
+// big face close-ups, cut in between the wider shots
+const LOOKS = {
+  night: { bg: [[8, 9, 14], [16, 12, 24]], fill: [6, 5, 8], light: [255, 176, 196], la: .3, lc: [.45, .75], glow: 'red', gl: [1220, 1080], ga: .4, rim: [190, 160, 255], turn: .9 },
+  grey: { bg: [[20, 21, 26], [30, 31, 36]], fill: [9, 9, 11], light: [196, 200, 210], la: .16, lc: [-.6, -.3], glow: 'grey', gl: [260, 260], ga: .25, rim: [196, 200, 210], turn: .75, featA: .72 },
+  red: { bg: [[34, 5, 9], [96, 10, 18]], fill: [8, 4, 6], light: [255, 96, 96], la: .32, lc: [.3, .8], glow: 'red', gl: [960, 1180], ga: .55, rim: [255, 110, 110], turn: .9 },
+  sun: { bg: [[226, 142, 112], [255, 214, 160]], fill: [24, 14, 20], light: [255, 214, 150], la: .42, lc: [.8, -.1], glow: 'gold', gl: [1760, 460], ga: .65, rim: [255, 226, 170], turn: .85 }
+};
+function faceShot(t, look, ex) {
+  const L = LOOKS[look];
+  screen();
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, rgba(L.bg[0])); g.addColorStop(1, rgba(L.bg[1]));
+  ctx.fillStyle = g; ctx.fillRect(-40, -40, W + 80, H + 80);
+  additive(() => glow(SPR[L.glow], L.gl[0], L.gl[1], 900, L.ga));
+  const x = W / 2 - 60 + Math.sin(t * .8) * 6, y = H * .44 + Math.sin(t * 1.3) * 3, r = 250;
+  ctx.fillStyle = rgba(L.rim, .5);                                         // rim on the lit side
+  ctx.beginPath(); ctx.arc(x + L.lc[0] * 8, y + L.lc[1] * 8, r + 6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = rgba(L.fill);
+  ctx.beginPath(); ctx.ellipse(x - 20, y + r * 2.05, r * 1.7, r * 1.15, 0, Math.PI, 0); ctx.fill();   // shoulders
+  ctx.fillRect(x - r * .36, y + r * .55, r * .62, r * .9);                                         // neck
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+  face(x, y, r, ex || exprAt(t), { turn: L.turn, light: L.light, la: L.la, lc: L.lc, featA: L.featA });
+}
+
+// ---------- the phone screen: a blurred 18+ video ----------
+// Only an abstract skin-tone mosaic and a video player's chrome: it reads as censored, and nothing explicit is drawn underneath.
+const SKIN = [[96, 52, 56], [150, 88, 78], [186, 118, 96], [214, 150, 120], [236, 186, 156], [246, 206, 182]];
+function mosaic(x, y, w, h, cell, t, a = 1) {
+  const cols = Math.ceil(w / cell), rows = Math.ceil(h / cell);
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+    const u = i / cols, v = j / rows;
+    const n = .5 + .22 * Math.sin(u * 5.1 + t * .9) * Math.cos(v * 4.3 - t * .6) + .2 * Math.sin((u * .8 + v) * 6.3 + t * 1.3) + .08 * Math.sin(i * 1.7 + j * 2.3);
+    ctx.fillStyle = rgba(mix(SKIN[clamp(Math.floor(n * SKIN.length), 0, SKIN.length - 1)], [255, 110, 130], .2), a);
+    ctx.fillRect(x + i * cell, y + j * cell, Math.min(cell, w - i * cell) + .4, Math.min(cell, h - j * cell) + .4);
+  }
+  const fg = ctx.createRadialGradient(x + w / 2, y + h / 2, 0, x + w / 2, y + h / 2, Math.max(w, h) * .7);   // frosted haze
+  fg.addColorStop(0, `rgba(255,235,235,${.16 * a})`); fg.addColorStop(1, 'rgba(255,235,235,0)');
+  ctx.fillStyle = fg; ctx.fillRect(x, y, w, h);
+}
+function badge18(x, y, s, a = 1) {
+  ctx.fillStyle = rgba(C.red, .95 * a); rrect(x, y, 64 * s, 34 * s, 8 * s); ctx.fill();
+  font(22 * s, SANS, '800'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = `rgba(255,255,255,${a})`; ctx.fillText('18+', x + 32 * s, y + 18 * s);
+}
+// the whole screen in close-up: site bar, the blurred video, its progress, more videos below
+function pornScreen(x, y, w, h, s, t, a) {
+  ctx.save(); rrect(x, y, w, h, 52 * s); ctx.clip();
+  ctx.fillStyle = rgba([10, 8, 10], a); ctx.fillRect(x, y, w, h);
+  font(18 * s, SANS, '600'); ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = rgba(C.cream, .8 * a);
+  ctx.fillText('3:51', x + 40 * s, y + 34 * s);
+  ctx.fillStyle = rgba([60, 56, 62], a); rrect(x + 24 * s, y + 70 * s, w - 48 * s, 44 * s, 12 * s); ctx.fill();
+  font(30 * s, SANS, '900'); ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  const lw = ctx.measureText('XXX').width;
+  ctx.shadowColor = rgba(C.red, .8 * a); ctx.shadowBlur = 12 * s;
+  ctx.fillStyle = rgba([255, 60, 70], a); ctx.fillText('XXX', x + 44 * s, y + 93 * s); ctx.shadowBlur = 0;
+  font(17 * s, SANS, '600'); ctx.fillStyle = rgba(C.cream, .75 * a); ctx.fillText('videos', x + 54 * s + lw, y + 94 * s);
+  badge18(x + w - 100 * s, y + 75 * s, s, a);
+  mosaic(x, y + 130 * s, w, 300 * s, 22 * s, t, a);
+  const pr = .62 + .002 * (t % 10), bx = x + 24 * s, bw = w - 48 * s;
+  ctx.fillStyle = rgba([90, 90, 96], a); ctx.fillRect(bx, y + 446 * s, bw, 5 * s);
+  ctx.fillStyle = rgba(C.red, a); ctx.fillRect(bx, y + 446 * s, bw * pr, 5 * s);
+  ctx.beginPath(); ctx.arc(bx + bw * pr, y + 448.5 * s, 9 * s, 0, Math.PI * 2); ctx.fill();
+  font(15 * s, SANS, '500'); ctx.fillStyle = rgba(C.cream, .7 * a); ctx.textAlign = 'left';
+  ctx.fillText('23:41', bx, y + 474 * s); ctx.textAlign = 'right'; ctx.fillText('41:02', bx + bw, y + 474 * s);
+  for (let k = 0; k < 4; k++) {                                   // more videos: the loop has no bottom
+    const tx = bx + (k % 2) * (w / 2 - 12 * s), ty = y + 506 * s + Math.floor(k / 2) * 170 * s, tw = w / 2 - 36 * s;
+    ctx.save(); rrect(tx, ty, tw, 110 * s, 10 * s); ctx.clip(); mosaic(tx, ty, tw, 110 * s, 14 * s, t * .5 + k * 3.1, a); ctx.restore();
+    ctx.fillStyle = rgba([80, 76, 84], .8 * a); rrect(tx, ty + 120 * s, tw * .8, 10 * s, 5 * s); ctx.fill();
+    ctx.fillStyle = rgba([0, 0, 0], .6 * a); rrect(tx + tw - 58 * s, ty + 82 * s, 50 * s, 20 * s, 5 * s); ctx.fill();
+  }
+  ctx.restore();
+}
+
+// ---------- THE QUESTION 0:00–0:04 ----------
+function coldOpen(t) {
+  if (t > 4.25) return;
+  screen();
+  const a = 1 - inv(3.9, 4.2, t);
+  slam('HOW MANY MORE YEARS', W / 2, 470, 118, C.cream, a * lerp(1, .45, inv(1.7, 1.9, t)), .25, t, 10);
+  slam('WILL YOU GIVE IT?', W / 2, 630, 132, C.red, a, 1.7, t, 10, '800', .6);
+}
+
+// ---------- STAGNATION 0:04–0:46 ----------
+// framings, cut hard: [start, zoom, centre x, centre y], or a special shot
+const STAG = [
+  [4.2, 'clock'], [6.2, 1, 960, 560], [8.6, 2.2, 975, 640], [10.6, 1.35, 960, 560], [14.6, 'clock'],
+  [16.6, 'faceN'], [18, 1.15, 940, 580], [19.6, 1, 960, 540], [21.8, 1.8, 1420, 520], [27.6, 2.2, 1480, 790],
+  [30.2, 2.2, 300, 620], [32.8, 2.2, 1140, 700], [35.4, 1, 960, 540], [37, 'faceG'], [38.6, 'phone']
+];
+const WHISPERS = ['just once', 'you deserve this', 'no one will know', 'it’s normal', 'five more minutes', 'you’re alone anyway'];
+const RESETS = [[20, 'DAY 1'], [22.2, 'DAY 3'], [22.9, 'DAY 1'], [23.6, 'DAY 5'], [24.3, 'DAY 1'], [25, 'DAY 2'],
+  [25.6, 'DAY 1'], [26.2, 'DAY 4'], [26.8, 'DAY 1'], [27.3, 'DAY 1']];
+const COSTS = [   // [shot start, label, anchor x, anchor y, label x, label y]
+  [27.6, 'untouched since March', 1514, 832, 1200, 690],
+  [30.2, 'same book. page 12.', 288, 628, 150, 540],
+  [32.8, 'Mom — 3 missed calls', 1150, 748, 1100, 600]
+];
+const morningAmt = t => keys([[19.3, 0], [19.9, 1], [27.6, 1], [28.4, .3]], t);
+
+function smoke(t, ox, oy, amt) {     // the pull: red smoke curling up out of the screen
+  if (amt <= .01) return;
+  additive(() => {
+    for (let i = 0; i < 90; i++) {
+      if (i / 90 > amt) break;
+      const life = 3 + rnd(i) * 2.5, age = (t + rnd(i + 50) * life) % life, k = age / life;
+      const ang = rnd(i + 9) * Math.PI * 2 + age * (.7 + rnd(i + 3) * .8);
+      const rad = (30 + k * 260) * (.6 + rnd(i + 7) * .6);
+      glow(SPR.red, ox + Math.cos(ang) * rad * 1.2 - k * 60, oy - k * 300 + Math.sin(ang) * rad * .5,
+        30 + k * 70, Math.sin(Math.PI * k) * .32 * Math.min(1, amt * 1.4));
+    }
+  });
+}
+function ash(t, ox, oy, t0) {       // the red goes grey and falls
+  const d = t - t0;
+  if (d < 0 || d > 3) return;
+  additive(() => {
+    for (let i = 0; i < 60; i++) {
+      glow(SPR.grey, ox + (rnd(i + 200) - .5) * 520 + Math.sin(d * 1.3 + i) * 12,
+        oy - rnd(i + 300) * 320 + d * (40 + rnd(i + 400) * 60), 6 + rnd(i) * 8, (1 - d / 3) * .5);
+    }
+  });
+}
+function edgeRed(t, amt) {          // red creeping in from the edges of the frame
+  if (amt <= .01) return;
+  additive(() => {
+    for (let i = 0; i < 44; i++) {
+      const p = rnd(i + 1300) * 4, side = Math.floor(p), u = p - side;
+      const inward = amt * (60 + rnd(i + 1400) * 160) * (.75 + .25 * Math.sin(t * 1.6 + i));
+      const x = side === 0 || side === 2 ? u * W : side === 1 ? W - inward : inward;
+      const y = side === 1 || side === 3 ? u * H : side === 0 ? inward : H - inward;
+      glow(SPR.red, x, y, 110 + rnd(i) * 90, .16 * amt);
+    }
+  });
+}
+function whispers(t, ox, oy) {
+  WHISPERS.forEach((w, i) => {
+    const t0 = 10.6 + i * .55, a = win(t, t0, Math.min(t0 + 3.4, 18.7), .3, .5);
+    if (!a) return;
+    const ang = -Math.PI * .9 + i * .62 + (t - t0) * .12, r = 210 + (i % 3) * 70;
+    font(32 + (i % 2) * 6, SERIF, '400', 'italic');
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.shadowColor = rgba(C.red, .8 * a); ctx.shadowBlur = 18;
+    ctx.fillStyle = rgba([255, 125, 125], .8 * a * (.8 + .2 * Math.sin(t * 13 + i)));
+    ctx.fillText(w, ox + Math.cos(ang) * r * 1.5, oy - 120 + Math.sin(ang) * r * .7);
+    ctx.shadowBlur = 0;
+  });
+}
+function clockShot(t) {             // 2:14 AM, then the minutes roll to 3:51
+  screen();
+  const m = Math.round(keys([[14.9, 134], [16.2, 231]], t, E.io));
+  additive(() => glow(SPR.blue, W / 2, 800, 760, .38 * (.9 + .1 * Math.sin(t * 9))));
+  const w = hand(`${Math.floor(m / 60)}:${String(m % 60).padStart(2, '0')}`, W / 2, 620, 260, C.cream, .92, 1, 'center', .3);
+  hand('AM', W / 2 + w / 2 + 30, 620, 90, C.cream, .6);
+}
+function resets(t) {                // DAY 1, DAY 3, DAY 1 … each one crossed out
+  const a = win(t, 19.9, 27.6, .2, .01);
+  if (!a) return;
+  RESETS.forEach(([t0, txt], i) => {
+    if (t < t0) return;
+    const x = 1330, y = 330 + i * 50;
+    const w = hand(txt, x, y, i ? 44 : 50, [205, 203, 198], .9 * a, inv(t0, t0 + (i ? .25 : .7), t));
+    const next = RESETS[i + 1];
+    if (next && t > next[0]) {
+      ctx.strokeStyle = rgba(C.red, .9 * a); ctx.lineWidth = 4; ctx.lineCap = 'round';
+      line(x - 8, y - 14, x - 8 + (w + 16) * inv(next[0], next[0] + .15, t), y - 20);
+    }
+  });
+}
+function resetFlash(t) {
+  let f = 0;
+  RESETS.forEach(([t0, txt], i) => { if (i && txt === 'DAY 1' && t >= t0) f = Math.max(f, .45 * (1 - inv(t0, t0 + .4, t))); });
+  return f;
+}
+function costs(t) {                 // what it took, one close-up each
+  COSTS.forEach(([t0, label, ax, ay, lx, ly]) => {
+    if (t < t0 || t >= t0 + 2.6) return;
+    const k = E.out(inv(t0 + .15, t0 + .5, t));
+    ctx.strokeStyle = rgba(C.cream, .55); ctx.lineWidth = 2;
+    line(ax, ay, lerp(ax, lx + 10, k), lerp(ay, ly + 12, k));
+    ctx.fillStyle = rgba(C.cream, .85); ctx.beginPath(); ctx.arc(ax, ay, 5, 0, Math.PI * 2); ctx.fill();
+    hand(label, lx, ly, 40, C.cream, .95, inv(t0 + .3, t0 + .9, t));
+  });
+}
+function eyes(cx, ey, s, off, blink, lids = true) {   // his reflection in the black glass
+  [-1, 1].forEach(sd => {
+    const ex = cx + sd * 62 * s;
+    ctx.fillStyle = rgba(C.cream, .3 * off);
+    ctx.beginPath(); ctx.ellipse(ex, ey, 30 * s, Math.max(.5, 11 * s * blink), 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = rgba([10, 10, 12], .9 * off);
+    ctx.beginPath(); ctx.arc(ex, ey + s, Math.max(.5, 8 * s * blink), 0, Math.PI * 2); ctx.fill();
+    if (!lids) return;
+    ctx.strokeStyle = rgba([0, 0, 0], .85 * off); ctx.lineWidth = 6 * s;
+    line(ex - 34 * s, ey - 7 * s, ex + 34 * s, ey - 9 * s);                                  // heavy lids
+    ctx.strokeStyle = rgba([120, 110, 120], .18 * off); ctx.lineWidth = 3 * s;
+    ctx.beginPath(); ctx.arc(ex, ey + 6 * s, 30 * s, .2 * Math.PI, .8 * Math.PI); ctx.stroke();  // dark circles
+  });
+}
+function bigPhone(t) {              // push in; the screen dies and he sees himself
+  const s = lerp(.3, 1, E.io(inv(38.6, 40.2, t))) * (1 + .03 * inv(40.2, 46, t));
+  const w = 430 * s, h = 860 * s, x = W / 2 - w / 2, y = H / 2 - h / 2;
+  const on = 1 - inv(41.2, 41.45, t), off = inv(41.6, 42.6, t);
+  ctx.fillStyle = '#0c0c10'; rrect(x - 16 * s, y - 16 * s, w + 32 * s, h + 32 * s, 66 * s); ctx.fill();
+  ctx.fillStyle = '#040406'; rrect(x, y, w, h, 52 * s); ctx.fill();
+  if (on > 0) {
+    pornScreen(x, y, w, h, s, t, on);
+    additive(() => { glow(SPR.red, W / 2, H / 2, 900 * s, .28 * on); glow(SPR.blue, W / 2, H / 2, 700 * s, .15 * on); });
+  }
+  if (off > 0) {
+    ctx.fillStyle = rgba(C.cream, .035 * off);                  // faint head and shoulders
+    ctx.beginPath(); ctx.ellipse(W / 2, y + h * .42, 120 * s, 160 * s, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(W / 2, y + h * .86, 260 * s, 150 * s, 0, Math.PI, 0); ctx.fill();
+    face(W / 2, y + h * .42, 120 * s, exprAt(t), { turn: 0, featA: .34 * off });   // his reflection
+    const sg = ctx.createLinearGradient(x, y, x + w, y + h);
+    sg.addColorStop(.35, 'rgba(255,255,255,0)'); sg.addColorStop(.5, `rgba(255,255,255,${.05 * off})`); sg.addColorStop(.65, 'rgba(255,255,255,0)');
+    ctx.fillStyle = sg; rrect(x, y, w, h, 52 * s); ctx.fill();
+  }
+}
+function sceneStagnation(t) {
+  const shot = shotAt(STAG, t);
+  if (shot[1] === 'clock') { clockShot(t); return; }
+  if (shot[1] === 'phone') { screen(); edgeRed(t, keys([[39, 0], [43, .55]], t)); bigPhone(t); return; }
+  if (shot[1] === 'faceN') { faceShot(t, 'night'); smoke(t, 1180, 1120, .9); return; }
+  if (shot[1] === 'faceG') { faceShot(t, 'grey'); hand('I couldn’t look anyone in the eye.', W / 2, 200, 62, C.cream, .95, 1, 'center'); return; }
+  cam(shot[1], shot[2], shot[3]);
+  const m = morningAmt(t);
+  const roomA = keys([[6.2, .13], [18.8, .13], [19.3, .05], [19.9, .26], [27.6, .26], [28, .42]], t);
+  drawWindow(m, roomA);
+  drawRoom(roomA, mix([120, 150, 220], C.cream, Math.max(m, .8 * inv(27.6, 28.2, t))));
+  const scr = t < 18.8 ? 1 : 0;                                // the screen is on through the night
+  const pull = t < 18.8 ? keys([[6.2, 0], [9, .45], [15, .85], [18.7, 1]], t, E.lin) : 0;
+  const hunch = keys([[6.2, .55], [14, .7], [18.5, .95], [19.9, .6], [27.6, .6], [28.4, .75]], t);
+  const P = poseSit(SIT.x, SIT.y + Math.sin(t * 1.5) * 1.5, SIT.s, hunch);
+  const [px, py] = P.hand;
+  additive(() => { glow(SPR.blue, px, py, 620 * scr, .3 * scr); glow(SPR.red, px, py - 60, 460, .32 * pull); });
+  const lit = t < 18.8;
+  drawPerson(P, [5, 5, 7], lit ? mix(C.blue, C.red, pull * .6) : [190, 194, 204],
+    lit ? .55 : .3 * m, lit ? 1 : -1, lit ? .25 : -.4);
+  face(P.head[0], P.head[1], P.head[2], exprAt(t), lit ? { turn: .9, light: [255, 176, 196], la: .34, lc: [.4, .8] }
+    : { turn: .9, light: [196, 200, 210], la: .12, lc: [-.6, -.3], featA: .7 });
+  if (t < 27.6) {                                              // the phone in his hands
+    ctx.fillStyle = '#0d0c0f'; rrect(px - 15, py - 26, 30, 50, 6); ctx.fill();
+    if (scr) { ctx.save(); rrect(px - 13, py - 23, 26, 44, 4); ctx.clip(); mosaic(px - 13, py - 23, 26, 30, 4.4, t); ctx.restore(); }
+  } else {                                                     // on the bed; it lights at 0:33
+    const n = win(t, 33, 35.4, .1, .5);
+    ctx.fillStyle = n > 0 ? rgba([200, 215, 255], .25 + .7 * n) : '#141418';
+    rrect(1120, 750, 58, 10, 3); ctx.fill();
+    if (n > 0) additive(() => glow(SPR.blue, 1150, 750, 160, .45 * n));
+  }
+  smoke(t, px, py, pull);
+  ash(t, px, py, 18.8);
+  whispers(t, px, py);
+  resets(t);
+  costs(t);
+  screen();
+  if (t >= 35.4) hand('I couldn’t look anyone in the eye.', W / 2, 200, 62, C.cream, .95, inv(35.5, 36.2, t), 'center');
+  const f = resetFlash(t);
+  if (f > 0) { ctx.fillStyle = rgba(C.red, f * .5); ctx.fillRect(-40, -40, W + 80, H + 80); }
+}
+
+// ---------- DEVIL LOOK TEST, 12 s: the cold line, him, the phone, the devil, its face, his face ----------
+const TDUR = 12;
+const TPHASES = [{ name: 'Cold line', a: 0 }, { name: 'Him', a: 2.6 }, { name: 'Phone', a: 4.6 },
+  { name: 'The devil', a: 6 }, { name: 'Its face', a: 8.5 }, { name: 'His face', a: 10.5 }];
+const DEV = document.createElement('canvas'); DEV.width = W; DEV.height = H;
+const dctx = DEV.getContext('2d');
+const DEVIL = { x: 790, y: 1080, s: 1 };           // the base of the figure, hidden behind the bed
+const mixExpr = (a, b, k) => { const o = {}; for (const f in a) o[f] = lerp(a[f], b[f], k); return o; };
+const sway = t => Math.sin(t * 1.7) * 6 * DEVIL.s;
+function devilHead(t, o) {
+  const { x, y, s } = DEVIL;
+  return [x + (40 + 60 * o.lean) * s + sway(t), y - 830 * s + o.lean * 40 * s];
+}
+function devilBody(g, t, o) {        // body, neck, head and horns, solid black
+  const { x, y, s } = DEVIL, tw = sway(t), [hx, hy] = devilHead(t, o);
+  g.fillStyle = g.strokeStyle = '#020102'; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.beginPath();
+  g.moveTo(x - 190 * s + tw, y - 700 * s);
+  g.quadraticCurveTo(x - 250 * s, y - 450 * s, x - 90 * s, y - 100 * s);
+  g.lineTo(x + 90 * s, y - 100 * s);
+  g.quadraticCurveTo(x + 250 * s, y - 450 * s, x + 190 * s + tw, y - 700 * s);
+  g.quadraticCurveTo(x + tw, y - 770 * s, x - 190 * s + tw, y - 700 * s);
+  g.fill();
+  g.lineWidth = 90 * s; g.beginPath(); g.moveTo(x + tw, y - 700 * s); g.lineTo(hx - 10 * s, hy + 60 * s); g.stroke();
+  g.save(); g.translate(hx, hy); g.rotate(-.15 - .2 * o.lean);
+  g.beginPath(); g.moveTo(0, -150 * s);
+  g.bezierCurveTo(130 * s, -150 * s, 125 * s, 10 * s, 70 * s, 95 * s); g.quadraticCurveTo(20 * s, 170 * s, 0, 175 * s);
+  g.quadraticCurveTo(-20 * s, 170 * s, -70 * s, 95 * s); g.bezierCurveTo(-125 * s, 10 * s, -130 * s, -150 * s, 0, -150 * s); g.fill();
+  g.restore();
+  for (const sd of [-1, 1]) {        // long horns curling out and up
+    const bx = hx + sd * 60 * s, by = hy - 100 * s;
+    g.beginPath(); g.moveTo(bx - 26 * s, by + 10 * s);
+    g.quadraticCurveTo(bx + sd * 160 * s, by - 40 * s, bx + sd * 125 * s, by - 260 * s);
+    g.quadraticCurveTo(bx + sd * 90 * s, by - 70 * s, bx + 26 * s, by + 6 * s);
+    g.fill();
+  }
+  g.save(); g.globalCompositeOperation = 'destination-out';
+  const fg = g.createLinearGradient(0, y - 420 * s, 0, y - 120 * s);
+  fg.addColorStop(0, 'rgba(0,0,0,0)'); fg.addColorStop(1, 'rgba(0,0,0,1)');
+  g.fillStyle = fg; g.fillRect(x - 420 * s, y - 420 * s, 840 * s, 540 * s); g.restore();
+}
+function devilArms(t, o) {           // drawn over him: arms with the elbows too high, fingers like knives
+  if (o.reach <= .01) return;
+  const { x, y, s } = DEVIL, tw = sway(t), targets = [[905, 612], [1004, 690]];
+  ctx.save();
+  ctx.strokeStyle = '#020102'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.shadowColor = rgba(C.red, .9 * o.a); ctx.shadowBlur = 26;
+  [-1, 1].forEach((sd, i) => {
+    const sh = [x + sd * 185 * s + tw, y - 690 * s], rest = [x + sd * 230 * s, y - 380 * s];
+    const tg = [lerp(rest[0], targets[i][0], o.reach), lerp(rest[1], targets[i][1] - 20, o.reach)];
+    const el = [(sh[0] + tg[0]) / 2 + (sd < 0 ? -90 : 70) * s, (sh[1] + tg[1]) / 2 - 130 * s * o.reach];
+    limb([sh, el, tg], 40 * s);
+    for (let f = 0; f < 4; f++) {
+      const ang = Math.PI * .5 + (f - 1.5) * .28 + (i ? -.35 : .25) + Math.sin(t * 3 + f) * .05;
+      const L = (110 + (f % 2) * 22) * s * (.6 + .4 * o.reach);
+      const k1 = [tg[0] + Math.cos(ang) * L * .55, tg[1] + Math.sin(ang) * L * .55];
+      const tip = [k1[0] + Math.cos(ang + .55) * L * .5, k1[1] + Math.sin(ang + .55) * L * .5];
+      ctx.lineWidth = 12 * s; ctx.beginPath(); ctx.moveTo(tg[0], tg[1]); ctx.lineTo(k1[0], k1[1]); ctx.lineTo(tip[0], tip[1]); ctx.stroke();
+    }
+  });
+  ctx.restore();
+}
+function devilEyes(t, o) {
+  const [hx, hy] = devilHead(t, o), s = DEVIL.s, fl = .85 + .15 * Math.sin(t * 23) * Math.sin(t * 7);
+  additive(() => { for (const sd of [-1, 1]) {
+    glow(SPR.red, hx + sd * 40 * s, hy - 8 * s, 95 * s, .95 * o.eyes * fl);
+    glow(SPR.amber, hx + sd * 40 * s, hy - 8 * s, 32 * s, o.eyes * fl);
+  } });
+  ctx.fillStyle = rgba([255, 244, 230], o.eyes);
+  for (const sd of [-1, 1]) {        // slanted slits, outer ends up
+    ctx.save(); ctx.translate(hx + sd * 40 * s, hy - 8 * s); ctx.rotate(-sd * .38);
+    ctx.beginPath(); ctx.ellipse(0, 0, 27 * s, Math.max(.5, 7 * s * o.eyes), 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = rgba([40, 0, 0], .95 * o.eyes); ctx.beginPath(); ctx.ellipse(0, 0, 3 * s, Math.max(.4, 6.5 * s * o.eyes), 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = rgba([255, 244, 230], o.eyes); ctx.restore();
+  }
+  if (o.a <= .02) return;
+  additive(() => {
+    ctx.strokeStyle = rgba([255, 70, 40], .75 * o.a); ctx.lineWidth = 2.5 * s; ctx.lineCap = 'round';
+    for (const sd of [-1, 1]) {
+      ctx.beginPath(); ctx.moveTo(hx + sd * 62 * s, hy - 2 * s);
+      ctx.lineTo(hx + sd * 78 * s, hy + 30 * s); ctx.lineTo(hx + sd * 70 * s, hy + 52 * s); ctx.lineTo(hx + sd * 88 * s, hy + 84 * s); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.moveTo(hx + 4 * s, hy - 34 * s); ctx.lineTo(hx - 8 * s, hy - 70 * s); ctx.lineTo(hx + 6 * s, hy - 96 * s); ctx.lineTo(hx - 4 * s, hy - 128 * s); ctx.stroke();
+  });
+}
+function devilGrin(t, o) {           // too wide, glowing, full of teeth
+  if (o.grin <= .02) return;
+  const [hx, hy] = devilHead(t, o), s = DEVIL.s, w = 180 * s * (.6 + .4 * o.grin), d = 62 * s * o.grin;
+  const up = u => -6 * s + (d * .25 + 3 * s) * (1 - Math.pow(2 * u / w, 2));
+  const lo = u => -6 * s + (d * .8 + 3 * s) * (1 - Math.pow(2 * u / w, 2));
+  ctx.save(); ctx.translate(hx + 8 * s, hy + 62 * s); ctx.rotate(-.12);
+  ctx.beginPath(); ctx.moveTo(-w / 2, -6 * s); ctx.quadraticCurveTo(0, d * .5, w / 2, -6 * s); ctx.quadraticCurveTo(0, d * 1.6, -w / 2, -6 * s);
+  const g = ctx.createLinearGradient(0, -6 * s, 0, d * 1.2);
+  g.addColorStop(0, rgba([255, 90, 40], .95 * o.a)); g.addColorStop(1, rgba([80, 0, 6], .95 * o.a));
+  ctx.fillStyle = g; ctx.fill(); ctx.clip();
+  ctx.fillStyle = rgba([240, 226, 200], o.a);
+  for (let i = 0; i < 13; i++) {
+    const u = -w / 2 + (i + .5) * w / 13, hw = w / 30;
+    ctx.beginPath(); ctx.moveTo(u - hw, up(u) - 3 * s); ctx.lineTo(u + hw, up(u) - 3 * s); ctx.lineTo(u + (rnd(i + 50) - .5) * 4 * s, up(u) + 20 * s * o.grin * (.55 + .9 * rnd(i + 51))); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(u - hw, lo(u) + 3 * s); ctx.lineTo(u + hw, lo(u) + 3 * s); ctx.lineTo(u + (rnd(i + 70) - .5) * 4 * s, lo(u) - 17 * s * o.grin * (.55 + .9 * rnd(i + 71))); ctx.fill();
+  }
+  ctx.restore();
+  additive(() => glow(SPR.red, hx, hy + 62 * s + d * .6, 150 * s, .5 * o.a * o.grin));
+}
+function devilSmoke(t, a) {          // black smoke eating the room, and embers rising through it
+  const { x, y, s } = DEVIL;
+  for (let i = 0; i < 70; i++) {
+    const life = 3 + rnd(i + 3000) * 3, age = (t + rnd(i + 3001) * life) % life, k = age / life, ang = rnd(i + 3002) * Math.PI * 2;
+    ctx.fillStyle = `rgba(0,0,0,${.34 * a * Math.sin(Math.PI * k)})`;
+    ctx.beginPath(); ctx.arc(x + Math.cos(ang) * (230 + 170 * k) * s, y - 520 * s + Math.sin(ang) * (480 + 120 * k) * s - k * 120 * s,
+      (60 + rnd(i + 3003) * 90) * s * (.6 + k), 0, Math.PI * 2); ctx.fill();
+  }
+  additive(() => { for (let i = 0; i < 46; i++) {
+    const life = 2 + rnd(i + 3100) * 2, age = (t + rnd(i + 3101) * life) % life, k = age / life;
+    glow(i % 3 ? SPR.red : SPR.amber, x + (rnd(i + 3102) - .5) * 760 * s + Math.sin(t * 2 + i) * 20, y - 200 * s - k * 820 * s, 6 + rnd(i) * 9, a * Math.sin(Math.PI * k));
+  } });
+}
+// the whole devil in the current framing [z, cx, cy]; o: a (presence), eyes, grin, reach, lean
+function drawDevil(t, fr, o) {
+  const [z, cx, cy] = fr;
+  dctx.setTransform(1, 0, 0, 1, 0, 0); dctx.clearRect(0, 0, W, H);
+  dctx.setTransform(z, 0, 0, z, W / 2 - cx * z + SHX, H / 2 - cy * z + SHY);
+  devilBody(dctx, t, o);
+  cam(z, cx, cy);
+  additive(() => glow(SPR.red, DEVIL.x, DEVIL.y - 560, 1100, .35 * o.a * (.8 + .2 * Math.sin(t * 6))));   // the aura's heat
+  devilSmoke(t, o.a);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.save(); ctx.globalAlpha = o.a;
+  ctx.shadowColor = 'rgba(255,24,32,.95)'; ctx.shadowBlur = 70 * Math.min(z, 1.6); ctx.drawImage(DEV, 0, 0);   // red rim
+  ctx.shadowBlur = 0;
+  for (let k = 0; k < 27; k++) {     // heat shimmer: the body wavers in strips
+    const sy = k * 40, dx = Math.sin(t * 7 + k * .9) * 5 * o.a;
+    ctx.drawImage(DEV, 0, sy, W, 40, dx, sy, W, 40);
+  }
+  ctx.restore();
+  cam(z, cx, cy);
+}
+
+// ---------- the test's shots ----------
+function typeLine(txt, y, size, k, col, a, t) {   // thin, cold capitals typed one by one, a little unsteady
+  font(size, SANS, '300'); ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  const track = size * .18, chars = [...txt], ws = chars.map(c => ctx.measureText(c).width);
+  let x = W / 2 - (ws.reduce((p, w) => p + w, 0) + track * (chars.length - 1)) / 2;
+  const n = chars.length * k, f = Math.floor(t * 20);
+  chars.forEach((c, i) => {
+    const al = clamp(n - i);
+    if (al > 0) { ctx.fillStyle = rgba(col, a * al); ctx.fillText(c, x + (rnd(i + f * 31) - .5) * 1.6, y + (rnd(i + f * 17) - .5) * 1.2); }
+    x += ws[i] + track;
+  });
+}
+function coldLine(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const a = 1 - inv(2.4, 2.6, t), col = [196, 212, 228];
+  typeLine('YOU THINK YOU’RE ALONE WHEN YOU WATCH IT…', 500, 46, inv(.2, 1.7, t), col, a, t);
+  typeLine('…DON’T YOU?', 590, 46, inv(1.9, 2.25, t), col, a, t);
+}
+function roomShot(t, fr, stage) {     // stage 0: only its eyes in the dark; stage 1: it steps out
+  const flick = stage ? .55 + .45 * Math.abs(Math.sin(t * 31) * Math.sin(t * 7.3)) : 1;
+  cam(...fr);
+  drawWindow(0, .13 * flick);
+  drawRoom(.13 * flick, [120, 150, 220]);
+  const show = stage ? E.sine(inv(6, 6.9, t)) : 0;
+  const o = { a: show, eyes: stage ? 1 : win(t, 3.2, 4.7, .5, .01), grin: E.sine(inv(6.9, 8.1, t)),
+    reach: stage ? E.io(inv(6.4, 8.2, t)) : 0, lean: stage ? E.sine(inv(6.6, 8.3, t)) : 0 };
+  if (show > 0) drawDevil(t, fr, o);
+  const P = poseSit(SIT.x, SIT.y + Math.sin(t * 1.5) * 1.5, SIT.s, .7), [px, py] = P.hand;
+  additive(() => { glow(SPR.blue, px, py, 600, .28); glow(SPR.red, px, py - 40, 420, .25); });
+  drawPerson(P, [5, 5, 7], mix(C.blue, C.red, .4), .55, 1, .25);
+  face(P.head[0], P.head[1], P.head[2], mixExpr(EXPR.glazed, EXPR.shock, inv(8, 8.35, t)), { turn: .9, light: [255, 176, 196], la: .34, lc: [.4, .8] });
+  ctx.fillStyle = '#0d0c0f'; rrect(px - 15, py - 26, 30, 50, 6); ctx.fill();
+  ctx.save(); rrect(px - 13, py - 23, 26, 44, 4); ctx.clip(); mosaic(px - 13, py - 23, 26, 30, 4.4, t); ctx.restore();
+  if (show > 0) devilArms(t, o);
+  if (o.eyes > 0) devilEyes(t, o);
+  if (show > 0) devilGrin(t, o);
+  screen();
+  if (stage) { ctx.fillStyle = rgba(C.red, .1 * show * (.6 + .4 * Math.sin(t * 5))); ctx.fillRect(-40, -40, W + 80, H + 80); }
+}
+function phoneShot(t) {               // the screen up close, and two red eyes in the glass behind him
+  screen();
+  const s = .98 + .06 * inv(4.6, 6, t), w = 430 * s, h = 860 * s, x = W / 2 - w / 2, y = H / 2 - h / 2;
+  additive(() => { glow(SPR.red, W / 2, H / 2, 900, .3); glow(SPR.blue, W / 2, H / 2, 700, .15); });
+  ctx.fillStyle = '#0c0c10'; rrect(x - 16 * s, y - 16 * s, w + 32 * s, h + 32 * s, 66 * s); ctx.fill();
+  pornScreen(x, y, w, h, s, t, 1);
+  const r = win(t, 5.2, 6.05, .25, .01);
+  if (r) additive(() => { for (const sd of [-1, 1]) glow(SPR.red, W / 2 - 60 * s + sd * 26 * s, y + 170 * s, 30 * s, .9 * r); });
+}
+function devilFace(t) {               // close on its face; it twitches twice
+  const o = { a: 1, eyes: 1, grin: 1, reach: 1, lean: 1 }, [hx, hy] = devilHead(t, o);
+  const tw = (t > 9.1 && t < 9.16) || (t > 9.9 && t < 9.95) ? 1 : 0;
+  const fr = [1.5 + .12 * inv(8.5, 10.5, t), hx + tw * 24, hy - 40];
+  cam(...fr);
+  drawRoom(.08, [120, 60, 70]);
+  drawDevil(t, fr, o);
+  devilEyes(t, o); devilGrin(t, o);
+  screen();
+  ctx.fillStyle = rgba(C.red, .08 + .06 * Math.sin(t * 5)); ctx.fillRect(-40, -40, W + 80, H + 80);
+}
+function renderTest(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.shadowBlur = 0;
+  const jolt = [6, 8.5, 10.5].reduce((m, s) => t >= s && t < s + .35 ? Math.max(m, 18 * (1 - inv(s, s + .35, t))) : m, 0);
+  SHX = jolt ? Math.sin(t * 91) * jolt : 0; SHY = jolt ? Math.cos(t * 77) * jolt * .7 : 0;
+  ctx.fillStyle = '#030305'; ctx.fillRect(0, 0, W, H);
+  if (t < 2.6) coldLine(t);
+  else if (t < 4.6) roomShot(t, [1, 960, 560], 0);
+  else if (t < 6) phoneShot(t);
+  else if (t < 8.5) roomShot(t, [.92, 900, 480], 1);
+  else if (t < 10.5) devilFace(t);
+  else faceShot(t, 'red', EXPR.shock);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const gl = Math.max(win(t, 8.42, 8.62, .05, .05), win(t, 10.42, 10.62, .05, .05), inv(11.2, 11.7, t));
+  glitch(t + 1000, gl);               // t + 1000: skip the film's own glitch windows, keep a moving seed
+  const g = ctx.createRadialGradient(W / 2, H / 2, H * .3, W / 2, H / 2, H * 1.02);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,.8)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const fb = inv(11.6, 12, t);
+  if (fb > 0) { ctx.fillStyle = `rgba(0,0,0,${fb})`; ctx.fillRect(0, 0, W, H); }
+}
+
+// ---------- playback (loops) ----------
+let T = 0, playing = false, last = 0;
+const btn = document.getElementById('play'), scrub = document.getElementById('scrub');
+const tm = document.getElementById('time'), bar = document.getElementById('phases');
+scrub.max = TDUR; document.title = 'LUST — devil look test';
+const fmt = s => `0:${String(Math.floor(s)).padStart(2, '0')}`;
+TPHASES.forEach(p => {
+  const b = document.createElement('button');
+  b.textContent = p.name; b.onclick = () => { seek(p.a + .01); b.blur(); };
+  p.btn = b; bar.appendChild(b);
+});
+function draw() {
+  renderTest(T);
+  scrub.value = T; tm.textContent = `${fmt(T)} / ${fmt(TDUR)}`;
+  TPHASES.forEach((p, i) => p.btn.classList.toggle('on', T >= p.a && (i === TPHASES.length - 1 || T < TPHASES[i + 1].a)));
+}
+function seek(s) { T = clamp(s, 0, TDUR); draw(); }
+function frame(now) {
+  if (!playing) return;
+  T += Math.min(.1, (now - last) / 1000); last = now;
+  if (T >= TDUR) T = 0;
+  draw();
+  requestAnimationFrame(frame);
+}
+function toggle() {
+  playing = !playing; btn.textContent = playing ? '❚❚' : '▶';
+  if (playing) { last = performance.now(); requestAnimationFrame(frame); }
+}
+btn.onclick = () => { toggle(); btn.blur(); };
+scrub.oninput = () => seek(+scrub.value);
+addEventListener('keydown', e => { if (e.code === 'Space') { e.preventDefault(); toggle(); } });
+window.renderAt = s => { T = clamp(s, 0, TDUR); renderTest(T); };
+draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,1324 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUST — It Watches Back</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #050506; color: #e9e4da;
+    font: 14px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; min-height: 100vh; }
+  #stage, #ui { width: min(100%, calc((100vh - 150px) * 16 / 9)); }
+  #stage { aspect-ratio: 16 / 9; background: #000; box-shadow: 0 20px 60px rgba(0, 0, 0, .6); }
+  canvas { width: 100%; height: 100%; display: block; }
+  #ui { display: grid; grid-template-columns: auto 1fr auto; gap: 10px 14px; align-items: center; }
+  button { background: #16171b; color: #e9e4da; border: 1px solid #2a2b31; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; }
+  button:hover { border-color: #4a4b52; }
+  button.on { background: #e9a948; color: #120c06; border-color: #e9a948; }
+  #play { width: 46px; }
+  input[type=range] { width: 100%; accent-color: #e9a948; }
+  #time { font-variant-numeric: tabular-nums; min-width: 96px; text-align: right; color: #a9a49b; }
+  #phases { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  #phases label { margin-left: auto; color: #a9a49b; display: flex; gap: 6px; align-items: center; }
+</style>
+</head>
+<body>
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas></div>
+<div id="ui">
+  <button id="play" title="Play / pause (space)">▶</button>
+  <input id="scrub" type="range" min="0" max="110.5" step="0.01" value="0" aria-label="Timeline">
+  <span id="time">0:00 / 1:50</span>
+  <div id="phases"></div>
+</div>
+<script>
+'use strict';
+// LUST: code-drawn motion graphics. Every frame is a pure function of time t (seconds),
+// so scrubbing is exact and frames can be exported one by one with renderAt(t).
+const W = 1920, H = 1080, DUR = 110.5;
+const cv = document.getElementById('c');
+const ctx = cv.getContext('2d');
+
+// ---------- maths ----------
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, k) => a + (b - a) * k;
+const inv = (a, b, v) => clamp((v - a) / (b - a));
+const E = {
+  io: k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2,
+  out: k => 1 - Math.pow(1 - k, 3),
+  sine: k => -(Math.cos(Math.PI * k) - 1) / 2,
+  lin: k => k
+};
+// 1 inside [a, b] with eased fades of fi / fo seconds, 0 outside
+const win = (t, a, b, fi = .6, fo = .6) => t < a || t > b ? 0 :
+  Math.min(fi > 0 ? E.sine(inv(a, a + fi, t)) : 1, fo > 0 ? E.sine(inv(b, b - fo, t)) : 1);
+const rnd = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const mix = (c1, c2, k) => [lerp(c1[0], c2[0], k), lerp(c1[1], c2[1], k), lerp(c1[2], c2[2], k)];
+const rgba = (c, a = 1) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${clamp(a)})`;
+// eased lookup over [[t, v1, v2…], …]; values may be numbers or colours
+function keys(list, t, f = E.sine, j = 1) {
+  if (t <= list[0][0]) return list[0][j];
+  for (let i = 1; i < list.length; i++) {
+    if (t <= list[i][0]) {
+      const k = f(inv(list[i - 1][0], list[i][0], t)), a = list[i - 1][j], b = list[i][j];
+      return Array.isArray(a) ? mix(a, b, k) : lerp(a, b, k);
+    }
+  }
+  return list[list.length - 1][j];
+}
+
+// ---------- look ----------
+const C = {
+  black: [4, 4, 6], night: [8, 9, 14], cream: [238, 230, 214], red: [232, 44, 52], blood: [110, 10, 18],
+  blue: [150, 185, 255], amber: [255, 168, 70], gold: [255, 212, 140], grey: [150, 150, 156]
+};
+const HAND = '"Bradley Hand", "Segoe Print", "Noteworthy", "Marker Felt", cursive';
+const SANS = '"Helvetica Neue", Helvetica, Arial, sans-serif';
+const SERIF = 'Georgia, "Times New Roman", serif';
+
+// ---------- story data (times match LUST_screenplay.md) ----------
+const PHASES = [
+  { name: 'Cold open', a: 0, b: 4 },
+  { name: 'Night 1', a: 4, b: 14 },
+  { name: 'Nights 2–4', a: 14, b: 43 },
+  { name: 'It shows itself', a: 43, b: 60.6 },
+  { name: 'He fights back', a: 60.6, b: 95.5 },
+  { name: 'Weeks later', a: 95.5, b: 110.5 }
+];
+// every line is the devil's: soft and kind until 0:44, then its real voice
+const VO = [
+  { id: 'VO01', t: .1, d: 1.8, text: 'You think you’re alone when you watch it… don’t you?' },
+  { id: 'VO02', t: 5.1, d: 2.2, text: 'Shh… it’s okay. Everyone does it.' },
+  { id: 'VO03', t: 8, d: 2.3, text: 'You worked hard today. You deserve this.' },
+  { id: 'VO04', t: 11.3, d: 1.8, text: 'Just one more. Then sleep.' },
+  { id: 'VO05', t: 14.9, d: 2.2, text: 'She’ll call again. Stay with me.' },
+  { id: 'VO06', t: 19.3, d: 2, text: 'See? You feel better already.' },
+  { id: 'VO07', t: 22.9, d: 2.2, text: 'Who needs them? You have me.' },
+  { id: 'VO08', t: 27.3, d: 2, text: 'I’ll never leave you.' },
+  { id: 'VO09', t: 32.6, d: 3.6, text: 'She’d never understand you… not like I do.' },
+  { id: 'VO10', t: 39.95, d: 2.8, text: 'One more… one more… one more…' },
+  { id: 'VO11', t: 44.1, d: 2, text: 'I was never in the phone.' },
+  { id: 'VO12', t: 46.7, d: 1.9, text: 'I was always… in you.' },
+  { id: 'VO13', t: 50.75, d: 2.3, text: 'Every night… you fed me.' },
+  { id: 'VO14', t: 53.2, d: 1.8, text: 'Now you’re mine.' },
+  { id: 'VO15', t: 55.2, d: 1.4, text: '(it screams)' },
+  { id: 'VO16', t: 61.6, d: 2.2, text: 'Come back… just once.' },
+  { id: 'VO17', t: 68, d: 1.8, text: 'You’ll get tired.' },
+  { id: 'VO18', t: 84.3, d: 1.2, text: 'Just one look…' },
+  { id: 'VO19', t: 88.3, d: 1.1, text: '(it shrieks)' },
+  { id: 'VO20', t: 93.1, d: 1.6, text: 'Tomorrow, then.' },
+  { id: 'VO21', t: 100.3, d: 1.2, text: 'I’ll wait.' }
+];
+// moments that hit: each one shakes the frame briefly
+const SLAMS = [3.4, 48.6, 51, 54.8, 55.15, 60.6, 84.3, 103.9, 105.9];
+// glitch tears: [start, end, strength]
+const GLITCH = [[3.4, 4, 1], [42.6, 43.1, .9], [55.15, 55.6, 1], [58.6, 59.2, .7], [84.3, 84.6, .8], [88.2, 88.6, .7], [101.7, 102.3, 1]];
+
+// ---------- glow sprites, stamped with additive blending ----------
+function sprite(c, size = 128) {
+  const s = document.createElement('canvas'); s.width = s.height = size;
+  const g = s.getContext('2d'), r = size / 2, grd = g.createRadialGradient(r, r, 0, r, r, r);
+  grd.addColorStop(0, rgba(c, 1)); grd.addColorStop(.28, rgba(c, .5)); grd.addColorStop(1, rgba(c, 0));
+  g.fillStyle = grd; g.fillRect(0, 0, size, size);
+  return s;
+}
+const SPR = {};
+for (const k of ['red', 'amber', 'gold', 'grey', 'blue', 'cream']) SPR[k] = sprite(C[k]);
+function glow(spr, x, y, r, a) {
+  if (a <= .003 || r <= 0) return;
+  const g0 = ctx.globalAlpha;
+  ctx.globalAlpha = g0 * Math.min(1, a);
+  ctx.drawImage(spr, x - r, y - r, r * 2, r * 2);
+  ctx.globalAlpha = g0;
+}
+function additive(fn) {
+  const o = ctx.globalCompositeOperation;
+  ctx.globalCompositeOperation = 'lighter'; fn(); ctx.globalCompositeOperation = o;
+}
+
+// ---------- camera: framings are hard cuts; slams shake the frame ----------
+let SHX = 0, SHY = 0;
+function setShake(t) {
+  let a = 0;
+  for (const s of SLAMS) if (t >= s && t < s + .4) a = Math.max(a, 16 * (1 - inv(s, s + .4, t)));
+  SHX = a ? Math.sin(t * 91) * a : 0; SHY = a ? Math.cos(t * 77) * a * .7 : 0;
+}
+let PUSH = 1;                        // a slow push-in on every shot, set per frame
+function cam(z = 1, cx = W / 2, cy = H / 2) { const k = z * PUSH; ctx.setTransform(k, 0, 0, k, W / 2 - cx * k + SHX, H / 2 - cy * k + SHY); }
+function screen() { ctx.setTransform(PUSH, 0, 0, PUSH, W / 2 * (1 - PUSH) + SHX, H / 2 * (1 - PUSH) + SHY); }
+// the framing in force at time t, from [[start, z, cx, cy], …]
+function shotAt(list, t) { let s = list[0]; for (const x of list) if (t >= x[0]) s = x; return s; }
+function glitch(t, extra = 0) {     // horizontal tears across the frame
+  let amt = extra;
+  for (const [a, b, s] of GLITCH) if (t >= a && t <= b) amt = Math.max(amt, s * Math.sin(Math.PI * inv(a, b, t)));
+  if (amt <= .02) return;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const seed = Math.floor(t * 24);
+  for (let i = 0; i < 9; i++) {
+    const y = rnd(seed * 13 + i) * H, h = 8 + rnd(seed * 7 + i) * 60, dx = (rnd(seed * 3 + i) - .5) * 160 * amt;
+    ctx.drawImage(cv, 0, y, W, h, dx, y, W, h);
+  }
+  ctx.fillStyle = rgba(C.red, .08 * amt); ctx.fillRect(0, 0, W, H);
+}
+
+// ---------- shapes and type ----------
+function line(x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+function rrect(x, y, w, h, r) {
+  ctx.beginPath();
+  if (ctx.roundRect) ctx.roundRect(x, y, w, Math.max(0, h), Math.max(0, Math.min(r, w / 2, Math.abs(h) / 2)));
+  else ctx.rect(x, y, w, h);
+}
+function font(size, fam = SANS, weight = '400', style = 'normal') { ctx.font = `${style} ${weight} ${size}px ${fam}`; }
+// handwriting that writes itself on: k 0→1 reveals the letters left to right; returns the full width
+function hand(txt, x, y, size, col, a, k = 1, align = 'left', glowA = 0) {
+  font(size, HAND);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
+  const full = ctx.measureText(txt).width;
+  if (a <= .003 || k <= 0) return full;
+  const x0 = align === 'center' ? x - full / 2 : align === 'right' ? x - full : x;
+  const f = txt.length * clamp(k), n = Math.floor(f), shown = txt.slice(0, n);
+  if (glowA > 0) { ctx.shadowColor = rgba(col, glowA * a); ctx.shadowBlur = size * .5; }
+  ctx.fillStyle = rgba(col, a);
+  ctx.fillText(shown, x0, y);
+  if (n < txt.length) { ctx.fillStyle = rgba(col, a * (f - n)); ctx.fillText(txt[n], x0 + ctx.measureText(shown).width, y); }
+  ctx.shadowBlur = 0;
+  return full;
+}
+// tracked capitals centred on x; returns the width
+function spaced(txt, x, y, size, col, a, track = 0, weight = '800', glowA = 0, fam = SANS) {
+  font(size, fam, weight);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  const chars = [...txt], ws = chars.map(ch => ctx.measureText(ch).width);
+  const total = ws.reduce((s, w) => s + w, 0) + track * (chars.length - 1);
+  if (a <= .003) return total;
+  let cx = x - total / 2;
+  if (glowA > 0) { ctx.shadowColor = rgba(col, glowA * a); ctx.shadowBlur = size * .35; }
+  ctx.fillStyle = rgba(col, a);
+  chars.forEach((ch, i) => { ctx.fillText(ch, cx, y); cx += ws[i] + track; });
+  ctx.shadowBlur = 0;
+  return total;
+}
+
+// a line of capitals that slams in at t0: oversized, then snaps to size in .15 s
+function slam(txt, x, y, size, col, a, t0, t, track = 8, weight = '800', glowA = 0) {
+  if (t < t0 || a <= .003) return 0;
+  const sc = 1 + .28 * (1 - E.out(inv(t0, t0 + .15, t)));
+  ctx.save(); ctx.translate(x, y); ctx.scale(sc, sc);
+  const w = spaced(txt, 0, 0, size, col, a * inv(t0, t0 + .06, t), track, weight, glowA);
+  ctx.restore();
+  return w;
+}
+
+// ---------- the man: a silhouette made of round-capped strokes ----------
+function limb(pts, w) {
+  ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+  ctx.stroke();
+}
+// rim light: the same shape a little larger, nudged toward the light, drawn first in the light's colour
+function drawPerson(P, fill, rim, rimA, lx = 0, ly = -1) {
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const pass = (dx, dy, col, extra) => {
+    ctx.strokeStyle = col; ctx.fillStyle = col;
+    for (const [pts, w] of P.parts) limb(pts.map(p => [p[0] + dx, p[1] + dy]), w + extra);
+    ctx.beginPath(); ctx.arc(P.head[0] + dx, P.head[1] + dy, P.head[2] + extra / 2, 0, Math.PI * 2); ctx.fill();
+  };
+  if (rimA > .003) pass(lx * 5, ly * 5, rgba(rim, rimA), 4);
+  pass(0, 0, rgba(fill), 0);
+}
+// sitting on the bed edge, facing right; h = hunch (0 upright … 1 folded over the phone)
+function poseSit(x, y, s, h) {
+  const sh = [x + (16 + 46 * h) * s, y - (168 - 44 * h) * s];
+  const hd = [sh[0] + (20 + 44 * h) * s, sh[1] - (64 - 38 * h) * s];
+  const knee = [x + 108 * s, y - 4 * s], foot = [x + 120 * s, y + 92 * s];
+  const elbow = [sh[0] + (34 + 14 * h) * s, sh[1] + (70 - 10 * h) * s];
+  const hand = [x + (100 + 8 * h) * s, y - (50 + 12 * (1 - h)) * s];
+  return {
+    head: [hd[0], hd[1], 40 * s], hand,
+    parts: [
+      [[[x, y], [x + (4 - 10 * h) * s, y - 90 * s], sh], 58 * s],
+      [[[x - 10 * s, y + 4 * s], [knee[0] - 16 * s, knee[1] + 8 * s], [foot[0] - 24 * s, foot[1]]], 36 * s],
+      [[[x, y], knee, foot], 40 * s],
+      [[sh, elbow, hand], 24 * s]
+    ]
+  };
+}
+// standing, seen from behind; y = hip height, feet at y + 188·s; turn moves the head to the right
+function poseStand(x, y, s, turn = 0, breathe = 0) {
+  const sh = y - 186 * s - breathe * 3 * s;
+  return {
+    head: [x + turn * 16 * s, sh - 66 * s, 40 * s],
+    parts: [
+      [[[x, y - 8 * s], [x, sh + 10 * s]], 74 * s],
+      [[[x - 40 * s, sh + 8 * s], [x + 40 * s, sh + 8 * s]], 34 * s],
+      [[[x - 20 * s, y], [x - 26 * s, y + 188 * s]], 34 * s],
+      [[[x + 20 * s, y], [x + 26 * s, y + 188 * s]], 34 * s],
+      [[[x - 46 * s, sh + 14 * s], [x - 58 * s, sh + 100 * s], [x - 60 * s, sh + 176 * s]], 22 * s],
+      [[[x + 46 * s, sh + 14 * s], [x + 58 * s, sh + 100 * s], [x + 60 * s, sh + 176 * s]], 22 * s]
+    ]
+  };
+}
+// walking / running in profile toward the right; ph = stride phase (radians), y = ground line
+function poseWalk(x, y, s, ph, run = 0) {
+  const amp = .42 + .3 * run, lean = .06 + .2 * run, L = 98 * s;
+  const leg = p => {
+    const th = Math.sin(p) * amp, bend = .12 + (.55 + .6 * run) * Math.max(0, Math.cos(p));
+    const knee = [Math.sin(th) * L, Math.cos(th) * L];
+    return [knee, [knee[0] + Math.sin(th - bend) * L, knee[1] + Math.cos(th - bend) * L]];
+  };
+  const A = leg(ph), B = leg(ph + Math.PI);
+  const hip = [x, y - Math.max(A[1][1], B[1][1])];          // the lower foot touches the ground
+  const at = p => [hip[0] + p[0], hip[1] + p[1]];
+  const sh = [hip[0] + Math.sin(lean) * 168 * s, hip[1] - Math.cos(lean) * 168 * s];
+  const hd = [sh[0] + Math.sin(lean * 1.3) * 64 * s, sh[1] - Math.cos(lean * 1.3) * 64 * s];
+  const arm = p => {
+    const ua = -Math.sin(p) * amp * .9, fb = .35 + .9 * run;
+    const el = [sh[0] + Math.sin(ua) * 78 * s, sh[1] + Math.cos(ua) * 78 * s];
+    return [sh, el, [el[0] + Math.sin(ua + fb) * 70 * s, el[1] + Math.cos(ua + fb) * 70 * s]];
+  };
+  return {
+    head: [hd[0], hd[1], 36 * s],
+    parts: [
+      [[hip, at(B[0]), at(B[1])], 32 * s], [arm(ph + Math.PI), 20 * s],
+      [[hip, sh], 54 * s],
+      [[hip, at(A[0]), at(A[1])], 32 * s], [arm(ph), 20 * s]
+    ]
+  };
+}
+
+// ---------- the bedroom, in thin lines ----------
+const BED = { x0: 600, x1: 1250, y: 760 };
+const SIT = { x: 860, y: 760, s: 1.1 };
+function drawWindow(m, a) {          // m: 0 night … 1 grey morning
+  if (a <= .003) return;
+  const x = 300, y = 220, w = 260, h = 290, v = Math.min(1, a * 4);
+  ctx.fillStyle = rgba(mix([26, 34, 64], [176, 182, 192], m), (.12 + .4 * m) * v);
+  ctx.fillRect(x, y, w, h);
+  if (m > .01) {
+    ctx.fillStyle = rgba([196, 200, 210], .06 * m * v);
+    ctx.beginPath(); ctx.moveTo(x, 860); ctx.lineTo(x + w, 860); ctx.lineTo(x + w + 380, H); ctx.lineTo(x + 220, H); ctx.closePath(); ctx.fill();
+  }
+  ctx.strokeStyle = rgba(C.cream, Math.min(1, a * 1.6)); ctx.lineWidth = 3;
+  ctx.strokeRect(x, y, w, h); line(x + w / 2, y, x + w / 2, y + h); line(x, y + h / 2, x + w, y + h / 2);
+}
+function drawRoom(a, col) {
+  if (a <= .003) return;
+  ctx.strokeStyle = rgba(col, a); ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  line(0, 860, W, 860);                                                  // floor
+  ctx.strokeRect(BED.x0, BED.y, BED.x1 - BED.x0, 64);                    // mattress
+  line(BED.x0 + 14, BED.y + 64, BED.x0 + 14, 860); line(BED.x1 - 14, BED.y + 64, BED.x1 - 14, 860);
+  rrect(BED.x0 - 26, BED.y - 160, 26, 224, 10); ctx.stroke();            // headboard
+  ctx.strokeRect(1590, 330, 180, 530);                                   // door
+  ctx.beginPath(); ctx.arc(1612, 610, 7, 0, Math.PI * 2); ctx.stroke();
+  rrect(1462, 806, 104, 54, 16); ctx.stroke();                           // gym bag
+  ctx.beginPath(); ctx.moveTo(1488, 806); ctx.quadraticCurveTo(1514, 770, 1540, 806); ctx.stroke();
+  line(110, 650, 450, 650); line(130, 650, 130, 860); line(430, 650, 430, 860);   // desk
+  ctx.strokeRect(240, 632, 96, 18);                                      // the book
+}
+
+// ---------- background, vignette, captions ----------
+const SKY = [[0, C.black, C.black], [160, C.black, C.black]];
+function drawSky(t) {
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, rgba(keys(SKY, t, E.sine, 1))); g.addColorStop(1, rgba(keys(SKY, t, E.sine, 2)));
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+}
+function drawVignette(t) {
+  const beat = (t > 43 && t < 48.6) || (t > 59.2 && t < 60.6) ? .14 * Math.pow(Math.max(0, Math.sin(t * Math.PI * 2)), 12) : 0;   // slow heartbeat
+  const v = keys([[0, .75], [60.6, .75], [61.3, .5], [78.8, .55], [95.5, .75]], t) + beat;
+  const g = ctx.createRadialGradient(W / 2, H / 2, H * .3, W / 2, H / 2, H * 1.02);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, `rgba(0,0,0,${clamp(v)})`);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  const fb = inv(DUR - 1.4, DUR, t);
+  if (fb > 0) { ctx.fillStyle = `rgba(0,0,0,${fb})`; ctx.fillRect(0, 0, W, H); }
+}
+
+// ---------- the hero's face: cream features on the dark head ----------
+const EXPR = {
+  glazed:  { lid: .45, brow: 0, browH: 0, smile: 0, open: 0, grit: 0, gx: .3, gy: .6, tear: 0, sweat: 0 },
+  tired:   { lid: .66, brow: .45, browH: -.04, smile: -.3, open: 0, grit: 0, gx: .2, gy: .7, tear: 0, sweat: 0 },
+  empty:   { lid: .5, brow: .8, browH: .06, smile: -.55, open: 0, grit: 0, gx: 0, gy: .9, tear: .6, sweat: 0 },
+  ashamed: { lid: .55, brow: .85, browH: .06, smile: -.6, open: 0, grit: 0, gx: -.8, gy: .7, tear: 0, sweat: 0 },
+  shock:   { lid: 0, brow: .7, browH: .2, smile: -.25, open: .45, grit: 0, gx: 0, gy: 0, tear: 0, sweat: 0 },
+  resolve: { lid: .18, brow: -.75, browH: -.04, smile: -.15, open: 0, grit: 0, gx: .5, gy: 0, tear: 0, sweat: 0 },
+  strain:  { lid: .8, brow: -1, browH: -.08, smile: -.45, open: .35, grit: 1, gx: 0, gy: 0, tear: 0, sweat: 1 },
+  focus:   { lid: .22, brow: -.4, browH: 0, smile: 0, open: 0, grit: 0, gx: .7, gy: 0, tear: 0, sweat: 0 },
+  calm:    { lid: .32, brow: .15, browH: .04, smile: .45, open: 0, grit: 0, gx: .6, gy: -.1, tear: 0, sweat: 0 },
+  smile:   { lid: .38, brow: .25, browH: .06, smile: .85, open: .12, grit: 0, gx: .5, gy: -.15, tear: 0, sweat: 0 }
+};
+const EXPR_KEYS = [[0, 'glazed'], [16.4, 'tired'], [24.4, 'empty'], [32.4, 'ashamed'], [41.1, 'empty'], [48.6, 'shock'],
+  [53.9, 'resolve'], [61.3, 'strain'], [67.2, 'focus'], [72.7, 'strain'], [79.5, 'calm'], [81.5, 'smile'], [82.4, 'calm'],
+  [84.3, 'strain'], [86, 'resolve'], [89.4, 'calm']];
+function exprAt(t) {                // blends into each new expression over .35 s, and blinks now and then
+  let i = 0;
+  while (i + 1 < EXPR_KEYS.length && t >= EXPR_KEYS[i + 1][0]) i++;
+  const cur = EXPR[EXPR_KEYS[i][1]], prev = EXPR[EXPR_KEYS[Math.max(0, i - 1)][1]];
+  const k = i ? E.sine(inv(EXPR_KEYS[i][0], EXPR_KEYS[i][0] + .35, t)) : 1, out = {};
+  for (const f in cur) out[f] = lerp(prev[f], cur[f], k);
+  const ph = t % 3.7;
+  if (out.open < .4 && ph < .13) out.lid = Math.max(out.lid, 1 - Math.abs(ph - .065) / .065);
+  return out;
+}
+// turn 0 = facing us, 1 = three-quarters to the right; o.light tints the side the light falls on
+function face(x, y, r, ex, o = {}) {
+  const turn = o.turn ?? .9, fa = o.featA ?? .92, col = C.cream;
+  if (o.light) {
+    ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.clip();
+    const lc = o.lc || [.5, .5], lx = x + lc[0] * r, ly = y + lc[1] * r;
+    const g = ctx.createRadialGradient(lx, ly, 0, lx, ly, r * 1.4);
+    g.addColorStop(0, rgba(o.light, o.la ?? .3)); g.addColorStop(1, rgba(o.light, 0));
+    ctx.fillStyle = g; ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+    ctx.restore();
+  }
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const ey = y - .05 * r, open = Math.max(.04, 1 - ex.lid);
+  const eyeList = [[x + r * lerp(-.36, .27, turn), .22 * r, 1], [x + r * lerp(.36, .7, turn), .22 * r * lerp(1, .7, turn), -1]];
+  for (const [cx, ew, side] of eyeList) {
+    const eh = .13 * r * open, px = cx + ex.gx * ew * .22, py = ey + ex.gy * eh * .35;
+    ctx.save();
+    ctx.beginPath(); ctx.ellipse(cx, ey, ew / 2, eh / 2 + .002 * r, 0, 0, Math.PI * 2);
+    ctx.fillStyle = rgba(col, fa * .95); ctx.fill(); ctx.clip();
+    ctx.fillStyle = rgba([14, 11, 13], Math.min(1, fa * 1.1));
+    ctx.beginPath(); ctx.arc(px, py, .06 * r, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = rgba([255, 255, 255], fa * .9);
+    ctx.beginPath(); ctx.arc(px + .025 * r, py - .025 * r, .016 * r, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = rgba(col, fa); ctx.lineWidth = .03 * r;            // upper lid
+    ctx.beginPath(); ctx.ellipse(cx, ey, ew / 2 + .01 * r, eh / 2 + .01 * r, 0, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
+    if (ex.lid > .5) {                                                     // tired bags
+      ctx.strokeStyle = rgba(col, fa * .3); ctx.lineWidth = .018 * r;
+      ctx.beginPath(); ctx.arc(cx, ey + .06 * r, ew * .45, .15 * Math.PI, .85 * Math.PI); ctx.stroke();
+    }
+    // brow: side 1 is the near eye (inner end on its right), -1 the far eye
+    const by = ey - .2 * r - ex.browH * r, inner = cx + side * ew * .55, outer = cx - side * ew * .62;
+    ctx.strokeStyle = rgba(col, fa); ctx.lineWidth = .04 * r;
+    line(outer, by + ex.brow * .03 * r, inner, by - ex.brow * .08 * r);
+  }
+  const nx = x + r * lerp(0, .58, turn);                                   // nose
+  ctx.strokeStyle = rgba(col, fa * .5); ctx.lineWidth = .022 * r;
+  ctx.beginPath(); ctx.moveTo(nx, y + .02 * r); ctx.lineTo(nx + .06 * r * turn, y + .2 * r); ctx.lineTo(nx - .02 * r, y + .23 * r); ctx.stroke();
+  const mx = x + r * lerp(0, .46, turn), my = y + .45 * r, mw = .32 * r * lerp(1, .8, turn);   // mouth
+  const cy = my - ex.smile * .05 * r, dip = my + ex.smile * .1 * r;
+  if (ex.open > .05) {
+    const lo = ex.open * .16 * r;
+    ctx.fillStyle = rgba([14, 9, 11], Math.min(1, fa * 1.1));
+    ctx.beginPath(); ctx.moveTo(mx - mw / 2, cy); ctx.quadraticCurveTo(mx, dip - lo * .2, mx + mw / 2, cy);
+    ctx.quadraticCurveTo(mx, dip + lo, mx - mw / 2, cy); ctx.fill();
+    if (ex.grit > .05) { ctx.fillStyle = rgba(col, fa * .85 * ex.grit); ctx.fillRect(mx - mw * .38, (cy + dip) / 2 - .012 * r, mw * .76, .05 * r); }
+  }
+  ctx.strokeStyle = rgba(col, fa); ctx.lineWidth = .032 * r;
+  ctx.beginPath(); ctx.moveTo(mx - mw / 2, cy); ctx.quadraticCurveTo(mx, dip, mx + mw / 2, cy); ctx.stroke();
+  if (ex.tear > .02) {
+    ctx.fillStyle = rgba(col, fa * .7 * ex.tear);
+    ctx.beginPath(); ctx.arc(eyeList[0][0] + .04 * r, ey + .12 * r + ex.tear * .1 * r, .025 * r, 0, Math.PI * 2); ctx.fill();
+  }
+  if (ex.sweat > .02) {
+    ctx.fillStyle = rgba(col, fa * .6 * ex.sweat);
+    for (const [dx, dy] of [[-.25, -.62], [.42, -.55]]) { ctx.beginPath(); ctx.ellipse(x + dx * r, y + dy * r, .02 * r, .035 * r, 0, 0, Math.PI * 2); ctx.fill(); }
+  }
+}
+// big face close-ups, cut in between the wider shots
+const LOOKS = {
+  night: { bg: [[8, 9, 14], [16, 12, 24]], fill: [6, 5, 8], light: [255, 176, 196], la: .3, lc: [.45, .75], glow: 'red', gl: [1220, 1080], ga: .4, rim: [190, 160, 255], turn: .9 },
+  grey: { bg: [[20, 21, 26], [30, 31, 36]], fill: [9, 9, 11], light: [196, 200, 210], la: .16, lc: [-.6, -.3], glow: 'grey', gl: [260, 260], ga: .25, rim: [196, 200, 210], turn: .75, featA: .72 },
+  red: { bg: [[34, 5, 9], [96, 10, 18]], fill: [8, 4, 6], light: [255, 96, 96], la: .32, lc: [.3, .8], glow: 'red', gl: [960, 1180], ga: .55, rim: [255, 110, 110], turn: .9 },
+  sun: { bg: [[226, 142, 112], [255, 214, 160]], fill: [24, 14, 20], light: [255, 214, 150], la: .42, lc: [.8, -.1], glow: 'gold', gl: [1760, 460], ga: .65, rim: [255, 226, 170], turn: .85 }
+};
+function faceShot(t, look, ex) {
+  const L = LOOKS[look];
+  screen();
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, rgba(L.bg[0])); g.addColorStop(1, rgba(L.bg[1]));
+  ctx.fillStyle = g; ctx.fillRect(-40, -40, W + 80, H + 80);
+  additive(() => glow(SPR[L.glow], L.gl[0], L.gl[1], 900, L.ga));
+  const x = W / 2 - 60 + Math.sin(t * .8) * 6, y = H * .44 + Math.sin(t * 1.3) * 3, r = 250;
+  ctx.fillStyle = rgba(L.rim, .5);                                         // rim on the lit side
+  ctx.beginPath(); ctx.arc(x + L.lc[0] * 8, y + L.lc[1] * 8, r + 6, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = rgba(L.fill);
+  ctx.beginPath(); ctx.ellipse(x - 20, y + r * 2.05, r * 1.7, r * 1.15, 0, Math.PI, 0); ctx.fill();   // shoulders
+  ctx.fillRect(x - r * .36, y + r * .55, r * .62, r * .9);                                         // neck
+  ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+  face(x, y, r, ex || exprAt(t), { turn: L.turn, light: L.light, la: L.la, lc: L.lc, featA: L.featA });
+}
+
+// ---------- the phone screen: a blurred 18+ video ----------
+// Only an abstract skin-tone mosaic and a video player's chrome: it reads as censored, and nothing explicit is drawn underneath.
+const SKIN = [[96, 52, 56], [150, 88, 78], [186, 118, 96], [214, 150, 120], [236, 186, 156], [246, 206, 182]];
+function mosaic(x, y, w, h, cell, t, a = 1) {
+  const cols = Math.ceil(w / cell), rows = Math.ceil(h / cell);
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+    const u = i / cols, v = j / rows;
+    const n = .5 + .22 * Math.sin(u * 5.1 + t * .9) * Math.cos(v * 4.3 - t * .6) + .2 * Math.sin((u * .8 + v) * 6.3 + t * 1.3) + .08 * Math.sin(i * 1.7 + j * 2.3);
+    ctx.fillStyle = rgba(mix(SKIN[clamp(Math.floor(n * SKIN.length), 0, SKIN.length - 1)], [255, 110, 130], .2), a);
+    ctx.fillRect(x + i * cell, y + j * cell, Math.min(cell, w - i * cell) + .4, Math.min(cell, h - j * cell) + .4);
+  }
+  const fg = ctx.createRadialGradient(x + w / 2, y + h / 2, 0, x + w / 2, y + h / 2, Math.max(w, h) * .7);   // frosted haze
+  fg.addColorStop(0, `rgba(255,235,235,${.16 * a})`); fg.addColorStop(1, 'rgba(255,235,235,0)');
+  ctx.fillStyle = fg; ctx.fillRect(x, y, w, h);
+}
+function badge18(x, y, s, a = 1) {
+  ctx.fillStyle = rgba(C.red, .95 * a); rrect(x, y, 64 * s, 34 * s, 8 * s); ctx.fill();
+  font(22 * s, SANS, '800'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = `rgba(255,255,255,${a})`; ctx.fillText('18+', x + 32 * s, y + 18 * s);
+}
+// the whole screen in close-up: site bar, the blurred video, its progress, more videos below
+function pornScreen(x, y, w, h, s, t, a, dy = 0) {   // dy: how far a notification has pushed the page down
+  ctx.save(); rrect(x, y, w, h, 52 * s); ctx.clip();
+  ctx.fillStyle = rgba([10, 8, 10], a); ctx.fillRect(x, y, w, h);
+  font(18 * s, SANS, '600'); ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = rgba(C.cream, .8 * a);
+  ctx.fillText('3:51', x + 40 * s, y + 34 * s);
+  ctx.translate(0, dy * s);
+  ctx.fillStyle = rgba([60, 56, 62], a); rrect(x + 24 * s, y + 70 * s, w - 48 * s, 44 * s, 12 * s); ctx.fill();
+  font(30 * s, SANS, '900'); ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  const lw = ctx.measureText('XXX').width;
+  ctx.shadowColor = rgba(C.red, .8 * a); ctx.shadowBlur = 12 * s;
+  ctx.fillStyle = rgba([255, 60, 70], a); ctx.fillText('XXX', x + 44 * s, y + 93 * s); ctx.shadowBlur = 0;
+  font(17 * s, SANS, '600'); ctx.fillStyle = rgba(C.cream, .75 * a); ctx.fillText('videos', x + 54 * s + lw, y + 94 * s);
+  badge18(x + w - 100 * s, y + 75 * s, s, a);
+  mosaic(x, y + 130 * s, w, 300 * s, 22 * s, t, a);
+  const pr = .62 + .002 * (t % 10), bx = x + 24 * s, bw = w - 48 * s;
+  ctx.fillStyle = rgba([90, 90, 96], a); ctx.fillRect(bx, y + 446 * s, bw, 5 * s);
+  ctx.fillStyle = rgba(C.red, a); ctx.fillRect(bx, y + 446 * s, bw * pr, 5 * s);
+  ctx.beginPath(); ctx.arc(bx + bw * pr, y + 448.5 * s, 9 * s, 0, Math.PI * 2); ctx.fill();
+  font(15 * s, SANS, '500'); ctx.fillStyle = rgba(C.cream, .7 * a); ctx.textAlign = 'left';
+  ctx.fillText('23:41', bx, y + 474 * s); ctx.textAlign = 'right'; ctx.fillText('41:02', bx + bw, y + 474 * s);
+  const scroll = (t * 70 * s) % (170 * s);                    // the feed keeps scrolling: more videos
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y + 490 * s, w, h - 490 * s); ctx.clip();   // ...under the video, never over it
+  for (let k = 0; k < 8; k++) {
+    const tx = bx + (k % 2) * (w / 2 - 12 * s), ty = y + 506 * s + Math.floor(k / 2) * 170 * s - scroll, tw = w / 2 - 36 * s;
+    ctx.save(); rrect(tx, ty, tw, 110 * s, 10 * s); ctx.clip(); mosaic(tx, ty, tw, 110 * s, 14 * s, t * .5 + k * 3.1, a); ctx.restore();
+    ctx.fillStyle = rgba([80, 76, 84], .8 * a); rrect(tx, ty + 120 * s, tw * .8, 10 * s, 5 * s); ctx.fill();
+    ctx.fillStyle = rgba([0, 0, 0], .6 * a); rrect(tx + tw - 58 * s, ty + 82 * s, 50 * s, 20 * s, 5 * s); ctx.fill();
+  }
+  ctx.restore();
+  ctx.restore();
+}
+
+// ---------- shared pieces: smoke, red edges, the dawn path, cold typed lines ----------
+function smoke(t, ox, oy, amt) {     // the pull: red smoke curling up out of the screen
+  if (amt <= .01) return;
+  additive(() => {
+    for (let i = 0; i < 90; i++) {
+      if (i / 90 > amt) break;
+      const life = 3 + rnd(i) * 2.5, age = (t + rnd(i + 50) * life) % life, k = age / life;
+      const ang = rnd(i + 9) * Math.PI * 2 + age * (.7 + rnd(i + 3) * .8);
+      const rad = (30 + k * 260) * (.6 + rnd(i + 7) * .6);
+      glow(SPR.red, ox + Math.cos(ang) * rad * 1.2 - k * 60, oy - k * 300 + Math.sin(ang) * rad * .5,
+        30 + k * 70, Math.sin(Math.PI * k) * .32 * Math.min(1, amt * 1.4));
+    }
+  });
+}
+function edgeRed(t, amt) {          // red creeping in from the edges of the frame
+  if (amt <= .01) return;
+  additive(() => {
+    for (let i = 0; i < 44; i++) {
+      const p = rnd(i + 1300) * 4, side = Math.floor(p), u = p - side;
+      const inward = amt * (60 + rnd(i + 1400) * 160) * (.75 + .25 * Math.sin(t * 1.6 + i));
+      const x = side === 0 || side === 2 ? u * W : side === 1 ? W - inward : inward;
+      const y = side === 1 || side === 3 ? u * H : side === 0 ? inward : H - inward;
+      glow(SPR.red, x, y, 110 + rnd(i) * 90, .16 * amt);
+    }
+  });
+}
+const GROUND = 820;
+function hills(d, p) {
+  [[.08, 640, 70, [26, 24, 48], [120, 72, 84]], [.22, 706, 50, [15, 13, 28], [66, 38, 50]]].forEach(([par, base, amp, c0, c1], j) => {
+    ctx.fillStyle = rgba(mix(c0, c1, p));
+    ctx.beginPath(); ctx.moveTo(-600, H + 400);
+    for (let x = -600; x <= W + 600; x += 24) {
+      const u = (x + d * par) * .004 + j * 10;
+      ctx.lineTo(x, base - amp * (Math.sin(u) * .6 + Math.sin(u * 2.3 + 1) * .3 + Math.sin(u * 5.1) * .1));
+    }
+    ctx.lineTo(W + 600, H + 400); ctx.closePath(); ctx.fill();
+  });
+}
+function embers(t, d, p) {
+  additive(() => {
+    const n = Math.floor(30 + 90 * p), span = W + 200;
+    for (let i = 0; i < n; i++) {
+      const life = 3 + rnd(i + 900) * 4, age = (t + rnd(i + 901) * life) % life, k = age / life;
+      const x = (((rnd(i + 902) * span - d * .35 - age * 40) % span) + span) % span - 100;
+      glow(SPR.gold, x, GROUND + 30 - k * (500 + rnd(i + 903) * 300), 5 + rnd(i + 904) * 9, Math.sin(Math.PI * k) * (.25 + .5 * p));
+    }
+  });
+}
+function momWorld(t, fr, p, d, ph, run) {   // the hills, the path and him walking
+  cam(...fr);
+  hills(d, p);
+  ctx.fillStyle = rgba(mix([8, 8, 14], [34, 20, 24], p)); ctx.fillRect(-600, GROUND, W + 1200, H);
+  const lg = ctx.createLinearGradient(0, 0, W, 0);
+  lg.addColorStop(0, rgba(C.amber, 0)); lg.addColorStop(.55, rgba(C.amber, .2 + .4 * p)); lg.addColorStop(1, rgba(C.gold, .45 + .45 * p));
+  ctx.strokeStyle = lg; ctx.lineWidth = 3; line(-600, GROUND, W + 600, GROUND);
+  ctx.fillStyle = rgba(C.cream, .16);
+  for (let i = 0; i < 40; i++) {
+    const span = W * 1.5, x = (((rnd(i + 1000) * span - d) % span) + span) % span - W * .25;
+    ctx.fillRect(x, GROUND + 14 + rnd(i + 1100) * 120, 3 + rnd(i) * 26, 2);
+  }
+  embers(t, d, p);
+  const PW = poseWalk(760, GROUND, 1.05, ph, run);
+  drawPerson(PW, [8, 7, 10], C.gold, .35 + .45 * p, 1, -.3);
+  face(PW.head[0], PW.head[1], PW.head[2], exprAt(t), { turn: 1, light: C.gold, la: .3 + .2 * p, lc: [.8, -.1] });
+}
+function typeLine(txt, y, size, k, col, a, t) {   // thin, cold capitals typed one by one, a little unsteady
+  font(size, SANS, '300'); ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  const track = size * .18, chars = [...txt], ws = chars.map(c => ctx.measureText(c).width);
+  let x = W / 2 - (ws.reduce((p, w) => p + w, 0) + track * (chars.length - 1)) / 2;
+  const n = chars.length * k, f = Math.floor(t * 20);
+  chars.forEach((c, i) => {
+    const al = clamp(n - i);
+    if (al > 0) { ctx.fillStyle = rgba(col, a * al); ctx.fillText(c, x + (rnd(i + f * 31) - .5) * 1.6, y + (rnd(i + f * 17) - .5) * 1.2); }
+    x += ws[i] + track;
+  });
+}
+
+// ---------- DEVIL LOOK TEST, 12 s: the cold line, him, the phone, the devil, its face, his face ----------
+const TDUR = 12;
+const TPHASES = [{ name: 'Cold line', a: 0 }, { name: 'Him', a: 2.6 }, { name: 'Phone', a: 4.6 },
+  { name: 'The devil', a: 6 }, { name: 'Its face', a: 8.5 }, { name: 'His face', a: 10.5 }];
+const DEV = document.createElement('canvas'); DEV.width = W; DEV.height = H;
+const dctx = DEV.getContext('2d');
+const DEVIL = { x: 790, y: 1080, s: 1 };           // the base of the figure, hidden behind the bed
+const mixExpr = (a, b, k) => { const o = {}; for (const f in a) o[f] = lerp(a[f], b[f], k); return o; };
+const sway = t => Math.sin(t * 1.7) * 6 * DEVIL.s;
+function devilHead(t, o) {
+  const { x, y, s } = DEVIL;
+  return [x + (40 + 60 * o.lean) * s + sway(t), y - 830 * s + o.lean * 40 * s];
+}
+function devilBody(g, t, o) {        // body, neck, head and horns, solid black
+  const { x, y, s } = DEVIL, tw = sway(t), [hx, hy] = devilHead(t, o);
+  g.fillStyle = g.strokeStyle = '#020102'; g.lineCap = 'round'; g.lineJoin = 'round';
+  g.beginPath();
+  g.moveTo(x - 190 * s + tw, y - 700 * s);
+  g.quadraticCurveTo(x - 250 * s, y - 450 * s, x - 90 * s, y - 100 * s);
+  g.lineTo(x + 90 * s, y - 100 * s);
+  g.quadraticCurveTo(x + 250 * s, y - 450 * s, x + 190 * s + tw, y - 700 * s);
+  g.quadraticCurveTo(x + tw, y - 770 * s, x - 190 * s + tw, y - 700 * s);
+  g.fill();
+  g.lineWidth = 90 * s; g.beginPath(); g.moveTo(x + tw, y - 700 * s); g.lineTo(hx - 10 * s, hy + 60 * s); g.stroke();
+  g.save(); g.translate(hx, hy); g.rotate(-.15 - .2 * o.lean);
+  g.beginPath(); g.moveTo(0, -150 * s);
+  g.bezierCurveTo(130 * s, -150 * s, 125 * s, 10 * s, 70 * s, 95 * s); g.quadraticCurveTo(20 * s, 170 * s, 0, 175 * s);
+  g.quadraticCurveTo(-20 * s, 170 * s, -70 * s, 95 * s); g.bezierCurveTo(-125 * s, 10 * s, -130 * s, -150 * s, 0, -150 * s); g.fill();
+  g.restore();
+  for (const sd of [-1, 1]) {        // long horns curling out and up
+    const bx = hx + sd * 60 * s, by = hy - 100 * s;
+    g.beginPath(); g.moveTo(bx - 26 * s, by + 10 * s);
+    g.quadraticCurveTo(bx + sd * 160 * s, by - 40 * s, bx + sd * 125 * s, by - 260 * s);
+    g.quadraticCurveTo(bx + sd * 90 * s, by - 70 * s, bx + 26 * s, by + 6 * s);
+    g.fill();
+  }
+  g.save(); g.globalCompositeOperation = 'destination-out';
+  const fg = g.createLinearGradient(0, y - 420 * s, 0, y - 120 * s);
+  fg.addColorStop(0, 'rgba(0,0,0,0)'); fg.addColorStop(1, 'rgba(0,0,0,1)');
+  g.fillStyle = fg; g.fillRect(x - 420 * s, y - 420 * s, 840 * s, 540 * s); g.restore();
+}
+function devilArms(t, o) {           // drawn over him: arms with the elbows too high, fingers like knives
+  if (o.reach <= .01) return;
+  const { x, y, s } = DEVIL, tw = sway(t), targets = [[905, 612], [1004, 690]];
+  ctx.save();
+  ctx.strokeStyle = '#020102'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.shadowColor = rgba(C.red, .9 * o.a); ctx.shadowBlur = 26;
+  [-1, 1].forEach((sd, i) => {
+    const sh = [x + sd * 185 * s + tw, y - 690 * s], rest = [x + sd * 230 * s, y - 380 * s];
+    const tg = [lerp(rest[0], targets[i][0], o.reach), lerp(rest[1], targets[i][1] - 20, o.reach)];
+    const el = [(sh[0] + tg[0]) / 2 + (sd < 0 ? -90 : 70) * s, (sh[1] + tg[1]) / 2 - 130 * s * o.reach];
+    limb([sh, el, tg], 40 * s);
+    for (let f = 0; f < 4; f++) {
+      const ang = Math.PI * .5 + (f - 1.5) * .28 + (i ? -.35 : .25) + Math.sin(t * 3 + f) * .05;
+      const L = (110 + (f % 2) * 22) * s * (.6 + .4 * o.reach);
+      const k1 = [tg[0] + Math.cos(ang) * L * .55, tg[1] + Math.sin(ang) * L * .55];
+      const tip = [k1[0] + Math.cos(ang + .55) * L * .5, k1[1] + Math.sin(ang + .55) * L * .5];
+      ctx.lineWidth = 12 * s; ctx.beginPath(); ctx.moveTo(tg[0], tg[1]); ctx.lineTo(k1[0], k1[1]); ctx.lineTo(tip[0], tip[1]); ctx.stroke();
+    }
+  });
+  ctx.restore();
+}
+function devilEyes(t, o) {
+  const [hx, hy] = devilHead(t, o), s = DEVIL.s, fl = .85 + .15 * Math.sin(t * 23) * Math.sin(t * 7);
+  additive(() => { for (const sd of [-1, 1]) {
+    glow(SPR.red, hx + sd * 40 * s, hy - 8 * s, 95 * s, .95 * o.eyes * fl);
+    glow(SPR.amber, hx + sd * 40 * s, hy - 8 * s, 32 * s, o.eyes * fl);
+  } });
+  ctx.fillStyle = rgba([255, 244, 230], o.eyes);
+  for (const sd of [-1, 1]) {        // slanted slits, outer ends up
+    ctx.save(); ctx.translate(hx + sd * 40 * s, hy - 8 * s); ctx.rotate(-sd * .38);
+    ctx.beginPath(); ctx.ellipse(0, 0, 27 * s, Math.max(.5, 7 * s * o.eyes), 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = rgba([40, 0, 0], .95 * o.eyes); ctx.beginPath(); ctx.ellipse(0, 0, 3 * s, Math.max(.4, 6.5 * s * o.eyes), 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = rgba([255, 244, 230], o.eyes); ctx.restore();
+  }
+  if (o.a <= .02) return;
+  additive(() => {
+    ctx.strokeStyle = rgba([255, 70, 40], .75 * o.a); ctx.lineWidth = 2.5 * s; ctx.lineCap = 'round';
+    for (const sd of [-1, 1]) {
+      ctx.beginPath(); ctx.moveTo(hx + sd * 62 * s, hy - 2 * s);
+      ctx.lineTo(hx + sd * 78 * s, hy + 30 * s); ctx.lineTo(hx + sd * 70 * s, hy + 52 * s); ctx.lineTo(hx + sd * 88 * s, hy + 84 * s); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.moveTo(hx + 4 * s, hy - 34 * s); ctx.lineTo(hx - 8 * s, hy - 70 * s); ctx.lineTo(hx + 6 * s, hy - 96 * s); ctx.lineTo(hx - 4 * s, hy - 128 * s); ctx.stroke();
+  });
+}
+function devilGrin(t, o) {           // too wide, glowing, full of teeth
+  const sc = o.scream || 0;
+  if (o.grin <= .02 && sc <= .02) return;
+  const [hx, hy] = devilHead(t, o), s = DEVIL.s, w = 180 * s * (.6 + .4 * Math.max(o.grin, sc)) * (1 - .25 * sc), d = s * (62 * o.grin + 120 * sc);
+  const up = u => -6 * s + (d * .25 + 3 * s) * (1 - Math.pow(2 * u / w, 2));
+  const lo = u => -6 * s + (d * .8 + 3 * s) * (1 - Math.pow(2 * u / w, 2));
+  ctx.save(); ctx.translate(hx + 8 * s, hy + 62 * s); ctx.rotate(-.12);
+  ctx.beginPath(); ctx.moveTo(-w / 2, -6 * s); ctx.quadraticCurveTo(0, d * .5, w / 2, -6 * s); ctx.quadraticCurveTo(0, d * 1.6, -w / 2, -6 * s);
+  const g = ctx.createLinearGradient(0, -6 * s, 0, d * 1.2);
+  g.addColorStop(0, rgba([255, 90, 40], .95 * o.a)); g.addColorStop(1, rgba([80, 0, 6], .95 * o.a));
+  ctx.fillStyle = g; ctx.fill(); ctx.clip();
+  ctx.fillStyle = rgba([240, 226, 200], o.a);
+  for (let i = 0; i < 13; i++) {
+    const u = -w / 2 + (i + .5) * w / 13, hw = w / 30;
+    ctx.beginPath(); ctx.moveTo(u - hw, up(u) - 3 * s); ctx.lineTo(u + hw, up(u) - 3 * s); ctx.lineTo(u + (rnd(i + 50) - .5) * 4 * s, up(u) + 20 * s * o.grin * (.55 + .9 * rnd(i + 51))); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(u - hw, lo(u) + 3 * s); ctx.lineTo(u + hw, lo(u) + 3 * s); ctx.lineTo(u + (rnd(i + 70) - .5) * 4 * s, lo(u) - 17 * s * o.grin * (.55 + .9 * rnd(i + 71))); ctx.fill();
+  }
+  ctx.restore();
+  additive(() => glow(SPR.red, hx, hy + 62 * s + d * .6, 150 * s, .5 * o.a * o.grin));
+}
+function devilSmoke(t, a) {          // black smoke eating the room, and embers rising through it
+  const { x, y, s } = DEVIL;
+  for (let i = 0; i < 70; i++) {
+    const life = 3 + rnd(i + 3000) * 3, age = (t + rnd(i + 3001) * life) % life, k = age / life, ang = rnd(i + 3002) * Math.PI * 2;
+    ctx.fillStyle = `rgba(0,0,0,${.34 * a * Math.sin(Math.PI * k)})`;
+    ctx.beginPath(); ctx.arc(x + Math.cos(ang) * (230 + 170 * k) * s, y - 520 * s + Math.sin(ang) * (480 + 120 * k) * s - k * 120 * s,
+      (60 + rnd(i + 3003) * 90) * s * (.6 + k), 0, Math.PI * 2); ctx.fill();
+  }
+  additive(() => { for (let i = 0; i < 46; i++) {
+    const life = 2 + rnd(i + 3100) * 2, age = (t + rnd(i + 3101) * life) % life, k = age / life;
+    glow(i % 3 ? SPR.red : SPR.amber, x + (rnd(i + 3102) - .5) * 760 * s + Math.sin(t * 2 + i) * 20, y - 200 * s - k * 820 * s, 6 + rnd(i) * 9, a * Math.sin(Math.PI * k));
+  } });
+}
+// the whole devil in the current framing [z, cx, cy]; o: a (presence), eyes, grin, reach, lean
+function drawDevil(t, fr, o) {
+  const [z, cx, cy] = fr;
+  dctx.setTransform(1, 0, 0, 1, 0, 0); dctx.clearRect(0, 0, W, H);
+  const zz = z * PUSH;
+  dctx.setTransform(zz, 0, 0, zz, W / 2 - cx * zz + SHX, H / 2 - cy * zz + SHY);
+  devilBody(dctx, t, o);
+  cam(z, cx, cy);
+  additive(() => glow(SPR.red, DEVIL.x, DEVIL.y - 560 * DEVIL.s, 1100 * DEVIL.s, .35 * o.a * (.8 + .2 * Math.sin(t * 6))));   // the aura's heat
+  devilSmoke(t, o.a);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.save(); ctx.globalAlpha = o.a;
+  ctx.shadowColor = 'rgba(255,24,32,.95)'; ctx.shadowBlur = 70 * Math.min(z, 1.6); ctx.drawImage(DEV, 0, 0);   // red rim
+  ctx.shadowBlur = 0;
+  for (let k = 0; k < 27; k++) {     // heat shimmer: the body wavers in strips
+    const sy = k * 40, dx = Math.sin(t * 7 + k * .9) * 5 * o.a;
+    ctx.drawImage(DEV, 0, sy, W, 40, dx, sy, W, 40);
+  }
+  ctx.restore();
+  cam(z, cx, cy);
+}
+
+// ---------- IT WATCHES BACK: where it stands, and the extra looks ----------
+const SPOTS = { window: [430, 980, .6], foot: [1390, 1060, .8], beside: [1120, 1050, .9], behind: [790, 1080, 1], chase: [150, 1180, .75] };
+function placeDevil(spot) { [DEVIL.x, DEVIL.y, DEVIL.s] = SPOTS[spot]; }
+const devilO = o => Object.assign({ a: 0, eyes: 0, grin: 0, reach: 0, lean: 0, scream: 0 }, o);
+EXPR.sleep = { lid: 1, brow: .1, browH: 0, smile: .15, open: 0, grit: 0, gx: 0, gy: 0, tear: 0, sweat: 0 };
+LOOKS.shower = { bg: [[30, 40, 52], [60, 74, 90]], fill: [10, 12, 16], light: [210, 230, 255], la: .3, lc: [0, -.8], glow: 'blue', gl: [960, -100], ga: .5, rim: [200, 225, 255], turn: .8 };
+LOOKS.lamp = { bg: [[34, 22, 14], [60, 38, 22]], fill: [16, 10, 8], light: [255, 200, 140], la: .4, lc: [.7, -.2], glow: 'amber', gl: [1600, 500], ga: .45, rim: [255, 200, 140], turn: .85 };
+function fill(top, bottom) {
+  screen();
+  const g = ctx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, rgba(top)); g.addColorStop(1, rgba(bottom || top));
+  ctx.fillStyle = g; ctx.fillRect(-40, -40, W + 80, H + 80);
+}
+function redEyes(x, y, sz, a) {      // two burning slits, for when only its eyes show
+  if (a <= .01) return;
+  additive(() => { for (const sd of [-1, 1]) glow(SPR.red, x + sd * sz * 1.5, y, sz * 3.4, .9 * a); });
+  ctx.fillStyle = rgba([255, 240, 225], a);
+  for (const sd of [-1, 1]) {
+    ctx.save(); ctx.translate(x + sd * sz * 1.5, y); ctx.rotate(-sd * .38);
+    ctx.beginPath(); ctx.ellipse(0, 0, sz, sz * .26, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+  }
+}
+
+// ---------- shots ----------
+function shotCold(t) {
+  const a = 1 - inv(1.8, 2, t), col = [196, 212, 228];
+  screen();
+  typeLine('YOU THINK YOU’RE ALONE WHEN YOU WATCH IT…', 500, 46, inv(.1, 1.1, t), col, a, t);
+  typeLine('…DON’T YOU?', 590, 46, inv(1.2, 1.5, t), col, a, t);
+}
+function shotClock(t, label, L = 1) {       // the time, cold and thin, lit from below by a screen
+  fill([4, 5, 8]);
+  additive(() => glow(SPR.blue, W / 2, 840, 760, .3 * (.92 + .08 * Math.sin(t * 11))));
+  slam(label, W / 2, 540, 240, [214, 224, 238], .95, t - L, t, 0, '200');
+}
+function shotCard(t, label, L) { fill([3, 3, 5]); typeLine(label, 540, 52, inv(.2, 1, L), [196, 212, 228], 1 - inv(2.2, 2.6, L), t); }
+function shards(t, t0, x0, y0) {    // the phone bursts off the wall, the pieces fall and stay on the floor
+  const d = t - t0;
+  if (d < 0) return;
+  ctx.fillStyle = '#15151b'; ctx.strokeStyle = 'rgba(200,215,255,.6)'; ctx.lineWidth = 1.5;
+  for (let i = 0; i < 16; i++) {
+    const ang = Math.PI * (.6 + rnd(i + 4000) * .8), v = 300 + rnd(i + 4001) * 500;
+    const vx = Math.cos(ang) * v, vy = Math.sin(ang) * v * .6;
+    const land = (-vy + Math.sqrt(vy * vy + 1800 * (856 - y0))) / 900, dd = Math.min(d, land);
+    ctx.save(); ctx.translate(x0 + vx * dd, Math.min(856, y0 + vy * dd + 450 * dd * dd)); ctx.rotate(dd * (4 + rnd(i) * 8) * (i % 2 ? 1 : -1));
+    ctx.beginPath(); ctx.moveTo(-10, -6); ctx.lineTo(12, -2); ctx.lineTo(-4, 9); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+  }
+  if (d < .8) additive(() => {
+    glow(SPR.cream, x0, y0, 320, .9 * Math.exp(-d * 8));
+    for (let i = 0; i < 20; i++) glow(SPR.amber, x0 - rnd(i + 4100) * 300 * d * 3, y0 + (rnd(i + 4101) - .5) * 260 * d * 3, 6, 1 - d / .8);
+  });
+}
+// p: spot, o(t) devil, hunch, lit (screen on), flicker, fr, throw, shardsAt, morning
+function shotRoom(t, p, L) {
+  const fr = p.fr || [1, 960, 560], flick = p.flicker ? .55 + .45 * Math.abs(Math.sin(t * 31) * Math.sin(t * 7.3)) : 1;
+  fill([8, 9, 14], [14, 12, 22]);
+  cam(...fr);
+  drawWindow(0, .14 * flick);
+  drawRoom(.14 * flick, [120, 150, 220]);
+  if (p.spot) placeDevil(p.spot);
+  if (p.creep) DEVIL.x -= p.creep * L;            // it edges closer while we watch
+  const o = devilO(p.o ? p.o(t) : {}), lit = p.lit !== false;
+  if (o.a > 0) drawDevil(t, fr, o);
+  const P0 = poseSit(SIT.x, SIT.y, SIT.s, p.hunch ?? .65);
+  if (o.a > .3 && p.spot !== 'window') tether(t, P0.parts[0][0][1], [DEVIL.x, DEVIL.y - 560 * DEVIL.s], o.a * (p.throwAt ? 1 - inv(p.throwAt + .35, p.throwAt + .6, t) : 1));
+  const P = poseSit(SIT.x, SIT.y + Math.sin(t * 1.5) * 1.5, SIT.s, p.hunch ?? .65);
+  let [px, py] = P.hand;
+  if (p.throwAt) {                     // wind up, then throw it at the wall
+    const sh = P.parts[3][0][0], up = t > p.throwAt;
+    P.parts[3][0] = [sh, [sh[0] + (up ? 60 : -30), sh[1] - 70], [sh[0] + (up ? 140 : -50), sh[1] - (up ? 120 : 90)]];
+    const k = inv(p.throwAt, p.throwAt + .35, t);
+    px = lerp(sh[0] - 50, 1580, k); py = lerp(sh[1] - 90, 430, k) - Math.sin(Math.PI * k) * 120;
+  }
+  if (lit) additive(() => { glow(SPR.blue, px, py, 600, .26); glow(SPR.red, px, py - 40, 420, .24); });
+  drawPerson(P, [5, 5, 7], lit ? mix(C.blue, C.red, .4) : [120, 120, 140], lit ? .55 : .22, 1, .25);
+  face(P.head[0], P.head[1], P.head[2], exprAt(t), lit ? { turn: .9, light: [255, 176, 196], la: .34, lc: [.4, .8] }
+    : { turn: .9, light: [170, 180, 210], la: .14, lc: [-.6, -.3], featA: .75 });
+  if (!(p.throwAt && t > p.throwAt + .35) && !p.shardsAt) {
+    ctx.save(); ctx.translate(px, py); if (p.throwAt) ctx.rotate(inv(p.throwAt, p.throwAt + .35, t) * 9);
+    ctx.fillStyle = '#0d0c0f'; rrect(-15, -26, 30, 50, 6); ctx.fill();
+    if (lit) { rrect(-13, -23, 26, 44, 4); ctx.clip(); mosaic(-13, -23, 26, 30, 4.4, t); }
+    ctx.restore();
+  }
+  if (p.throwAt) shards(t, p.throwAt + .35, 1580, 430);
+  if (p.shardsAt) shards(t, p.shardsAt, 1580, 430);
+  if (o.a > 0) devilArms(t, o);
+  if (o.eyes > 0) devilEyes(t, o);
+  if (o.a > 0) devilGrin(t, o);
+  screen();
+  if (o.a > .3) { ctx.fillStyle = rgba(C.red, .1 * o.a * (.6 + .4 * Math.sin(t * 5))); ctx.fillRect(-40, -40, W + 80, H + 80); }
+}
+function tether(t, from, to, a) {   // smoke running out of his back into it: it lives in him, it feeds on him
+  if (a <= .02) return;
+  for (let i = 0; i < 28; i++) {
+    const k = (i / 28 + t * .35) % 1, x = lerp(from[0], to[0], k) + Math.sin(k * 9 + t * 3) * 18, y = lerp(from[1], to[1], k) + Math.cos(k * 7 + t * 2) * 14;
+    ctx.fillStyle = `rgba(0,0,0,${.5 * a * Math.sin(Math.PI * k)})`; ctx.beginPath(); ctx.arc(x, y, 24 + 16 * Math.sin(Math.PI * k), 0, Math.PI * 2); ctx.fill();
+  }
+  additive(() => { for (let i = 0; i < 14; i++) { const k = (i / 14 + t * .5) % 1; glow(SPR.red, lerp(from[0], to[0], k), lerp(from[1], to[1], k), 46, .3 * a * Math.sin(Math.PI * k)); } });
+}
+function shotDevilFace(t, p, L) {   // close on its face, wherever it stands
+  fill([5, 3, 4]);
+  placeDevil(p.spot);
+  const o = devilO(Object.assign({ a: 1, eyes: 1 }, p.o(t))), [hx, hy] = devilHead(t, o), s = DEVIL.s;
+  const tw = p.twitch && ((L > 1.1 && L < 1.16) || (L > 1.9 && L < 1.95)) ? 1 : 0;
+  const fr = [(p.scare ? 2.1 : 1.5 + .12 * clamp(L / 3)) / s, hx + tw * 24 * s, hy - (p.scare ? 10 : 40) * s];
+  cam(...fr);
+  drawRoom(.08, [120, 60, 70]);
+  drawDevil(t, fr, o); devilEyes(t, o); devilGrin(t, o);
+  screen();
+  ctx.fillStyle = rgba(C.red, .08 + .06 * Math.sin(t * 5) + (p.scare ? .5 * (1 - inv(0, .18, L)) : 0)); ctx.fillRect(-40, -40, W + 80, H + 80);
+}
+function phoneFrame(L) {
+  const s = .96 + .05 * clamp(L / 3), w = 430 * s, h = 860 * s;
+  return { s, w, h, x: W / 2 - w / 2, y: H / 2 - h / 2 };
+}
+function notifDrop(t, p) {          // a banner pushes the site down while it shows, so both stay readable
+  if (!p.notif) return 0;
+  const k = E.out(inv(p.notif[0], p.notif[0] + .35, t)), out = p.swipe ? E.io(inv(p.swipe, p.swipe + .35, t)) : 0;
+  return 110 * k * (1 - out);
+}
+function notif(f, t, n, swipe) {    // a banner slides down; he swipes it away
+  const [t0, kind, title, text] = n;
+  if (t < t0) return;
+  const { s, w, h, x, y } = f, k = E.out(inv(t0, t0 + .35, t)), out = swipe ? E.io(inv(swipe, swipe + .35, t)) : 0;
+  const bx = x + 18 * s + out * w, by = y + lerp(-120, 46, k) * s, bw = w - 36 * s;
+  ctx.save(); rrect(x, y, w, h, 52 * s); ctx.clip();
+  ctx.fillStyle = 'rgba(40,40,46,.95)'; rrect(bx, by, bw, 96 * s, 20 * s); ctx.fill();
+  ctx.fillStyle = rgba({ mom: [76, 200, 120], call: [76, 200, 120], mail: [80, 140, 255], msg: [255, 96, 150], xxx: [200, 16, 46] }[kind]);
+  rrect(bx + 16 * s, by + 22 * s, 52 * s, 52 * s, 12 * s); ctx.fill();
+  font(30 * s, SANS, '700'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff';   // an icon you can read without words
+  ctx.fillText({ mom: '♥', call: '☎', mail: '✉', msg: '♥', xxx: 'X' }[kind], bx + 42 * s, by + 49 * s);
+  ctx.textAlign = 'left';
+  font(19 * s, SANS, '700'); ctx.fillStyle = rgba(C.cream); ctx.fillText(title, bx + 82 * s, by + 34 * s);
+  font(16.5 * s, SANS, '400'); ctx.fillStyle = rgba(C.cream, .85); ctx.fillText(text, bx + 82 * s, by + 64 * s);
+  ctx.restore();
+}
+function callScreen(f, L) {
+  const { s, w, h, x, y } = f;
+  ctx.save(); rrect(x, y, w, h, 52 * s); ctx.clip();
+  const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#1c3326'); g.addColorStop(1, '#07100b');
+  ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+  for (let k = 0; k < 3; k++) {                                   // rings: the call is connected
+    const q = (L * .8 + k / 3) % 1; ctx.strokeStyle = rgba([150, 230, 170], .5 * (1 - q)); ctx.lineWidth = 3 * s;
+    ctx.beginPath(); ctx.arc(x + w / 2, y + 250 * s, (80 + 90 * q) * s, 0, Math.PI * 2); ctx.stroke();
+  }
+  ctx.fillStyle = rgba(C.cream, .18); ctx.beginPath(); ctx.arc(x + w / 2, y + 250 * s, 80 * s, 0, Math.PI * 2); ctx.fill();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  font(64 * s, SANS, '300'); ctx.fillStyle = rgba(C.cream, .9); ctx.fillText('M', x + w / 2, y + 252 * s);
+  font(40 * s, SANS, '500'); ctx.fillText('Mom', x + w / 2, y + 400 * s);
+  font(22 * s, SANS, '400'); ctx.fillStyle = rgba([150, 230, 170]); ctx.fillText(`12:${String(4 + Math.floor(L)).padStart(2, '0')}`, x + w / 2, y + 448 * s);
+  ctx.fillStyle = rgba([230, 60, 60]); ctx.beginPath(); ctx.arc(x + w / 2, y + 740 * s, 38 * s, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+}
+function bubble(f, txt, right, yy, a, col) {
+  const { s, w, x, y } = f;
+  if (a <= .01) return;
+  font(18 * s, SANS, '400'); const tw = ctx.measureText(txt).width, bw = tw + 36 * s;
+  const bx = right ? x + w - 24 * s - bw : x + 24 * s;
+  ctx.fillStyle = rgba(col, a); rrect(bx, y + yy * s, bw, 50 * s, 22 * s); ctx.fill();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = rgba(C.cream, a); ctx.fillText(txt, bx + 18 * s, y + (yy + 25) * s);
+}
+function chatScreen(f, L) {          // he writes to Maya; she answers
+  const { s, w, h, x, y } = f;
+  ctx.save(); rrect(x, y, w, h, 52 * s); ctx.clip();
+  ctx.fillStyle = '#0c0d12'; ctx.fillRect(x, y, w, h);
+  font(24 * s, SANS, '600'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = rgba(C.cream); ctx.fillText('Maya', x + w / 2, y + 70 * s);
+  bubble(f, 'I waited an hour. Guess you’re busy.', false, 150, 1, [58, 58, 66]);
+  bubble(f, 'I’m sorry about last week.', true, 260, inv(.2, .4, L), [40, 110, 230]);
+  bubble(f, 'Coffee on Saturday?', true, 326, inv(.6, .8, L), [40, 110, 230]);
+  if (L > 1 && L < 1.6) bubble(f, '•••', false, 410, 1, [58, 58, 66]);
+  bubble(f, 'Saturday :)', false, 410, inv(1.6, 1.75, L), [58, 58, 66]);
+  bubble(f, '♥', false, 476, inv(1.9, 2.05, L), [200, 50, 90]);
+  ctx.restore();
+}
+// p: screen 'xxx' | 'call' | 'chat', notif, swipe, dying (time the screen dies)
+function shotPhone(t, p, L) {
+  fill([3, 3, 5]);
+  const f = phoneFrame(L), { s, w, h, x, y } = f;
+  const on = p.dying ? (t < p.dying ? (Math.sin(t * 60) > -.3 ? 1 : .15) : 0) : 1;
+  const glowCol = p.screen === 'xxx' ? SPR.red : SPR.blue;
+  additive(() => { glow(glowCol, W / 2, H / 2, 900, .3 * on); glow(SPR.blue, W / 2, H / 2, 700, .12 * on); });
+  ctx.fillStyle = '#0c0c10'; rrect(x - 16 * s, y - 16 * s, w + 32 * s, h + 32 * s, 66 * s); ctx.fill();
+  ctx.fillStyle = '#040406'; rrect(x, y, w, h, 52 * s); ctx.fill();
+  if (on > 0) {
+    ctx.save(); ctx.globalAlpha = on;
+    if (p.screen === 'call') callScreen(f, L); else if (p.screen === 'chat') chatScreen(f, L);
+    else if (p.screen === 'home') homeScreen(f, t, L, p); else pornScreen(x, y, w, h, s, t, 1, notifDrop(t, p));
+    ctx.restore();
+  }
+  if (p.notif) notif(f, t, p.notif, p.swipe);
+}
+
+function shotSting(t, p, L) {        // the title, for half a second, torn by a glitch
+  fill([3, 3, 5]);
+  additive(() => glow(SPR.red, W / 2, 540, 800, .4));
+  slam('LUST', W / 2, 540, 260, C.cream, 1, t - L, t, 50, '800', .4);
+}
+// p.appear: when it fades into the glass (0 = already there); p.z zooms the shot in
+function shotReflection(t, p, L) {   // the screen is black: his face in the glass, and it, right behind him
+  fill([3, 3, 5]);
+  const s = 1.02, w = 430 * s, h = 860 * s, x = W / 2 - w / 2, y = H / 2 - h / 2;
+  ctx.fillStyle = '#0c0c10'; rrect(x - 16 * s, y - 16 * s, w + 32 * s, h + 32 * s, 66 * s); ctx.fill();
+  ctx.fillStyle = '#040406'; rrect(x, y, w, h, 52 * s); ctx.fill();
+  ctx.save(); rrect(x, y, w, h, 52 * s); ctx.clip();
+  const da = p.appear ? E.sine(inv(p.appear, p.appear + 1, t)) : 1, fr = [.9, 846, 517];
+  placeDevil('behind');
+  if (da > 0) {
+    const o = devilO({ a: .85 * da, eyes: da, grin: p.appear ? inv(p.appear + 1.4, p.appear + 2.4, t) : 1, reach: .5, lean: 1 });
+    drawDevil(t, fr, o); devilEyes(t, o); devilGrin(t, o);
+  }
+  screen();
+  ctx.fillStyle = rgba(C.cream, .035);
+  ctx.beginPath(); ctx.ellipse(W / 2, y + h * .5, 120 * s, 160 * s, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath(); ctx.ellipse(W / 2, y + h * .93, 260 * s, 150 * s, 0, Math.PI, 0); ctx.fill();
+  face(W / 2, y + h * .5, 120 * s, exprAt(t), { turn: 0, featA: .42 });
+  const sg = ctx.createLinearGradient(x, y, x + w, y + h);
+  sg.addColorStop(.35, 'rgba(255,255,255,0)'); sg.addColorStop(.5, 'rgba(255,255,255,.05)'); sg.addColorStop(.65, 'rgba(255,255,255,0)');
+  ctx.fillStyle = sg; ctx.fillRect(x, y, w, h);
+  ctx.restore();
+}
+const MONTAGE = [['mom', 'Mom', 'Call me when you can ❤'], ['mail', 'Work — final warning', 'Late again. See me at 9.'],
+  ['msg', 'Maya', 'I waited an hour. Guess you’re busy.']];
+function shotMontage(t, p, L) {      // cuts every .375 s: everything it took, faster and faster
+  const k = Math.floor(L / .375), sub = L - k * .375;
+  if (k < 3) shotPhone(t, { screen: 'xxx', notif: [t - 9, ...MONTAGE[k]] }, 2);
+  else if (k === 3) faceShot(t, 'night', EXPR.empty);
+  else if (k === 4) shotClock(t, ['3:51 AM', '4:22 AM', '4:57 AM'][Math.min(2, Math.floor(sub / .125))]);
+  else if (k === 5) shotDevilFace(t, { spot: 'behind', o: () => ({ grin: 1, lean: 1 }) }, sub);
+  else if (k === 6) faceShot(t, 'red', EXPR.empty);
+  else fill([2, 2, 3]);
+  screen();
+  font(42, SERIF, '400', 'italic'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.shadowColor = rgba(C.red, .8); ctx.shadowBlur = 16; ctx.fillStyle = rgba([255, 110, 110], .85);
+  ctx.fillText('one more', 300 + rnd(k + 40) * 1300, 200 + rnd(k + 41) * 640); ctx.shadowBlur = 0;
+}
+function shotShower(t, p) {          // 6:00 AM, cold water; it whispers from the steam
+  faceShot(t, 'shower');
+  ctx.strokeStyle = 'rgba(205,228,255,.35)'; ctx.lineWidth = 2;
+  for (let i = 0; i < 70; i++) {
+    const x = rnd(i + 5000) * W, sp = 900 + rnd(i + 5001) * 700, y = ((t * sp + rnd(i + 5002) * H) % (H + 200)) - 100;
+    line(x, y, x - 6, y + 60);
+  }
+  additive(() => { for (let i = 0; i < 8; i++) glow(SPR.grey, rnd(i + 5100) * W, 120 + rnd(i + 5101) * 300 + Math.sin(t + i) * 30, 320, .1); });
+  redEyes(1520, 230, 22, .7 * win(t, p.eyes[0], p.eyes[1], .4, .4));
+}
+const RUN = [67.2, 72];
+function shotRun(t, fr) {            // 6:30 AM, running into the dawn; it can't keep up
+  const u = t - RUN[0], ph = u * 2.4 * Math.PI * 2, d = u * 2.4 * 250, fade = inv(RUN[0], RUN[1], t);
+  fill([40, 30, 70], [210, 130, 100]);
+  additive(() => glow(SPR.amber, 1500, GROUND - 30, 900, .55));
+  momWorld(t, fr, .55, d, ph, 1);
+  placeDevil('chase');
+  const o = devilO({ a: .55 - .3 * fade, eyes: .9 - .5 * fade, grin: .3, lean: .4 });
+  drawDevil(t, fr, o); devilEyes(t, o); devilGrin(t, o);
+}
+function homeScreen(f, t, L, p) {    // his home screen; with p.del he holds the XXX app and deletes it
+  const { s, w, h, x, y } = f, del = p.del !== undefined;
+  ctx.save(); rrect(x, y, w, h, 52 * s); ctx.clip();
+  const g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, '#1a1c2a'); g.addColorStop(1, '#0b0c12');
+  ctx.fillStyle = g; ctx.fillRect(x, y, w, h);
+  const cols = 4, size = 70 * s, gap = (w - cols * size) / (cols + 1);
+  const gone = del ? E.io(inv(1.4, 1.7, L)) : 0, jig = del && L > .3 && L < 1.7;
+  for (let i = 0; i < 20; i++) {
+    const cx = x + gap + (i % cols) * (size + gap), cy = y + 150 * s + Math.floor(i / cols) * (size + 56 * s), isX = i === 9;
+    const sc = isX ? 1 - gone : 1;
+    if (sc <= .01) continue;
+    ctx.save(); ctx.translate(cx + size / 2, cy + size / 2); ctx.scale(sc, sc);
+    if (jig) ctx.rotate(Math.sin(t * 30 + i) * .06);
+    ctx.fillStyle = isX ? '#c8102e' : rgba(mix([60, 120, 200], [200, 120, 80], rnd(i + 6000)));
+    rrect(-size / 2, -size / 2, size, size, 16 * s); ctx.fill();
+    if (isX) { font(22 * s, SANS, '900'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#fff'; ctx.fillText('XXX', 0, s); }
+    ctx.restore();
+  }
+  if (del && L > .8 && L < 1.45) {
+    ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.fillRect(x, y, w, h);
+    const bx = x + 50 * s, by = y + 330 * s, bw = w - 100 * s;
+    ctx.fillStyle = 'rgba(44,44,50,.97)'; rrect(bx, by, bw, 190 * s, 22 * s); ctx.fill();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    font(21 * s, SANS, '700'); ctx.fillStyle = rgba(C.cream); ctx.fillText('Delete “XXX”?', x + w / 2, by + 50 * s);
+    font(16 * s, SANS, '400'); ctx.fillStyle = rgba(C.cream, .7); ctx.fillText('This removes the app and its data.', x + w / 2, by + 86 * s);
+    ctx.fillStyle = L > 1.25 ? 'rgba(255,80,80,.28)' : 'rgba(255,255,255,.06)';
+    rrect(bx + 14 * s, by + 120 * s, bw - 28 * s, 54 * s, 14 * s); ctx.fill();
+    font(20 * s, SANS, '700'); ctx.fillStyle = 'rgb(255,80,80)'; ctx.fillText('Delete', x + w / 2, by + 147 * s);
+  }
+  ctx.restore();
+}
+function poseLie(x, y, s) {          // asleep on his back, head on the pillow
+  return { head: [x, y - 30 * s, 38 * s], parts: [
+    [[[x + 40 * s, y - 20 * s], [x + 260 * s, y - 18 * s]], 60 * s],
+    [[[x + 260 * s, y - 18 * s], [x + 400 * s, y - 14 * s], [x + 520 * s, y - 10 * s]], 34 * s],
+    [[[x + 70 * s, y - 34 * s], [x + 170 * s, y - 44 * s], [x + 230 * s, y - 30 * s]], 20 * s]
+  ] };
+}
+function shotSleep(t, p) {           // 11:00 PM: no phone; it watches from the window, smaller now
+  fill([8, 9, 14], [14, 12, 22]);
+  cam(1, 960, 560);
+  drawWindow(0, .14); drawRoom(.14, [120, 150, 220]);
+  const P = poseLie(680, 762, 1.1);
+  drawPerson(P, [5, 5, 7], [150, 160, 200], .18, -1, -.4);
+  face(P.head[0], P.head[1], P.head[2], EXPR.sleep, { turn: .9, light: [170, 180, 210], la: .12, lc: [-.6, -.3], featA: .7 });
+  placeDevil('window');
+  devilEyes(t, devilO({ eyes: .5 * win(t, p.eyes[0], p.eyes[1], .5, .4) }));
+}
+function shotMirror(t, p, L) {       // weeks later: he's fine. Behind him, in the dark doorway, it opens its eyes
+  fill([150, 156, 166], [112, 118, 128]);
+  const mx = W / 2, my = 520, mw = 980, mh = 700;
+  ctx.fillStyle = '#5a5f68'; rrect(mx - mw / 2 - 18, my - mh / 2 - 18, mw + 36, mh + 36, 30); ctx.fill();
+  ctx.save(); rrect(mx - mw / 2, my - mh / 2, mw, mh, 22); ctx.clip();
+  const g = ctx.createLinearGradient(0, my - mh / 2, 0, my + mh / 2); g.addColorStop(0, '#2d323b'); g.addColorStop(1, '#1b1f26');
+  ctx.fillStyle = g; ctx.fillRect(mx - mw / 2, my - mh / 2, mw, mh);
+  const dx = mx + 250, dy = my - 260;
+  ctx.fillStyle = '#030304'; ctx.fillRect(dx, dy, 170, 560);
+  const ea = win(t, p.eyes[0], p.eyes[1], .2, .01);
+  if (ea > 0) { additive(() => glow(SPR.red, dx + 85, dy + 160, 220, .35 * ea)); redEyes(dx + 85, dy + 140, 16, ea); }
+  const hx = mx - 60, hy = my + 30, r = 190;
+  ctx.fillStyle = '#121418';
+  ctx.beginPath(); ctx.ellipse(hx, hy + r * 2, r * 1.6, r * 1.05, 0, Math.PI, 0); ctx.fill();
+  ctx.fillRect(hx - r * .34, hy + r * .55, r * .6, r * .9);
+  ctx.beginPath(); ctx.arc(hx, hy, r, 0, Math.PI * 2); ctx.fill();
+  face(hx, hy, r, exprAt(t), { turn: 0, light: [240, 236, 228], la: .3, lc: [0, -.1] });
+  ctx.restore();
+  const sh = ctx.createLinearGradient(mx - mw / 2, 0, mx + mw / 2, 0);
+  sh.addColorStop(.2, 'rgba(255,255,255,0)'); sh.addColorStop(.3, 'rgba(255,255,255,.06)'); sh.addColorStop(.4, 'rgba(255,255,255,0)');
+  ctx.fillStyle = sh; ctx.fillRect(mx - mw / 2, my - mh / 2, mw, mh);
+}
+function shotEnd(t, p) {             // the cold line comes back, with its answer
+  fill([3, 3, 5]);
+  typeLine('YOU THINK YOU’RE ALONE WHEN YOU WATCH IT…', 470, 46, inv(p.typeAt, p.typeAt + 1, t), [196, 212, 228], 1, t);
+  slam('YOU’RE NOT.', W / 2, 610, 130, C.red, 1, p.slamAt, t, 12, '800', .6);
+}
+function shotTitle(t, p) {
+  fill([3, 3, 5]);
+  additive(() => glow(SPR.red, W / 2, 480, 700, .25));
+  slam('LUST', W / 2, 470, 220, C.cream, 1, p.at, t, 46, '800', .25);
+  slam('IT WATCHES BACK', W / 2, 620, 34, [230, 80, 80], .9, p.at + .5, t, 16, '600');
+}
+
+// ---------- the devil's words, on screen: there is no narration ----------
+// Kind lines are a soft whisper in pink italics; its real lines slam in as red, glitching capitals.
+// A line keeps the place it started in (beside the phone, or low in the frame) even when the shot cuts.
+const REAL_WORDS = new Set(['VO11', 'VO12', 'VO13', 'VO14', 'VO21']);
+const kindAt = t => { let k = SHOTS[0][1]; for (const s of SHOTS) if (t >= s[0]) k = s[1]; return k; };
+function wrapText(txt, maxW) {
+  const lines = []; let cur = '';
+  for (const w of txt.split(' ')) {
+    const test = cur ? cur + ' ' + w : w;
+    if (cur && ctx.measureText(test).width > maxW) { lines.push(cur); cur = w; } else cur = test;
+  }
+  return cur ? [...lines, cur] : lines;
+}
+function devilWords(t) {
+  const c = VO.find(v => t >= v.t && t < v.t + v.d + .5);
+  if (!c || c.text.startsWith('(') || c.id === 'VO01' || c.id === 'VO10') return;   // the cold line and "one more" have their own type
+  const real = REAL_WORDS.has(c.id), kind = kindAt(c.t + .05), side = kind === 'phone' || kind === 'reflection';
+  const a = win(t, c.t, c.t + c.d + .5, .1, .3), L = t - c.t, x = side ? 1500 : W / 2;
+  const size = real ? (side ? 66 : 84) : (side ? 46 : 54), text = real ? c.text.toUpperCase() : c.text;
+  ctx.setTransform(1, 0, 0, 1, SHX, SHY); ctx.textBaseline = 'middle';
+  if (real) font(size, SANS, '800'); else font(size, SERIF, '400', 'italic');
+  const lines = wrapText(text, side ? 640 : 1500), lh = size * 1.22;
+  const y0 = (side ? 540 : kind === 'mirror' ? 985 : 945) - (lines.length - 1) * lh / 2;
+  if (real) {
+    const sc = 1 + .25 * (1 - E.out(clamp(L / .15))), jit = L < .35 ? 1 : .2, f = Math.floor(t * 30);
+    ctx.textAlign = 'center';
+    lines.forEach((ln, i) => {
+      const j = k => (rnd(f * 5 + i * 13 + k) - .5) * 12 * jit;
+      ctx.save(); ctx.translate(x, y0 + i * lh); ctx.scale(sc, sc);
+      ctx.fillStyle = `rgba(0,255,255,${.3 * a})`; ctx.fillText(ln, j(1) - 4, j(2));
+      ctx.fillStyle = `rgba(255,0,60,${.45 * a})`; ctx.fillText(ln, j(3) + 4, j(4));
+      ctx.shadowColor = 'rgba(0,0,0,.95)'; ctx.shadowBlur = 20;
+      ctx.fillStyle = rgba(C.red, a); ctx.fillText(ln, 0, 0);
+      ctx.restore();
+    });
+  } else {
+    const shown = text.length * clamp(L / .55); let start = 0;
+    ctx.textAlign = 'left'; ctx.shadowColor = rgba(C.red, .7 * a); ctx.shadowBlur = 20;
+    lines.forEach((ln, i) => {
+      const n = clamp(shown - start, 0, ln.length), whole = Math.floor(n), lx = x - ctx.measureText(ln).width / 2, y = y0 + i * lh;
+      ctx.fillStyle = rgba([255, 214, 220], .95 * a); ctx.fillText(ln.slice(0, whole), lx, y);
+      if (whole < ln.length && n > whole) { ctx.fillStyle = rgba([255, 214, 220], .95 * a * (n - whole)); ctx.fillText(ln[whole], lx + ctx.measureText(ln.slice(0, whole)).width, y); }
+      start += ln.length + 1;
+    });
+    ctx.shadowBlur = 0;
+  }
+}
+
+// ---------- the comeback: push-ups, pull-ups, squats, curls ----------
+LOOKS.dawn = { bg: [[60, 70, 90], [140, 130, 120]], fill: [12, 12, 16], light: [255, 220, 180], la: .38, lc: [-.6, -.4], glow: 'amber', gl: [300, 200], ga: .45, rim: [255, 220, 180], turn: .85 };
+LOOKS.gym = { bg: [[22, 20, 22], [40, 34, 30]], fill: [12, 10, 10], light: [255, 200, 140], la: .4, lc: [.2, -.9], glow: 'amber', gl: [960, -60], ga: .55, rim: [255, 210, 150], turn: .85 };
+const rep = (t, perSec) => (1 - Math.cos(2 * Math.PI * t * perSec)) / 2;   // 0 at rest … 1 at the hard end of a rep
+// side view, facing right, on the floor (y); k: 0 arms straight … 1 chest near the floor
+function posePushup(x, y, s, k) {
+  const lift = lerp(80, 34, k) * s, sh = [x + 240 * s, y - lift - 8 * s], hip = [x + 118 * s, y - lift * .55 - 10 * s];
+  const hand = [sh[0] + 8 * s, y - 4 * s], elbow = [sh[0] - (6 + 30 * k) * s, (sh[1] + hand[1]) / 2 - 6 * k * s];
+  return { head: [sh[0] + 42 * s, sh[1] - 16 * s, 31 * s], parts: [[[[x, y - 7 * s], hip, sh], 40 * s], [[sh, elbow, hand], 20 * s]] };
+}
+// hanging from a bar at yBar, seen from the side; k: 0 hanging … 1 chin over the bar
+function posePullup(x, yBar, s, k) {
+  const sh = [x, yBar + lerp(150, 44, k) * s], hand = [x + 10 * s, yBar];
+  const elbow = [x + lerp(12, 50, k) * s, (sh[1] + hand[1]) / 2 + 12 * k * s];
+  const hip = [x - 6 * s, sh[1] + 170 * s], knee = [x + 26 * s, hip[1] + 88 * s], foot = [x - 14 * s, knee[1] + 76 * s];
+  return { head: [x + 12 * s, sh[1] - 62 * s, 36 * s], parts: [[[hip, sh], 54 * s], [[sh, elbow, hand], 22 * s], [[hip, knee, foot], 32 * s]] };
+}
+// a barbell back squat from the side, facing right; k: 0 standing … 1 deep; returns the bar's position too
+function poseSquat(x, y, s, k) {
+  const hip = [x - 44 * k * s, y - lerp(196, 112, k) * s], knee = [x + lerp(8, 62, k) * s, y - lerp(100, 96, k) * s], foot = [x + 12 * s, y];
+  const sh = [hip[0] + lerp(6, 46, k) * s, hip[1] - lerp(170, 150, k) * s];
+  return { head: [sh[0] + 18 * s, sh[1] - 60 * s, 36 * s], bar: [sh[0] - 6 * s, sh[1] - 4 * s],
+    parts: [[[hip, sh], 54 * s], [[hip, knee, foot], 34 * s], [[sh, [sh[0] - 34 * s, sh[1] + 40 * s], [sh[0] - 6 * s, sh[1] - 2 * s]], 20 * s]] };
+}
+// standing dumbbell curl from the side; k: 0 arm down … 1 curled; returns the dumbbell's position
+function poseCurl(x, y, s, k) {
+  const hip = [x, y - 196 * s], sh = [x + 6 * s, y - 370 * s], el = [sh[0] + 6 * s, sh[1] + 84 * s], ang = lerp(.15, 2.5, k);
+  const hand = [el[0] + Math.sin(ang) * 74 * s, el[1] + Math.cos(ang) * 74 * s];
+  return { head: [x + 16 * s, y - 436 * s, 38 * s], db: hand,
+    parts: [[[[x - 14 * s, y], [x - 12 * s, y - 100 * s], hip], 34 * s], [[[x + 14 * s, y], [x + 16 * s, y - 100 * s], hip], 34 * s],
+      [[hip, sh], 56 * s], [[sh, el, hand], 22 * s]] };
+}
+function shotPushups(t, p, L) {     // 6:00 AM: push-ups on the bedroom floor; its eyes in the window fade out
+  fill([40, 46, 58], [70, 72, 80]);
+  cam(...(p && p.fr || [1, 960, 600]));
+  drawWindow(1, .3); drawRoom(.3, [200, 204, 214]);
+  const P = posePushup(780, 860, 1.2, rep(L, 1.4));
+  drawPerson(P, [8, 8, 11], [255, 220, 180], .5, -1, -.5);
+  face(P.head[0], P.head[1], P.head[2], exprAt(t), { turn: 1, light: [255, 220, 180], la: .3, lc: [-.4, -.6] });
+  placeDevil('window');
+  devilEyes(t, devilO({ eyes: .4 * (1 - inv(0, 1.6, L)) }));
+}
+function gymBg(fr) {
+  fill([18, 18, 22], [32, 28, 30]);
+  cam(...fr);
+  ctx.fillStyle = 'rgba(255,255,255,.03)'; ctx.fillRect(-600, 260, W + 1200, 380);          // the mirror wall
+  ctx.fillStyle = '#121214'; ctx.fillRect(-600, 860, W + 1200, 400);
+  ctx.strokeStyle = rgba([200, 200, 210], .14); ctx.lineWidth = 2; line(-600, 860, W + 600, 860);
+  additive(() => { for (let i = 0; i < 5; i++) glow(SPR.amber, 200 + i * 380, 110, 280, .28); });
+  ctx.fillStyle = rgba([255, 232, 196], .85); for (let i = 0; i < 5; i++) { rrect(150 + i * 380, 96, 100, 10, 5); ctx.fill(); }
+  ctx.fillStyle = '#0b0b0d'; ctx.fillRect(1560, 520, 24, 340); ctx.fillRect(1740, 520, 24, 340);   // a plate rack
+  for (const [px, py, r] of [[1572, 600, 56], [1572, 742, 66], [1752, 620, 48], [1752, 760, 70]]) {
+    ctx.fillStyle = '#0e0e11'; ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = rgba([210, 200, 190], .2); ctx.lineWidth = 3; ctx.stroke();
+  }
+}
+function plate(x, y, r) {
+  ctx.fillStyle = '#0c0c0f'; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = rgba([255, 210, 150], .45); ctx.lineWidth = 4; ctx.stroke();
+  ctx.fillStyle = rgba([255, 210, 150], .35); ctx.beginPath(); ctx.arc(x, y, r * .18, 0, Math.PI * 2); ctx.fill();
+}
+function shotGym(t, p, L) {          // 7:15 AM at the gym: p.move is 'pullup', 'squat' or 'curl'
+  gymBg(p.fr || [1, 960, 540]);
+  const lit = [255, 210, 150];
+  let P;
+  if (p.move === 'pullup') {
+    ctx.strokeStyle = '#2a2a30'; ctx.lineWidth = 16; ctx.lineCap = 'round';
+    line(760, 860, 760, 300); line(1160, 860, 1160, 300);
+    ctx.strokeStyle = rgba([220, 220, 230], .8); ctx.lineWidth = 10; line(740, 300, 1180, 300);
+    P = posePullup(950, 300, 1.05, rep(L, 1.1));
+  } else if (p.move === 'squat') {
+    P = poseSquat(900, 860, 1.1, rep(L, 1));
+  } else {
+    P = poseCurl(940, 860, 1.05, rep(L, 1.3));
+  }
+  drawPerson(P, [10, 9, 10], lit, .6, 0, -1);
+  face(P.head[0], P.head[1], P.head[2], exprAt(t), { turn: 1, light: lit, la: .32, lc: [.3, -.8] });
+  if (P.bar) { plate(P.bar[0], P.bar[1], 74); ctx.fillStyle = '#d8d8de'; rrect(P.bar[0] - 8, P.bar[1] - 8, 16, 16, 4); ctx.fill(); }
+  if (P.db) { ctx.strokeStyle = '#cfcfd6'; ctx.lineWidth = 8; line(P.db[0] - 26, P.db[1], P.db[0] + 26, P.db[1]); plate(P.db[0] - 26, P.db[1], 20); plate(P.db[0] + 26, P.db[1], 20); }
+}
+
+// ---------- the cut: [start, shot, settings] ----------
+const SHOTS = [
+  [0, 'cold'],
+  [2, 'room', { spot: 'window', o: t => ({ eyes: win(t, 2.3, 3.5, .3, .01) }) }],
+  [3.4, 'sting'],
+  // night 1: it watches from the window
+  [4, 'clock', '11:48 PM'],
+  [5, 'phone', { screen: 'xxx' }],
+  [6.6, 'face', 'night'],
+  [7.8, 'room', { spot: 'window', o: t => ({ a: .35 + .15 * inv(7.8, 9.6, t), eyes: .9 }) }],
+  [9.6, 'phone', { screen: 'xxx', notif: [9.8, 'mom', 'Mom', 'Call me when you can ❤'], swipe: 10.7 }],
+  [11.2, 'room', { fr: [2.2, 975, 640], spot: 'window' }],
+  [12.6, 'room', { lit: false, spot: 'window', o: t => ({ eyes: 1 - win(t, 13.3, 13.5, .08, .08) }) }],
+  // night 2: at the foot of the bed
+  [14, 'clock', '12:31 AM'],
+  [14.8, 'phone', { screen: 'xxx', notif: [15, 'call', 'Phone', '3 missed calls from Mom'], swipe: 15.9 }],
+  [16.4, 'room', { spot: 'foot', creep: 40, hunch: .72, o: () => ({ a: .7, eyes: 1, grin: .15 }) }],
+  [18.2, 'face', 'night'],
+  [19.2, 'devilface', { spot: 'foot', o: () => ({ a: .8, grin: .45, lean: .3 }) }],
+  [20.8, 'room', { fr: [2.2, 975, 640], spot: 'foot', hunch: .72 }],
+  // night 3: beside him, bending closer
+  [22, 'clock', '1:47 AM'],
+  [22.8, 'phone', { screen: 'xxx', notif: [23, 'mail', 'Work — final warning', 'Late again. See me at 9.'], swipe: 23.9 }],
+  [24.4, 'room', { spot: 'beside', creep: 30, hunch: .82, o: t => ({ a: .85, eyes: 1, grin: .4, lean: .5 + .5 * inv(24.4, 26.2, t) }) }],
+  [26.2, 'face', 'night'],
+  [27.2, 'devilface', { spot: 'beside', o: () => ({ a: .9, grin: .7, lean: 1 }) }],
+  [28.8, 'room', { spot: 'beside', hunch: .86, o: () => ({ a: .85, eyes: 1, grin: .5, lean: 1 }) }],
+  // night 4: right behind him, its hands settle on his shoulders
+  [30, 'clock', '3:05 AM'],
+  [30.8, 'phone', { screen: 'xxx', notif: [31, 'msg', 'Maya', 'I waited an hour. Guess you’re busy.'], swipe: 31.9 }],
+  [32.4, 'room', { spot: 'behind', hunch: .9, o: t => ({ a: 1, eyes: 1, grin: .6, reach: .2 + .45 * inv(32.4, 34.6, t), lean: 1 }) }],
+  [35, 'face', 'night'],
+  [36, 'devilface', { spot: 'behind', o: () => ({ grin: 1, lean: 1 }) }],
+  [37.4, 'room', { fr: [2, 930, 600], spot: 'behind', hunch: .9, o: () => ({ a: 1, eyes: 1, grin: .8, reach: .65, lean: 1 }) }],
+  [40, 'montage'],
+  // it shows itself
+  [43, 'phone', { screen: 'xxx', dying: 43.5 }],
+  [43.8, 'reflection', { appear: 44.1 }],
+  [46.4, 'reflection', { z: 1.5 }],
+  [48.6, 'room', { spot: 'behind', hunch: .55, flicker: true, o: t => ({ a: 1, eyes: 1, grin: 1, reach: .7 + .3 * inv(48.6, 50.8, t), lean: 1 }) }],
+  [51, 'devilface', { spot: 'behind', twitch: true, o: () => ({ grin: 1, lean: 1 }) }],
+  [53, 'face', 'red'],
+  [54.6, 'room', { spot: 'behind', hunch: .2, flicker: true, throwAt: 54.8, o: t => ({ a: 1, eyes: 1, grin: 1 - inv(55.15, 55.5, t),
+    scream: inv(55.15, 55.4, t), reach: .9 - .9 * inv(55.15, 55.6, t), lean: 1 - 1.6 * inv(55.15, 55.8, t) }) }],
+  [57.4, 'devilface', { spot: 'behind', o: t => ({ a: 1 - .65 * inv(57.4, 59.2, t), eyes: 1 - .5 * inv(58, 59.2, t), scream: 1 - inv(58.4, 59.2, t), lean: -.6 }) }],
+  [59.2, 'room', { spot: 'window', hunch: .3, lit: false, shardsAt: 55.15, o: t => ({ eyes: .45 * win(t, 59.6, 60.6, .3, .2) }) }],
+  // he fights back: the music turns here
+  [60.6, 'clock', '6:00 AM'],
+  [61.3, 'pushups'],
+  [63.7, 'face', 'dawn'],
+  [64.5, 'shower', { eyes: [64.7, 66.3] }],
+  [66.5, 'clock', '6:30 AM'],
+  [67.2, 'run', [1, 960, 540]], [68.4, 'run', [2.4, 760, 740]], [69.6, 'run', [1.9, 800, 470]], [70.8, 'run', [1, 960, 540]],
+  [72, 'clock', '7:15 AM'],
+  [72.7, 'gym', { move: 'pullup', fr: [1.15, 960, 520] }],
+  [74.5, 'gym', { move: 'squat', fr: [1.35, 900, 640] }],
+  [76.3, 'gym', { move: 'curl', fr: [1.75, 960, 650] }],
+  [77.9, 'face', 'gym'],
+  [78.8, 'clock', '8:00 PM'],
+  [79.5, 'phone', { screen: 'call' }],
+  [81.5, 'face', 'lamp'],
+  [82.4, 'clock', '9:30 PM'],
+  [83.1, 'phone', { screen: 'home', notif: [83.3, 'xxx', 'XXX', 'New videos for you 🔥'] }],
+  [84.3, 'devilface', { spot: 'behind', scare: true, o: () => ({ grin: 1, lean: 1 }) }],
+  [85.1, 'face', 'red'],
+  [86, 'phone', { screen: 'home', del: 86 }],
+  [88.2, 'devilface', { spot: 'behind', o: t => ({ a: 1 - .7 * inv(88.2, 89.4, t), scream: 1, lean: -.6 }) }],
+  [89.4, 'phone', { screen: 'chat' }],
+  [91.8, 'clock', '11:00 PM'],
+  [92.5, 'sleep', { eyes: [93.3, 95.3] }],
+  // weeks later
+  [95.5, 'card', 'WEEKS LATER'],
+  [96.9, 'mirror', { eyes: [100.1, 101.7] }],
+  [101.7, 'black'],
+  [102.3, 'end', { typeAt: 102.4, slamAt: 103.9 }],
+  [105.7, 'title', { at: 105.9 }]
+];
+const SHOT_FN = {
+  cold: shotCold, sting: shotSting, room: shotRoom, black: () => fill([2, 2, 3]), clock: shotClock, phone: shotPhone,
+  face: (t, look) => faceShot(t, look), devilface: shotDevilFace, montage: shotMontage, reflection: shotReflection,
+  shower: shotShower, run: shotRun, pushups: shotPushups, gym: shotGym, sleep: shotSleep, card: shotCard, mirror: shotMirror, end: shotEnd, title: shotTitle
+};
+const FLASH = { clock: [255, 255, 255], devilface: [255, 60, 60], sting: [255, 60, 60] };   // a two-frame flash on these cuts
+
+// ---------- one frame ----------
+function render(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.shadowBlur = 0;
+  setShake(t);
+  let i = 0;
+  while (i + 1 < SHOTS.length && t >= SHOTS[i + 1][0]) i++;
+  const [t0, kind, p] = SHOTS[i], L = t - t0, len = (SHOTS[i + 1] ? SHOTS[i + 1][0] : DUR) - t0;
+  PUSH = (1 + .07 * clamp(L / len)) * (p && p.z ? p.z : 1);
+  SHOT_FN[kind](t, p, L);
+  PUSH = 1;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (FLASH[kind] && L < .08) { ctx.fillStyle = rgba(FLASH[kind], .3 * (1 - L / .08)); ctx.fillRect(0, 0, W, H); }
+  glitch(t);
+  drawVignette(t);
+  devilWords(t);
+}
+
+// ---------- playback controls ----------
+let T = 0, playing = false, last = 0;
+const btn = document.getElementById('play'), scrub = document.getElementById('scrub');
+const tm = document.getElementById('time'), bar = document.getElementById('phases');
+scrub.max = DUR;
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+PHASES.forEach(p => {
+  const b = document.createElement('button');
+  b.textContent = p.name; b.onclick = () => { seek(p.a + .01); b.blur(); };
+  p.btn = b; bar.appendChild(b);
+});
+function draw() {
+  render(T);
+  scrub.value = T; tm.textContent = `${fmt(T)} / ${fmt(DUR)}`;
+  PHASES.forEach(p => p.btn.classList.toggle('on', T >= p.a && (T < p.b || p.b === DUR)));
+}
+function seek(s) { T = clamp(s, 0, DUR); draw(); }
+function frame(now) {
+  if (!playing) return;
+  T = Math.min(DUR, T + Math.min(.1, (now - last) / 1000)); last = now;
+  if (T >= DUR) { playing = false; btn.textContent = '▶'; }
+  draw();
+  if (playing) requestAnimationFrame(frame);
+}
+function toggle() {
+  playing = !playing; btn.textContent = playing ? '❚❚' : '▶';
+  if (playing) { if (T >= DUR) T = 0; last = performance.now(); requestAnimationFrame(frame); }
+}
+btn.onclick = () => { toggle(); btn.blur(); };
+scrub.oninput = () => seek(+scrub.value);
+addEventListener('keydown', e => {
+  if (e.code === 'Space') { e.preventDefault(); toggle(); }
+  else if (e.code === 'ArrowRight') seek(T + 5);
+  else if (e.code === 'ArrowLeft') seek(T - 5);
+});
+window.renderAt = s => { T = clamp(s, 0, DUR); render(T); };   // for exporting frames to video
+const jump = location.hash.match(/t=([\d.]+)/);
+if (jump) T = clamp(+jump[1], 0, DUR);
+draw();
+</script>
+</body>
+</html>

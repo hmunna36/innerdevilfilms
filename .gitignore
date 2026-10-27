@@ -7,3 +7,9 @@ anim/public/audio/*.wav
 # full-size renders of Shorts and new films stay on YouTube; the small *_phone.mp4 copies are committed
 shorts/*/short[0-9][0-9].mp4
 films/*/film[0-9][0-9].mp4
+# sound decoded or mixed from the committed sources (the ElevenLabs mp3s); each film's mix.py and short_mix.py rebuild it
+films/*/audio/wav/
+films/*/audio/mix.wav
+shorts/*/mix.wav
+*.rendering.mp4
+__pycache__/

@@ -1,28 +1,64 @@
-# Titles, descriptions, release times
+# Titles, descriptions, thumbnails, release times
 
-## Release times (decided 20 Oct 2026, my call; Harshad said "you decide")
+## Release times (decided 20 Oct 2026, kept for the new style on 27 Oct)
 
-- **Shorts: every day at 20:00 IST.** Harshad chose 8 PM for film 1; it is evening in India and morning in the US.
-- **Films: every Sunday at 19:00 New York time** (Monday 04:30 IST until 1 Nov, 05:30 IST after US clocks change).
-  The two biggest recent films in this genre went out on a Sunday about 7 PM US Eastern: Day One Films'
-  DISCIPLINE (Sun 27 Sep, now 4M+ views) and Monk Mode Films' LUST VS LOVE (Sun 18 Oct, 184K in its first day).
-- The weekly film routine runs on Thursday, so a film has three days of slack; if the run fails, a re-run on
-  Friday or Saturday still makes Sunday.
-- `yt.mjs --schedule=auto` picks the slot; never schedule by hand unless a slot is taken.
+- **Shorts: every day at 20:00 IST**: evening in India, morning in the US.
+- **Films: every Sunday at 19:00 New York time** (Monday 05:30 IST from November): the two biggest recent films in this
+  genre went out on a Sunday about 7 PM US Eastern. The weekly film routine runs on Thursday, so a film has three days of
+  slack, and the Mac has time to swap in the ChatGPT thumbnail.
+- `yt.mjs --schedule=auto` picks the slot; never schedule by hand unless a slot is taken. (LUST itself went out on
+  Tuesday 27 Oct 22:30 IST, a one-off chosen by the owner.)
 
 ## Film titles
 
-`WORD | Hook line`: the topic word in capitals, then a short line in the past tense about him
-(film 1: "TOMORROW | He Kept Saying It"). Under 50 characters. The word is the struggle as he says it to himself
-("TOMORROW", "JUST ONE MORE", "LATER", "I'M FINE"), not the abstract noun ("Procrastination"). Never "Devil Mode".
+`WORD | Hook line`: the vice in capitals, then a short ominous line (LUST | It Watches Back; GAMBLING | The House Always
+Wins). Under 50 characters. The hook is about IT or what it does, never names the devil, and is never "Devil Mode".
 
 ## Film description
 
-Two short lines of story (the stake and the turn, no spoilers of the cost or the twist), "When kindness stops
-working, something else takes over.", "Subscribe for the next film.", then 5 hashtags
-(`#animation #shortfilm #<topic> #motivation #innerdevil`). Tags: 10-12, as in `channel/UPLOAD.md`.
+Two short lines of story that set up the dread without spoiling the reveal ("Every night, a kind voice told him it was
+fine. Every night, the thing behind him got a little closer."), one line saying what the film is ("WORD | Hook is an
+animated short film about the habit that feeds on you in the dark, and the morning he finally fought back."), a question
+for the comments, then `#shortfilm #animation #horror #selfimprovement #<topic>`. Tags: 10-13 (LUST's
+`films/03-lust/publish.json` is the model): the topic, the title, "the devil you feed", "horror short film", "animated
+short film", "addiction", "self improvement", "discipline", "dopamine", "animation".
 
 ## YouTube settings (in publish.json)
 
-`categoryId "1"` (Film & Animation), `language "en"`, `madeForKids false`, `syntheticMedia false` (the films are
-hand-built animation, not AI-generated realistic footage), `notifySubscribers true`.
+`categoryId "1"` (Film & Animation), `language "en"`, `madeForKids false`, `syntheticMedia false` (hand-built animation
+in code, not AI-generated realistic footage), `notifySubscribers true`, `privacy "private"` with `publishAt` (the slot).
+
+## Thumbnails (decided 27 Oct 2026)
+
+The owner wants extreme thumbnails drawn by ChatGPT from film frames, and the cloud cannot reach ChatGPT. So:
+
+1. **The cloud film run** uploads with the code-drawn thumbnail: `render.sh thumb films/NN-slug` draws the film's
+   `thumb` settings (`{ word, hook, expr }`): the topic word huge in fat white letters with a red edge, the hook small
+   under it, its face huge with the grin, his terrified face lit red. Copy it to `films/NN-slug/thumb.jpg` (the cover in
+   `publish.json`) and keep `thumb_code.jpg`. The film never goes out with a random frame.
+2. **The Mac** (`/idf thumb NN`, the owner's Chrome, any day before the Sunday release) makes the real one and swaps it
+   in. The report of every film run says so.
+
+### `/idf thumb NN` on the Mac
+
+1. `git -C ~/Desktop/innerdevilfilms pull` and `git sparse-checkout add films/NN-slug engine`; `. .claude/skills/idf/bin/env.sh`.
+2. Three reference frames from the film: its face closest (a `devilface` shot), his most frightened face (a `face`
+   shot), and the vice on the phone or its claws on his shoulders: `render.sh stills film films/NN-slug --at a,b,c --out
+   films/NN-slug/thumb` (they are committed as `ref_*.jpg`, as LUST's are).
+3. ChatGPT in the owner's Chrome, a new chat, the method in `~/.claude/skills/be/reference/chatgpt.md` (load the Chrome
+   tools in one ToolSearch call, work in a tab you create, attach the three frames, wait for the image, download it).
+   The prompt: "Make a YouTube thumbnail, 16:9, for my animated horror short film. Use the attached frames from the film
+   for the characters and keep their exact design: the devil (black, long horns, burning slit eyes, a huge glowing grin
+   full of teeth, red rim light, black smoke) and the man (a dark round head with simple cream eyes, brows and mouth).
+   Make it extreme and scary: the devil's face huge on the right, leaning over the man; the man on the left, terrified,
+   lit red by his phone. The word "<WORD>" huge in fat white letters with a thick red edge at the top left, and
+   "<HOOK>" small under it. Deep red and black, high contrast, readable at small size. Nothing explicit, no real logos or
+   brands, no blood." Ask for a fix if a face is off-model, a word is misspelled, or it fails the 320 px test.
+4. Check it at 320 px wide (the word must read at a glance), convert to JPEG under 2 MB, save `films/NN-slug/thumb.jpg`
+   (the code one stays as `thumb_code.jpg`), then `node .claude/skills/idf/bin/yt.mjs thumb <videoId> films/NN-slug/thumb.jpg`.
+5. Note it in the film's README and `reference/log.md`, push with `bin/push.sh`, and leave the clone light again.
+
+## Studio-only work (the API cannot do it; list it in the report)
+
+- A Short's "Related video" = its film.
+- A film's end screen (the next film or the channel) and the pinned comment (the owner writes it).

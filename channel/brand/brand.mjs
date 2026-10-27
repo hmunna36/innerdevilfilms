@@ -1,6 +1,6 @@
 // Draws the channel's banner and profile picture with the LUST film engine, plus previews of how they crop.
 // usage: [LUST_HTML=<the LUST film page>] node brand.mjs [logoZoom logoY]   writes banner.png, logo.png and preview_*.png
-// next to this file. The defaults (1.7, 500) made the published picture; the film page defaults to ../lust.html.
+// next to this file. The defaults (1.7, 500) made the published picture; the film page defaults to films/03-lust/original/lust.html.
 import { createRequire } from 'node:module'; import fs from 'node:fs'; import path from 'node:path';
 const require = createRequire(import.meta.url);
 const { chromium } = require(process.env.HOME + '/.cache/cp/node/node_modules/playwright-core');
@@ -8,7 +8,7 @@ const here = path.dirname(new URL(import.meta.url).pathname);
 const [z, y] = [+(process.argv[2] || 1.7), +(process.argv[3] || 500)];
 const browser = await chromium.launch({ channel: 'chrome', headless: true });
 const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
-await page.goto('file://' + (process.env.LUST_HTML || path.join(here, '..', 'lust.html')));
+await page.goto('file://' + (process.env.LUST_HTML || path.join(here, '..', '..', 'films', '03-lust', 'original', 'lust.html')));
 await page.addScriptTag({ path: path.join(here, 'brand.js') });
 const save = (name, url) => fs.writeFileSync(path.join(here, name), Buffer.from(url.split(',')[1], 'base64'));
 const { png, box } = await page.evaluate(() => brandBanner());

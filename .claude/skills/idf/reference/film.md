@@ -1,82 +1,94 @@
 # Making a film (`/idf film next`)
 
-Target: 2:20-3:30, 1920x1080, 30 fps, wordless-ish (short spoken lines as captions, no voiceover), an original
-synthesized score. The model is film 1, TOMORROW (`anim/src/Film04.tsx`, `films/01-tomorrow/`): read its code
-before writing a line of a new one, and keep what works.
+Target: 1:40-2:20, 1920x1080, 30 fps, no narration, an extreme ElevenLabs score, the devil's words on screen, code-drawn
+on the engine. The model is LUST (`films/03-lust`: `film.js`, `SCREENPLAY.md`, `music.json`, `mix.py`): read all four
+before writing a line, and keep what works. Each film keeps the spine below and brings ONE new device of its own (a
+way the vice shows on his phone, a place, a twist in how it feeds), so the channel never repeats itself.
 
-## The shape (every film; this IS the channel)
+## The spine (every film; this IS the channel)
 
-| Part | Share | What happens |
-|---|---|---|
-| Cold open | 0-4 s | The climax first: the Devil's line or his eyes, a hit, then "N DAYS EARLIER" |
-| The want and the clock | ~15% | One concrete stake with a deadline, said plainly (a notice, a text, a calendar): rent, a test, a match, a promise |
-| The Angel's comfort | ~20% | He tries, gets tired; the Angel says "Rest. Tomorrow." and he believes it. The clock moves; small losses |
-| The low point | ~10% | The stake gets personal (someone he loves is hurt by his delay). Silence. |
-| Devil Mode | ~25% | The Angel's light gutters; the clock ticks; the shadow rises; the eyes open; ONE hard line ("Then move."). Silence, then the drop: DEVIL MODE, the beat, a fast montage of him working (cuts every 1-2 s, a counter rising) |
-| The cost | ~10% | What the hard voice took (sleep, a friend, his kindness) shown, not said |
-| The reveal and the end | ~15% | The voice was his own (the mirror, the shadow is his shape); a final image and one line that lands, then the title card |
+| Part | LUST | What happens | Music |
+|---|---|---|---|
+| Cold open | 0:00-0:04 | A very cold line to the viewer about the vice, typed in thin capitals ("YOU THINK YOU'RE ALONE WHEN YOU WATCH IT… DON'T YOU?"); its eyes open in the dark; the title slams on a hit | drone, a riser, one huge hit on the title |
+| Night 1 | 0:04-0:14 | the clock (late), the vice on his phone, his glazed face, it watching from far (the window); a banner from someone who loves him, swiped away; its first kind whispers | the horror pulse starts, a creepy music-box line on top |
+| Nights 2-4 | 0:14-0:40 | each night the clock is later, a new banner (Mom's missed calls, work's final warning, the one who waited an hour), his face emptier, it closer: the foot of the bed, beside him, behind him with its hands on his shoulders; black smoke runs from his back into it; kind whispers | the pulse hits harder each night |
+| The montage | 0:40-0:43 | cuts every .375 s: the banners, his empty face, the clock racing, its grin; one word ("one more") | its peak |
+| It shows itself | 0:43-1:00 | the phone dies, total silence; the black glass shows his face and it right behind him; its real voice in red: the reveal ("I WAS NEVER IN THE PHONE." / "I WAS ALWAYS… IN YOU.", "EVERY NIGHT… YOU FED ME.", "NOW YOU'RE MINE."); his shock; he breaks the vice's hold (throws the phone, it shatters); it screams and shrinks back to the window | a second of dead silence, the reveal explosion, silence before the throw, the scream |
+| He fights back | 1:00-1:35 | 6:00 AM, the music turns: push-ups, the cold shower (its eyes in the steam), the run at dawn (it chases and falls behind), the gym (pull-ups, squats, curls), strain turning to calm on his face; he calls someone he loves; 9:30 PM it attacks (a jump scare and the vice's banner); he deletes the app, it shrieks; he texts the one he let down, a reply and a heart; 11:00 PM asleep without the phone, its eyes small in the window | a clearly different heroic training anthem, dropping out only for the attack |
+| Weeks later | 1:35-1:50 | calm; the mirror; he is fine; in the dark doorway behind him its eyes open: its last line ("I'LL WAIT."); the cold line comes back with its answer ("…YOU'RE NOT."); the title | a calm piano, the lullaby's first notes detuned, the score's biggest hit again |
 
-Each film keeps the three characters and the counter device (DAYS LEFT, or the film's own unit), and ends on its
-title word. Each must also have ONE new idea of its own (a set used a new way, a new device, a twist in who the
-voices are), so the channel does not repeat itself.
+Every topic in `topics.md` says its own vice, its device, the cost and its last line. Translate the spine, not LUST's
+props: GAMBLING's phone shows a betting app and the balance; its banners are the landlord and his sister's fees; its
+reveal is in a dark screen full of zeros; he deletes the app and works double shifts. Keep the bedroom, the clock, the
+phone, the devil's approach, the reveal in black glass (or the film's own dark mirror), the training comeback, the
+ending in the mirror: the audience learns the channel by them.
 
 ## The story (before any code)
 
-1. Three loglines for the topic ("When ___, ___ must ___ before ___, but ___"). Pick the one with the sharpest stake
-   and the most surprising cost.
-2. A beat table: time, what we see, what is said (every on-screen word), the sound. Plant the twist's clues (at
-   least two, visible on a second watch).
-3. **The critic.** Start a sub-agent (Agent tool, general-purpose) with the beat table and this brief: "You are a
-   jury member at an animation festival and a YouTube strategist. Attack this short film: is the stake concrete and
-   felt within 15 s; is the turn earned; does the cost hurt; is the twist planted and surprising; would a stranger
-   watch past 30 s; what is cliché; what is confusing without sound; is any line shorthand or local slang. Score
-   each 1-10 and give the three changes that matter most." Make the changes; send it again until no score is below
-   8 (at most three rounds). Keep the last critique in `STORY.md`.
-4. Lock `films/NN-<slug>/STORY.md`: logline, title (`reference/publish.md`), the beat table, the clues, the critique.
+1. Three loglines ("Every night ___ feeds ___, until ___"). Pick the one with the cruelest cost and the coldest line.
+2. The beat table, on the spine, with times to a tenth of a second: what we see, every word on screen (the devil's lines
+   with `real` marked, the clocks, the banners, the cards), his expression, the devil's spot, the music section, the hits.
+   Count the words: one line at a time, about 8 words a line at most, each held at least 1.6 s.
+3. **The critic.** A sub-agent (Agent tool, general-purpose) gets the beat table and this brief: "You are a jury member
+   at an animation festival and a YouTube strategist who runs a horror-motivation channel. Attack this 2-minute short
+   film with no narration: does the cold line chill in under 3 seconds; is the stake felt by 0:15 with the sound off;
+   does the devil get closer every night, visibly; are the banners (the people he is losing) clear without sound; is
+   the reveal line earned and surprising; does the comeback feel like real training at real hours; does the last line
+   land; is anything graphic, explicit, a real brand, or local slang; is any shot longer than 3 s. Score each 1-10 and
+   give the three changes that matter most." Make the changes; send it again until no score is below 8 (three rounds at
+   most). Keep the last critique.
+4. Lock `films/NN-slug/STORY.md`: the logline, the title (`publish.md`), the beat table, the critique. Push.
 
-## The kit (what to build with)
+## The music (ElevenLabs; `engine/audio/music.mjs`)
 
-- `Film04.tsx` structure: `Scene` = a function of time drawing one set-up; `CUTS` = camera set-ups `[zoom, x, y,
-  rot]` over scenes; `CutView` draws a cut at any size (W, H), which is how Shorts reuse the film. `flashOf(t)` and
-  `daysAt(t)` are the film's flash and counter tracks; give the new film its own.
-- Characters: `Char` (kit.tsx) wraps Bean's rig with props (phone, paper, pen, mug), a chair seat and a light;
-  poses in `rig/beanPoses.ts`; `walk(t)` for steps. `DevilFig`, `WallShadow` and smoke for the Devil; `angel.tsx`.
-- Phones and paper: `PhonePOV` (the chat on his phone, from his eyes; give it a `name`, a `clock`, `items` and
-  `typing`), `DrawerPhone` (the lock screen), `NoticeCard` (a paper held in his hands, thumbs over it),
-  `FloorLetter`, `TopDownNotice`.
-- The desk: `DeskTop`, `DeskFront`, `Laptop` with `ScreenUI` states (off, form, sent, rejected, inbox, gigs, paid),
-  `ScreenInsert` for a close-up of the screen, `FaceGlow`.
-- Sets: the PNGs in `anim/public/poses/set_*.png`. Character PNGs there (bean_*, devil_*, angel_*, friend_*) are
-  older still poses: use them only for a background figure; the main action uses the rigs.
-- What does not exist must be drawn in code (SVG), in the same flat style: thick dark outline, soft shading, warm
-  practical lights, deep shadows. Nothing photographic.
+Write `films/NN-slug/music.json` from the beat table's times (copy `films/03-lust/music.json`):
 
-## The score (`anim/scripts/filmNN_score.py`)
+- `score`: a composition plan (`music_v2_5`) with three chunks timed to the film: `[Intro]` the cold open (about 4 s:
+  drone, riser, one massive hit on the title), `[Nights]` to the montage's end (about 39 s: a relentless dark pulse,
+  distorted sub bass, pounding toms, half-time hats, a creepy detuned music-box melody, harder every 8 bars),
+  `[Reveal]` to the turn (about 17 s: one second of dead silence, then a colossal hit, a wordless dark choir, screeching
+  strings, the hits at the reveal's beats). `negative_styles`: vocals with words, lyrics, singing, rap, spoken word,
+  narration. Give the film's vice a colour in the styles (GAMBLING: casino chimes turned sour; THE BOTTLE: glass).
+- `cues.RISE`: the comeback anthem, one prompt, the length of the comeback (about 35 s): a huge impact, hard-hitting
+  drums at about 128 BPM, driving bass, heroic strings and brass in a bright major key, rising, triumphant. Clearly
+  different from the score: this is the turn the owner asked for.
+- `cues.ENDING`: about 15 s, a calm, sparse piano with an unsettling undertone.
+- `shared_sfx`: scream, shriek, smash, scare, stinger, swell (free, made for LUST). `sfx`: at most two new ones for the
+  vice (a dice roll, a bottle cap), about 200 credits each.
+- Rules: every line of a chunk under 200 characters; no artist, film or franchise names; avoid trademark-like sound
+  words ("braam" got a plan refused as "copyrighted"; "deep brass blasts" passed).
+- `node engine/audio/music.mjs films/NN-slug --dry-run`, then without it. About 1,700-2,100 credits a film. The
+  account is shared with the daily channels: the tool refuses below its reserve; then report, and make nothing more.
+- Listen-free checks: the files' lengths match the plan; `mix.py`'s report shows the sections where they should be.
 
-Copy `film04_score.py`'s instruments (everything above "# ================= COLD OPEN") and write new sections:
-the Angel's soft piano in a minor key, ticking that speeds up, a heartbeat, the rising choir, total silence before
-the drop, the Devil-mode beat (128 BPM, power chords, chugs, a lead motif), a quiet ending. Every visual hit gets a
-sound. Write to `anim/public/audio/filmNN_mix.wav` and play it with `<Audio>` in the composition. Check the
-phone band (300 Hz-6 kHz): no stretch longer than 2 s under -38 dB; add a pad there if one is.
+## Building `film.js`
 
-## Ship bar (score each 1-10 from the contact sheets and spot frames; every item 8+)
+- Copy `films/03-lust/film.js`. Change: `title`, `subtitle`, `app` (the vice's app: an original name and logo, never a
+  real brand), `viceScreen` (draw the vice's screen with the phone pieces: mosaic, a feed, a progress bar, a balance…;
+  never explicit, always abstract), `handScreen`, `thumb`, the `words`, `expr`, `slams`, `glitch`, `vignette`,
+  `heartbeat` and the `shots` table. New props or places: new shots with `defShot` in the film, in the same style.
+- Cut rules: shots of 0.8-2.6 s (LUST averages 1.7 s); none over 3 s but the cards and the title; every shot already
+  pushes in; flash frames on the clock, the devil's face and the title (`flash`); a slam (shake) on each big hit; a
+  glitch on each turn; the montage at the end of the nights.
+- Look at it: `render.sh sheet film films/NN-slug --every 1 --cols 6 --width 320 --out /tmp/s.jpg` and LOOK; then
+  `--at` the cuts ±0.1 s. Fix, repeat. The player (`engine/player.html?film=films/NN-slug`) plays it in a browser.
+- `mix.py` (copy LUST's): the score from 0 to the turn with its dead silences muted, RISE from the turn (muted during
+  the attack), the ending, the hits on top, `master()` to -14 LUFS / -2 dBTP. It writes `audio/mix.wav` (git-ignored).
 
-1. The stake is clear by 15 s, without sound.
-2. Every on-screen word is readable at phone size (caption 70 px+, held 1.2 s+) and in plain English.
-3. Motion: no shot is a still with a zoom; characters walk, reach, type, turn.
-4. Physics: props sit on things, paper lies flat, nothing floats or clips through a hand, a face or a frame edge.
-5. Faces and hands: never cut off by the frame, letterbox or an insert; the expression matches the beat.
-6. Cuts: no blank, black or wrong frame at a cut (check 2 frames either side of every cut).
-7. The Devil Mode sequence lands: build, silence, drop, montage.
-8. The ending lands: the reveal is clear, the last image holds 2 s+, the title card is spelled right.
-9. Sound: every hit has a sound, the mix peaks below 0 dBFS, the phone-band check passes.
-10. Length 2:20-3:30; the first 3 s would stop a thumb.
+## Ship bar (score each 1-10 from the sheets, spot frames and the MP4; every item 8+)
 
-Record the scores and rounds in `films/NN-<slug>/README.md`.
+1. The cold open stops a thumb: the cold line from the first frame, its eyes, the title on a hit.
+2. The story reads with the sound off: who he is losing (the banners), it getting closer, the reveal, the comeback, the
+   ending. Show the sheet to a sub-agent with no context and ask it to tell the story back.
+3. Pace: no shot over 3 s (cards, title excepted), flashes and glitches on the turns, the montage lands.
+4. The devil: visible, scary (rim, smoke, eyes, grin), closer every night, its words kind then red.
+5. His face: a clear expression in every face shot, changing with the story; never cut off by the frame.
+6. The phone: the vice shown safely (abstract, an original logo, no real brand), banners never hide the screen, every
+   text readable.
+7. The comeback: waking hours on the clocks; push-ups, a run, pull-ups, squats, curls; the music turns on its first frame.
+8. The ending: its last line, the cold line called back with its answer, the title spelled right.
+9. Sound: the score's sections change on the turns, the anthem clearly different, silences only where planned.
+10. Mechanics (`node engine/qa.mjs films/NN-slug/filmNN.mp4`): 1:30-2:30, H.264/AAC, -14 LUFS ±1, true peak at most
+    -1 dBTP, every black stretch planned.
 
-## Thumbnail
-
-A composition like `ThumbA` in `anim/src/Thumb.tsx`: Bean's face big and worried (left two-thirds), the film's one
-object (the notice, the phone), the Devil's grin or eyes in the dark behind, 1-3 fat words ("30 DAYS", "AGAIN?"),
-red glow. Render a still, save as `films/NN-<slug>/thumb.jpg` under 2 MB, and look at it at 320 px wide: the words
-must still read.
+Record the scores and rounds in `films/NN-slug/README.md`.

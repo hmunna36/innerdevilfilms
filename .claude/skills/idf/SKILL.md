@@ -1,100 +1,107 @@
 ---
 name: idf
-description: Produce Inner Devil Films videos end to end, made to run unattended in a Claude cloud routine. `/idf short next` (daily) makes one vertical YouTube Short (25-40 s, 1080x1920) cut from the channel's latest film with its own sound mix, QA's it, uploads it scheduled for the next free daily slot (20:00 IST) and pushes the source. `/idf film next` (weekly) makes one complete animated short film (2:20-3:30, 1920x1080) on the next topic in topics.md, with the channel's characters (Bean, the Angel, the Devil), built in code with Remotion and an original synthesized score, QA's it in a loop to the ship bar, uploads it scheduled for the next Sunday 19:00 New York time, plans the next seven Shorts from it, and pushes everything to github.com/hmunna36/innerdevilfilms.
-argument-hint: short next | film next | short <film-folder> | film <topic>
+description: Produce The Devil You Feed videos (the channel was Inner Devil Films; id UCMWgThNed--oMhcPwyDKceA) end to end in the house style of the film LUST | It Watches Back (27 Oct 2026) - animated horror shorts about a bad habit's devil, code-drawn on the channel's canvas engine, with no narration (an extreme ElevenLabs score, the devil's words on screen, a story that reads from the pictures alone). `/idf short next` (daily, cloud) cuts a 25-40 s vertical Short from the latest public film, QA's it, uploads it for 20:00 IST and pushes. `/idf film next` (weekly, cloud) makes a 1:40-2:20 film on the next topic in topics.md (story locked by a critic, ElevenLabs music, the engine, QA to the ship bar), uploads it with a code-drawn thumbnail for Sunday 19:00 New York, plans its seven Shorts and pushes to github.com/hmunna36/innerdevilfilms. `/idf thumb NN` (the Mac only) draws the film's extreme thumbnail with ChatGPT in the owner's Chrome and swaps it in.
+argument-hint: short next | film next | thumb <NN> | short <NN> | film <topic>
 effort: max
 ---
 
-# /idf: Inner Devil Films, from idea to scheduled release
+# /idf: The Devil You Feed, from idea to scheduled release
 
-**The channel** (youtube.com/@InnerDevilFilms, id UCMWgThNed--oMhcPwyDKceA): wordless-ish animated short films
-about the fights we have with ourselves. **The concept is Devil Mode** (the owner, Harshad, 19 Oct 2026: "the devil
-mode is the concept"): in every film the kind voice (the Angel) comforts Bean and he keeps putting things off; when
-kindness stops working, the hard voice (the Devil) takes over and makes him move; it costs him something; and in
-the end the voice turns out to be his own. Each film has its OWN title (a topic word plus a hook line), never
-"Devil Mode". Banner line: "When kindness fails, the devil gets to work."
+**The channel** (youtube.com/@TheDevilYouFeed, id UCMWgThNed--oMhcPwyDKceA; it was Inner Devil Films until 27 Oct
+2026): every bad habit has a devil. It whispers that it's fine, and every night you feed it, it gets closer. In every
+film someone finally stops feeding it. Animated horror short films, no narration. The model film is **LUST | It Watches
+Back** (`films/03-lust`, https://youtu.be/aqiuimf3dCg, 1:50), approved by the owner (Harshad) after many rounds.
 
-Two jobs:
+Three jobs:
 
-    short next:  preflight -> pick the next Short in shorts.md -> build it from its film's scenes -> sound -> render
-                 -> QA (loop) -> upload, scheduled 20:00 IST -> push -> report
-    film next:   preflight -> the topic (topics.md, demand check) -> STORY (logline, beat table, critic, lock)
-                 -> build the film in code -> score -> stills QA (loop) -> render -> QA (loop) -> thumbnail + title
-                 -> upload, scheduled Sunday 19:00 New York -> plan its 7 Shorts -> push -> report
+    short next:  preflight -> the next Short in shorts.md -> short.js (segments of the film, framed for 9:16) -> sound
+                 -> sheets with the safe area -> render -> QA (loop) -> upload, 20:00 IST -> push -> report
+    film next:   preflight film -> the topic (topics.md) -> STORY (beat table on the LUST spine, critic, lock) -> music.json
+                 -> ElevenLabs -> film.js on the engine -> sheets (loop) -> mix -> render -> QA (loop) -> code thumbnail
+                 + title -> upload, Sunday 19:00 New York -> plan its 7 Shorts -> push -> report
+    thumb NN:    (the Mac, with the owner's Chrome) film frames -> ChatGPT draws the thumbnail -> check -> swap it in -> push
 
-Nobody watches these runs. Never ask a question: decide, act, fix what is weak yourself, and report at the end.
+Unattended runs (the cloud routines) never ask a question: decide, act, fix what is weak, and report at the end.
 
-## Where you are (read `reference/cloud.md` before the first command)
+## The owner's rules (from making LUST, 27 Oct 2026; they win over anything else here)
 
-- A fresh Linux machine with a full clone of this repo; nothing survives except what you push. The repo is the only
-  memory: this skill's `topics.md`, `shorts.md`, `reference/log.md`, and the `films/` folders.
-- Code: `anim/` is the Remotion project (Remotion 4.0.529, React 19). Run `bin/preflight.sh` first; then
-  `. bin/env.sh` before any manual command. Render only through `bin/render.sh`.
-- Paths below are relative to the repo root; `$K` = `.claude/skills/idf`.
+1. **No narration.** Extreme music carries everything: a horror score whose sections change on the film's turns, then a
+   clearly different heroic training anthem from the moment he starts to improve.
+2. **The devil's lines are words on screen.** Kind lines are pink italic whispers; its real lines are red, slammed,
+   glitching capitals.
+3. **The story reads from the pictures alone**: the clock, the banners from the people he is losing, where the devil
+   stands, his face. Test it with the sound off.
+4. **Pace beats length.** Cuts every 1-3 s, a push-in on every shot, flash frames and glitches on the turns. LUST is 1:50;
+   films are 1:40-2:20. Never hold a shot for a line: cut on it.
+5. **The opening line is very cold** (it speaks to the viewer about the vice), and the ending calls it back with its answer.
+6. **The devil is properly visible**, with a highly scary aura (red rim, smoke, burning eyes, the grin), and comes
+   closer every night: the window, the foot of the bed, beside him, behind him with its hands on his shoulders.
+7. **The hero shows clear facial expressions**, changing with the story.
+8. **The phone shows the vice safely**: never explicit, an original logo, no real brands or logos, and a notification
+   never hides the screen (it pushes the page down).
+9. **Times on screen are normal waking hours** for the comeback (6:00 AM, 6:30 AM, 7:15 AM…), and the comeback shows
+   real training: push-ups, a run, and at the gym pull-ups, squats and curls.
+10. **Generic English, YouTube-safe, never graphic**: no gore, no blood, no self-harm, nothing sexual drawn.
+11. **Code-drawn animation only** (the engine). No AI video, no stock footage, no copyrighted music. ChatGPT images are
+    for thumbnails only.
+12. **Thumbnails are extreme**: the topic word huge in fat white letters with a red edge, the hook small under it ("IT …",
+    never naming the devil), drawn by ChatGPT from film frames on the Mac. The cloud uploads a code-drawn one first.
 
-## What exists to build with (read `reference/film.md`, "The kit", before building anything)
+## Where you are
 
-- **Characters** (`anim/src/rig/`): Bean (`bean.tsx`, `beanPoses.ts`: poses, a procedural `walk`, 12 expressions),
-  the Devil (the same rig as a black silhouette with a red rim, horns, slit eyes, grin, smoke), the Angel
-  (`angel.tsx`: glowing gold spirit with a halo; `ember`, `reach`). Harshad designed them: never redesign them.
-- **Kit** (`anim/src/film/`): `kit.tsx` (Char with props and chair, DevilFig, WallShadow, Paper, FloorNotes, smoke,
-  rain, captions `LineView`, `NoticeCard`, `PhonePOV` = a text chat seen on his phone, banners), `desk.tsx` (the desk,
-  a 3/4 laptop with screen UIs, the chair, `ScreenInsert`, `DrawerPhone` lock screen), `door.tsx` (floor-perspective
-  paper, feet, a reaching hand, a top-down notice).
-- **Sets** (`anim/public/poses/set_*.png`, 1920x1080, made with ChatGPT on 19 Oct 2026): bedroom, door, street (rain),
-  bench, bench2, table (a restaurant, an empty chair), corridor, mirror, room. The cloud cannot make new images:
-  stage every film in these sets, and draw anything else in code.
-- **The model film**: `anim/src/Film04.tsx` = film 1, "TOMORROW | He Kept Saying It" (2:32). Scenes are continuous
-  functions of time; cuts are camera set-ups over them. Copy its structure. Its score: `anim/scripts/film04_score.py`.
-- **The model Short**: `anim/src/ShortTomorrow.tsx` + `anim/scripts/short01_score.py`.
+- **The cloud** (a routine): a fresh Linux machine with a full clone; nothing survives but what you push. Read
+  `reference/cloud.md` before the first command. The repo is the only memory: `topics.md`, `shorts.md`,
+  `reference/log.md`, `films/`, `shorts/`.
+- **The Mac**: a light sparse clone at `~/Desktop/innerdevilfilms` (`git sparse-checkout add <path>` for more). The
+  toolchain is in `~/.cache/cp`; `. .claude/skills/idf/bin/env.sh` finds it. Push, then leave the clone light.
+- `$K` = `.claude/skills/idf`. Paths are from the repo root. Commit and push only with `$K/bin/push.sh <msg-file> <paths>`.
 
-## Rules (the owner's, from making film 1; they hold even if a doc seems to say otherwise)
+## What to build with: the engine (read `reference/engine.md` before building anything)
 
-1. Generic English for a global audience: $ amounts, no Indian-only words ("beta", rupees).
-2. Big moments must be highly dramatic and emotionally elevating: letterbox, flashes, a beat of silence, a drop.
-3. Characters MOVE: real motion (walks, gestures, reaching, typing), never a still pose that only zooms.
-4. Not slow, not zoomed out: close-ups and medium shots, cuts every 1-3 s in montages.
-5. Props behave physically: nothing floats or grows toward the camera; paper lies flat; a laptop sits on a desk.
-6. Texts state the stake in plain words ("My heart medicine runs out next week. It costs $600."), never shorthand.
-7. Messages appear ON the phone when he reads them (`PhonePOV`, `DrawerPhone`), never as floating cards.
-8. Story first, held to an award-winning standard: a want, stakes, a cost, a turn, a twist planted with clues,
-   a final image that lands. (On the Mac the story was argued with ChatGPT; in the cloud an adversarial critic
-   sub-agent plays that part: `reference/film.md`, "The story".)
-9. Code-built only, original synthesized score; no stock footage, no AI video, no copyrighted music.
+`engine/` is LUST's own code made reusable: the man and his face, the devil, the bedroom, the phone and its screens,
+the gym, the road, the shot library, the words, and a vertical mode for Shorts. A film is `films/NN-slug/film.js`:
+a `defineFilm({...})` with a cut table, the devil's words, his expressions and the film's own drawings (its vice screen).
+A Short is `shorts/NN-slug/short.js`: segments of the film, framed for 9:16. `$K/bin/render.sh` renders both.
 
-## Job 1: `/idf short next` (daily)  -> `reference/shorts.md`
+## Job 1: `/idf short next` (daily) -> `reference/shorts.md`
 
-1. `bin/preflight.sh`; BLOCKED -> report and stop.
-2. Take the first `[ ]` line in `$K/shorts.md`. If none is left, plan seven from the newest film first
-   (`reference/shorts.md`, "The menu"). Its film must already be PUBLIC (`node $K/bin/yt.mjs latest-film`), because
-   the Short points to it; if the newest film is not public yet, use the previous one.
-3. Build `anim/src/ShortNN.tsx` from the model (segments of film time + vertical cameras + captions + end card),
-   register it in `anim/src/Root.tsx`, write `anim/scripts/shortNN_score.py`, render stills, check them, render.
-4. QA (`reference/shorts.md`, "Ship bar"): contact sheet every second, the safe area, captions readable at phone
-   size, phone-band loudness, 25-40 s. Fix and repeat until every item passes.
-5. `shorts/NN-<slug>/`: `publish.json` (kind short, a title, a description with `#Shorts` and the film's link), the
-   small archive copy (`bin/phone-copy.sh`), `README.md`. Upload: `node $K/bin/yt.mjs upload shorts/NN-<slug>/publish.json --schedule=auto`.
-6. Mark the line `[x]` with the video id and time; add a line to `reference/log.md`; push with `bin/push.sh`.
+1. `$K/bin/preflight.sh short`; BLOCKED -> report and stop.
+2. The first line in `$K/shorts.md` that is `[ ]` or `built`. Its film must be PUBLIC (`node $K/bin/yt.mjs latest-film`),
+   because the Short sends people to it; if it is not yet, report and stop (nothing to do today). If no line is left,
+   plan seven from the newest public film first (`reference/shorts.md`, "The menu").
+3. `built`: the Short exists and passed QA: re-render it if its MP4 is missing, run `engine/qa.mjs`, and upload.
+   Otherwise write `shorts/NN-slug/short.js` (copy `shorts/15-lust-hook/short.js`), look at a safe-area sheet, fix,
+   build the sound (`short_mix.py`), render, QA (`reference/shorts.md`, "Ship bar"); loop until every item passes.
+4. `publish.json`, `README.md`, the archive copy (`$K/bin/phone-copy.sh`); upload with
+   `node $K/bin/yt.mjs upload shorts/NN-slug/publish.json --schedule=auto`.
+5. Mark the line `[x]` with the video id and time, add a line to `reference/log.md`, push.
 
-## Job 2: `/idf film next` (weekly)  -> `reference/film.md`
+## Job 2: `/idf film next` (weekly) -> `reference/film.md`
 
-1. `bin/preflight.sh`; BLOCKED -> report and stop.
-2. Topic: the first `[ ]` in `$K/topics.md` (a one-word struggle plus the hook idea). Check demand once with
-   `node $K/bin/yt.mjs demand "<WORD> animated short film"` and note it; a crowded word is fine, a crowded
-   EXACT title is not (the hook line must differ from every result).
-3. The story (`reference/film.md`, "The story"): three loglines, pick one, beat table with times, the Devil Mode
-   turn, the cost, the twist and its clues, every on-screen line. Send it to a critic sub-agent; fix; lock it in
-   `films/NN-<slug>/STORY.md`. Push a checkpoint.
-4. Build `anim/src/FilmNN.tsx` (copy Film04's structure and the kit), the score `anim/scripts/filmNN_score.py`,
-   register the composition. Stills of every cut, contact sheets, fix, repeat. Checkpoint push.
-5. Render (background, with a log). QA the video (`reference/film.md`, "Ship bar"): every item 8+ or fix and
-   re-render. If it cannot get there, upload nothing: push the work and report.
-6. Thumbnail (a composition like `anim/src/Thumb.tsx`: one big face, one object, 1-3 fat words, one glow) and the
-   title (`reference/publish.md`). `films/NN-<slug>/publish.json` (kind film), upload with `--schedule=auto`.
-7. Plan its seven Shorts in `$K/shorts.md` (they start once the film is public). Update `topics.md`,
-   `reference/log.md`, `films/README.md`. Push.
+1. `$K/bin/preflight.sh film` (it also checks ElevenLabs); BLOCKED -> report and stop.
+2. The topic: the first `[ ]` in `$K/topics.md`. Check demand once (`node $K/bin/yt.mjs demand "<WORD> animated short
+   film"`): the hook line must differ from every exact title found.
+3. The story (`reference/film.md`, "The story"): the beat table on the LUST spine with times, every word on screen, the
+   cold line and its callback, the vice's screen, the banners, the reveal lines, the comeback, the last line. The critic
+   sub-agent until every score is 8+ (three rounds at most). Lock `films/NN-slug/STORY.md`. Checkpoint push.
+4. The music (`reference/film.md`, "The music"): `music.json` timed to the beat table, `music.mjs --dry-run`, then make
+   it. Checkpoint push (the mp3s are committed: they cost credits).
+5. Build `films/NN-slug/film.js` on the engine; contact sheets of every cut, fix, repeat; `mix.py`. Checkpoint push.
+6. Render (background, with a log). QA (`reference/film.md`, "Ship bar"): every item 8+, or fix and re-render. If it
+   cannot get there, upload nothing: push the work and report.
+7. The code thumbnail (`render.sh thumb films/NN-slug`, then copy to `thumb.jpg`), the title and description
+   (`reference/publish.md`), `publish.json` (kind film, cover thumb.jpg), upload with `--schedule=auto`.
+8. Plan its seven Shorts in `$K/shorts.md`, after the ones still waiting. Update `topics.md`, `reference/log.md`,
+   `films/README.md`. Push.
+
+## Job 3: `/idf thumb NN` (the Mac only) -> `reference/publish.md`, "Thumbnails"
+
+The extreme thumbnail, drawn by ChatGPT in the owner's Chrome from three film frames, checked at 320 px, saved as
+`films/NN-slug/thumb.jpg` (under 2 MB), swapped in with `node $K/bin/yt.mjs thumb <videoId> films/NN-slug/thumb.jpg`,
+pushed. Do it before the film goes public (films go out Sunday 19:00 New York).
 
 ## The report (the last message of every run)
 
-Title, length, the YouTube link and release time (IST), QA rounds, what was hard, where it was pushed, and what is
-left for Harshad by hand (only Studio things: a Short's "Related video" link, end screens, pinned comments).
+Title, length, the YouTube link and release time (IST), QA rounds and what they fixed, ElevenLabs credits spent (films),
+where it was pushed, and what is left for the owner by hand: the ChatGPT thumbnail (`/idf thumb NN` on the Mac) for a
+film; in Studio, a Short's Related video (the film), a film's end screen and pinned comment.

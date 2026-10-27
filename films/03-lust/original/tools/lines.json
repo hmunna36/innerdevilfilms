@@ -1,0 +1,21 @@
+[
+  ["VO01", 0.1, "[whispers] You think you're alone when you watch it... don't you?"],
+  ["VO02", 5.1, "[softly] Shh... it's okay. Everyone does it."],
+  ["VO03", 8.0, "[softly] You worked hard today. You deserve this."],
+  ["VO04", 11.3, "[whispers] Just one more. Then sleep."],
+  ["VO05", 14.9, "[softly] She'll call again. Stay with me."],
+  ["VO06", 19.3, "[softly] See? You feel better already."],
+  ["VO07", 22.9, "[softly] Who needs them? You have me."],
+  ["VO08", 27.3, "[whispers] I'll never leave you."],
+  ["VO09", 32.6, "[softly] She'd never understand you... not like I do."],
+  ["VO10", 40.1, "[whispers] One more... one more... one more..."],
+  ["VO11", 44.4, "[menacing] I was never in the phone."],
+  ["VO12", 46.6, "[menacing] I was always... in you."],
+  ["VO13", 51.1, "[menacing] Every night... you fed me."],
+  ["VO14", 53.1, "[menacing] Now you're mine."],
+  ["VO16", 61.5, "[whispers] Come back... just once."],
+  ["VO17", 65.4, "[whispers] You'll get tired."],
+  ["VO18", 77.2, "[whispers] Just one look..."],
+  ["VO20", 86.8, "[whispers] Tomorrow, then."],
+  ["VO21", 93.8, "[menacing] I'll wait."]
+]

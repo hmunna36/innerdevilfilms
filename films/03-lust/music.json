@@ -1,0 +1,162 @@
+{
+ "model": "music_v2_5",
+ "note": "What LUST was scored with (27 Oct 2026). The film uses SCORE 0:00-1:00.6, RISE for the comeback, M4 and the start of M1 for the ending; M2 and M3 were not used. Chunks 4-5 of SCORE were replaced by RISE and the ending.",
+ "score": {
+  "id": "SCORE",
+  "chunks": [
+   {
+    "text": "[Intro]\n{a menacing sub-bass drone and a reversed riser that slams into a massive deep brass blast on the last beat}",
+    "duration_ms": 4000,
+    "positive_styles": [
+     "dark cinematic horror",
+     "cinematic",
+     "deep brass",
+     "sub bass",
+     "extreme",
+     "great production quality"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Nights]\n{relentless dark horror pulse: distorted 808 sub bass, pounding toms, trap hi-hats in half-time}\n{a creepy detuned music-box melody on top, a dissonant string ostinato}\n{the tension rises non-stop and hits harder every 8 bars}",
+    "duration_ms": 39000,
+    "positive_styles": [
+     "dark phonk",
+     "horror trap",
+     "aggressive",
+     "distorted 808",
+     "music box",
+     "140 bpm",
+     "intense"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Reveal]\n{one second of dead silence, then a colossal horror explosion}\n{huge deep brass blasts, a wordless dark choir, distorted drums, screeching strings, maximum terror}\n{a first massive hit at 5.6 seconds, a brutal hit at 12.2 seconds, then a ringing aftermath}",
+    "duration_ms": 17600,
+    "positive_styles": [
+     "epic horror",
+     "deep brass",
+     "wordless dark choir",
+     "distorted",
+     "terrifying",
+     "extreme"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Fight back]\n{aggressive epic hybrid trailer: huge taiko and trap drums at 140 bpm, distorted bass}\n{soaring defiant strings and a wordless choir, unstoppable and triumphant}\n{a one-second drop-out at 16.6 seconds, then it slams back harder}",
+    "duration_ms": 28400,
+    "positive_styles": [
+     "epic phonk",
+     "hybrid trailer",
+     "aggressive",
+     "triumphant",
+     "taiko",
+     "140 bpm",
+     "extreme"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Weeks later]\n{sudden calm: a fragile warm solo piano phrase}\n{at 4.6 seconds a creeping dark drone and the detuned music-box melody return}\n{one final massive hit at 8.4 seconds, then a low ringing drone to the end}",
+    "duration_ms": 15000,
+    "positive_styles": [
+     "dark ambient",
+     "solo piano",
+     "horror",
+     "cinematic"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   }
+  ]
+ },
+ "cues": {
+  "M1": {
+   "ms": 39000,
+   "prompt": "Creepy horror lullaby. A lone music box and soft felt piano play a slow, tender lullaby melody in D minor at 76 BPM over a deep sub-bass drone. Intimate, beautiful and wrong at the same time. Over time the music box drifts slightly out of tune and the drone grows darker; a slow heartbeat pulse joins in the second half. No drums, no vocals."
+  },
+  "M2": {
+   "ms": 17000,
+   "prompt": "Terrifying horror underscore for a monster reveal: a low dissonant string cluster swelling from silence, deep sub-bass pulses, eerie high violin harmonics, a sudden loud orchestral stinger, then tense near-silence with a thin high ringing tone. Cinematic and dark, no vocals."
+  },
+  "M3": {
+   "ms": 28000,
+   "prompt": "Driving, determined cinematic pulse at 110 BPM: tight punchy drums, pulsing low strings and a dark synth bass, building momentum, hopeful and defiant; warm chords arrive halfway through. Trailer style, no vocals."
+  },
+  "M4": {
+   "ms": 15000,
+   "prompt": "Calm, gentle morning piano, soft and warm, sparse notes, peaceful, with a faint unsettling undertone, 70 BPM, no vocals."
+  },
+  "RISE": {
+   "ms": 35000,
+   "prompt": "Powerful, uplifting motivational training anthem for a comeback montage: opens on a huge impact, then hard-hitting drums at 128 BPM, driving bass, heroic strings and brass in a bright major key, rising energy, inspiring, triumphant and unstoppable. Instrumental, no vocals."
+  }
+ },
+ "sfx": {
+  "scream": {
+   "sec": 2.2,
+   "text": "an inhuman demonic scream, distorted and terrifying, horror movie monster"
+  },
+  "shriek": {
+   "sec": 1.5,
+   "text": "a short high-pitched demonic shriek that fades away into the dark"
+  },
+  "smash": {
+   "sec": 1.3,
+   "text": "a phone hitting a wall hard and shattering, glass and plastic breaking"
+  },
+  "scare": {
+   "sec": 1.2,
+   "text": "violent horror jump scare, a distorted boom with a sharp hiss"
+  },
+  "stinger": {
+   "sec": 2.5,
+   "text": "loud low horror movie stinger, brass and strings hit, cinematic"
+  },
+  "swell": {
+   "sec": 2.5,
+   "text": "deep ominous sub-bass swell rising, horror"
+  }
+ }
+}

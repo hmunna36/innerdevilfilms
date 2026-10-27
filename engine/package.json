@@ -1,0 +1,9 @@
+{
+  "name": "idf-engine",
+  "private": true,
+  "description": "Inner Devil Films: the canvas film engine's renderer (headless Chrome through playwright-core, ffmpeg).",
+  "type": "module",
+  "dependencies": {
+    "playwright-core": "1.63.0"
+  }
+}

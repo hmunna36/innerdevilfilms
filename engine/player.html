@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inner Devil Films engine</title>
+<style>
+  @font-face { font-family: "IDF Sans"; src: url("fonts/Inter.ttf") format("truetype"); font-weight: 100 900; font-style: normal; }
+  @font-face { font-family: "IDF Serif"; src: url("fonts/Gelasio.ttf") format("truetype"); font-weight: 400 700; font-style: normal; }
+  @font-face { font-family: "IDF Serif"; src: url("fonts/Gelasio-Italic.ttf") format("truetype"); font-weight: 400 700; font-style: italic; }
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #050506; color: #e9e4da; font: 14px/1.4 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+  body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px; min-height: 100vh; }
+  #stage, #ui { width: min(100%, calc((100vh - 150px) * 16 / 9)); }
+  body.tall #stage, body.tall #ui { width: min(100%, calc((100vh - 150px) * 9 / 16)); }
+  #stage canvas { width: 100%; height: auto; display: block; background: #000; box-shadow: 0 20px 60px rgba(0, 0, 0, .6); }
+  #ui { display: grid; grid-template-columns: auto 1fr auto; gap: 10px 14px; align-items: center; }
+  #ui[hidden] { display: none; }
+  button { background: #16171b; color: #e9e4da; border: 1px solid #2a2b31; border-radius: 8px; padding: 7px 12px; font: inherit; cursor: pointer; }
+  button:hover { border-color: #4a4b52; }
+  button.on { background: #e9a948; color: #120c06; border-color: #e9a948; }
+  #play { width: 46px; }
+  input[type=range] { width: 100%; accent-color: #e9a948; }
+  #time { font-variant-numeric: tabular-nums; min-width: 96px; text-align: right; color: #a9a49b; }
+  #phases { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="ui" hidden>
+  <button id="play" title="Play / pause (space)">▶</button>
+  <input id="scrub" type="range" min="0" max="1" step="0.01" value="0" aria-label="Timeline">
+  <span id="time">0:00</span>
+  <div id="phases"></div>
+</div>
+<script src="core.js"></script>
+<script src="cast.js"></script>
+<script src="sets.js"></script>
+<script src="phone.js"></script>
+<script src="shots.js"></script>
+<script src="short.js"></script>
+<script src="player.js"></script>
+</body>
+</html>

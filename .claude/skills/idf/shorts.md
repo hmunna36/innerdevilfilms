@@ -1,5 +1,7 @@
 # Shorts queue (`/idf short next` takes the first line that is `[ ]` or `built`)
 
+Since 27 Oct 2026 Shorts are cut from the film's own code on the engine (`reference/shorts.md`). Lines 01-08 are the old style (Remotion).
+
 From film 01 TOMORROW (https://youtu.be/0GEqZ5t3Ci8), planned 20 Oct 2026. Film-time ranges refer to `Film04`.
 
 - [x] 01 tomorrow-hook: the whole story in 33 s (climax, 30 DAYS EARLIER, notice, Mom, "Tomorrow.", the entry, DEVIL MODE, end card); `shorts/01-tomorrow-hook/`, composition `Short01`; YT 3p3Q0i_lav0, public 20 Oct 2026 20:00 IST (uploaded from the Mac; Related video set in Studio)
@@ -15,9 +17,9 @@ From film 02 JUST ONE MORE (https://youtu.be/GVoVv5A5kOE), planned 22 Oct 2026. 
 - [x] 08 justonemore-hook: the whole story: the phone at 1% dies, his reflection's eyes ignite, "Put it down.", 4 DAYS EARLIER, Dad's "Pass the exam. I can't do one more year of night shifts." / "I'll pass it. I promise.", the Angel's "Just one more.", the nights slip, his own "Just one more." at 3 days, "Put it down.", the plug drops, silence, DEVIL MODE, the drawer, KNOCK x3, the note under the door, "It's my birthday. I just wanted to see you. - Dad", end card; `shorts/08-justonemore-hook/`, composition `Short08` (34.4 s); YT 3ypMOEbWDmY, public 27 Oct 2026 20:00 IST (uploaded from the cloud routine 26 Oct)
 Dropped 27 Oct 2026: Shorts 09-14 (cuts of JUST ONE MORE). The user made every earlier video private and restarted the channel with LUST.
 
-From film 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg, public 28 Oct 2026 20:00 IST), planned 27 Oct 2026. Times refer to the film (110.5 s).
+From film 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg, public 27 Oct 2026 22:30 IST), planned 27 Oct 2026. Times refer to the film (110.5 s, `films/03-lust/film.js`).
 
-- [ ] 15 lust-hook: the cold line, its eyes opening in the window, the four nights with it closer each time, the black screen and "I WAS NEVER IN THE PHONE.", end card (0-4, 4-14, 14-43, 43-46.5)
+- [built] 15 lust-hook: the cold line, its eyes opening in the window, the four nights with it closer each time, the black screen and "I WAS NEVER IN THE PHONE.", end card; `shorts/15-lust-hook/` (31.1 s), built and QA'd on the Mac 27 Oct 2026, NOT uploaded: the next run uploads it
 - [ ] 16 lust-reveal: the black glass, "I WAS ALWAYS... IN YOU.", it steps into the room, "NOW YOU'RE MINE.", the phone smashed against the wall, the scream, end card (43-60.6)
 - [ ] 17 lust-closer: one shot per night, window, foot of the bed, beside him, behind him with its claws, set to the horror score, end card (4-40)
 - [ ] 18 lust-comeback: the music turns at 6:00 AM: push-ups, the shower, the run, pull-ups, squats, curls, his face, end card (60.6-78.8)

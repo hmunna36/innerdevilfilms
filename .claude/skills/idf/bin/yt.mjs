@@ -10,6 +10,7 @@
 //   node yt.mjs list                      every video on the channel: privacy, schedule, kind, title
 //   node yt.mjs private <videoId>...      make videos private (cancels a schedule); other status fields are kept
 //   node yt.mjs latest-film               the newest PUBLIC film (id, title, url): the Shorts link to it
+//   node yt.mjs thumb <videoId> <image>   replace a video's thumbnail (the ChatGPT one, from the Mac); JPEG or PNG under 2 MB
 //   node yt.mjs demand "<query>"...       read-only: what YouTube ranks first for a query (about 100 quota units each, 4 max)
 //   node yt.mjs auth                      (the Mac only) one-time consent; writes ~/.config/idf/youtube-token.json
 //
@@ -39,6 +40,8 @@ const TOKEN_FILE = path.join(CONF, 'youtube-token.json');
 const ENV = process.env;
 const FROM_ENV = Boolean(ENV.YT_CLIENT_ID && ENV.YT_CLIENT_SECRET && ENV.IDF_YT_REFRESH_TOKEN);
 const CHANNEL = 'Inner Devil Films';
+// the channel is checked by its id: its display name changes ("The Devil You Feed" since 27 Oct 2026), the id does not
+const CHANNEL_ID = 'UCMWgThNed--oMhcPwyDKceA';
 const SCOPE = 'https://www.googleapis.com/auth/youtube.force-ssl'; // upload, thumbnails, captions
 const API = 'https://www.googleapis.com/youtube/v3';
 const UPLOAD = 'https://www.googleapis.com/upload/youtube/v3';
@@ -102,7 +105,7 @@ async function auth() {
   fs.chmodSync(TOKEN_FILE, 0o600);
   console.log(`saved the refresh token to ${TOKEN_FILE}`);
   const ch = await myChannel();
-  if (ch && ch.snippet.title !== CHANNEL) console.log(`WARNING: this token belongs to "${ch.snippet.title}", not ${CHANNEL}. Run auth again and pick ${CHANNEL}.`);
+  if (ch && ch.id !== CHANNEL_ID) console.log(`WARNING: this token belongs to "${ch.snippet.title}" (${ch.id}), not ${CHANNEL} (${CHANNEL_ID}). Run auth again and pick it.`);
   await whoami();
 }
 
@@ -153,7 +156,7 @@ async function whoami() {
   const ch = await myChannel();
   if (!ch) die(`the token has no YouTube channel (choose the ${CHANNEL} channel when authorizing)`);
   console.log(`channel: ${ch.snippet.title} (${ch.id}), ${ch.statistics?.videoCount ?? '?'} videos, ${ch.statistics?.subscriberCount ?? '?'} subscribers`);
-  if (ch.snippet.title !== CHANNEL) die(`this token is for "${ch.snippet.title}", not ${CHANNEL}: run auth again and pick ${CHANNEL}`);
+  if (ch.id !== CHANNEL_ID) die(`this token is for "${ch.snippet.title}" (${ch.id}), not ${CHANNEL} (${CHANNEL_ID}): run auth again and pick it`);
 }
 
 // ---- calendar ---------------------------------------------------------------------------------------------------
@@ -339,7 +342,7 @@ async function upload(specPath, dryRun, autoSchedule = false) {
   }
   const ch = await myChannel();
   if (!ch) die('the token has no channel');
-  if (ch.snippet.title !== CHANNEL) die(`this token is for "${ch.snippet.title}", not ${CHANNEL}: run \`yt.mjs auth\` and pick ${CHANNEL}`);
+  if (ch.id !== CHANNEL_ID) die(`this token is for "${ch.snippet.title}" (${ch.id}), not ${CHANNEL} (${CHANNEL_ID}): run \`yt.mjs auth\` and pick it`);
   console.log(`channel: ${ch.snippet.title} (${ch.id})\n${spec.title}`);
   if (!y.id) {
     const resource = {
@@ -388,6 +391,16 @@ async function upload(specPath, dryRun, autoSchedule = false) {
   }
 }
 
+async function setThumb(id, file) {
+  if (!id || !file || !fs.existsSync(file)) die('usage: yt.mjs thumb <videoId> <image.jpg|png>');
+  const img = fs.readFileSync(file);
+  if (img.length > 2e6) die(`${file} is ${(img.length / 1e6).toFixed(1)} MB: YouTube takes 2 MB at most`);
+  const ch = await myChannel();
+  if (ch?.id !== CHANNEL_ID) die(`this token is for "${ch?.snippet?.title}" (${ch?.id}), not ${CHANNEL} (${CHANNEL_ID})`);
+  await api('POST', `${UPLOAD}/thumbnails/set?videoId=${id}&uploadType=media`, {body: img, headers: {'Content-Type': file.endsWith('.png') ? 'image/png' : 'image/jpeg'}});
+  console.log(`thumbnail of ${id} replaced with ${path.basename(file)}`);
+}
+
 async function status(ids) {
   const r = await (await api('GET', `${API}/videos?part=status,processingDetails,snippet&id=${ids.join(',')}`)).json();
   for (const v of r.items ?? [])
@@ -416,7 +429,7 @@ async function demand(questions) {
     const millions = sorted.filter((x) => x >= 1e6).length;
     const ok = median >= 1e6 || millions >= 3;
     console.log(`  median ${median.toLocaleString('en-US')} views; ${millions} of ${rows.length} at a million or more; top ${sorted[sorted.length - 1].toLocaleString('en-US')}`);
-    console.log(`  → ${ok ? 'QUALIFIES for a film' : 'does NOT qualify (median under 1,000,000 and fewer than three at a million): rephrase once, else drop it'}`);
+    console.log(`  → ${ok ? 'a crowded, proven topic' : 'a quieter topic'} (for this channel the check informs the title: keep the topic, and make the hook line differ from every title above)`);
   }
 }
 
@@ -434,6 +447,7 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
     else if (cmd === 'list') await listAll();
     else if (cmd === 'private') await makePrivate(args);
     else if (cmd === 'demand') await demand(args);
+    else if (cmd === 'thumb') await setThumb(args[0], args[1]);
     else console.log('usage: yt.mjs auth | whoami | upcoming | next-free | reschedule <id> <time> | upload <publish.json> [--dry-run] [--schedule=auto] | status <videoId>... | demand "<question>"...');
   } catch (e) {
     die(e.message);

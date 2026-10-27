@@ -12,3 +12,4 @@
 - 2026-10-26 (cloud routine) Short 08 justonemore-hook built (34.4 s), QA: 3 stills rounds + 1 video round, uploaded as 3ypMOEbWDmY, public 27 Oct 2026 20:00 IST; first Short of film 02
 - 2026-10-27 (Mac, by hand) channel restarted with film 03 LUST | It Watches Back (aqiuimf3dCg, public 27 Oct 22:30 IST); the channel is now The Devil You Feed
 - 2026-10-27 (Mac, by hand) the pipeline rebuilt for the LUST style: the canvas engine (`engine/`, 16:9 and a 9:16 Short mode), ElevenLabs music (`music.mjs`), the new skill; LUST moved into the repo; Short 15 lust-hook built and QA'd (31.1 s), not uploaded
+- 2026-10-27 (Mac, by hand) the film pipeline dry-run tested: preflight film GO, demand check, a music plan checked and priced (about 1,860 credits a film, nothing made), a throwaway GAMBLING sketch built on the engine with its own betting-app screen, a 16 s film stretch rendered with its sound in sync, the code thumbnail, a film upload dry run (Sun 1 Nov 19:00 New York)

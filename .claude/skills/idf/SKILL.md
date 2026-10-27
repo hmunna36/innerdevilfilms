@@ -79,8 +79,10 @@ A Short is `shorts/NN-slug/short.js`: segments of the film, framed for 9:16. `$K
 ## Job 2: `/idf film next` (weekly) -> `reference/film.md`
 
 1. `$K/bin/preflight.sh film` (it also checks ElevenLabs); BLOCKED -> report and stop.
-2. The topic: the first `[ ]` in `$K/topics.md`. Check demand once (`node $K/bin/yt.mjs demand "<WORD> animated short
-   film"`): the hook line must differ from every exact title found.
+2. The topic: the first `[ ]` in `$K/topics.md`. If `films/NN-slug/` already exists, a run was cut off: continue from
+   its last checkpoint (STORY.md locked -> the music; music.json and mp3s -> the build; film.js -> the render), never
+   from scratch. Check demand once (`node $K/bin/yt.mjs demand "<WORD> animated short film"`): it informs the title;
+   the hook line must differ from every exact title found.
 3. The story (`reference/film.md`, "The story"): the beat table on the LUST spine with times, every word on screen, the
    cold line and its callback, the vice's screen, the banners, the reveal lines, the comeback, the last line. The critic
    sub-agent until every score is 8+ (three rounds at most). Lock `films/NN-slug/STORY.md`. Checkpoint push.

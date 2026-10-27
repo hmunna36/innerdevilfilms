@@ -35,7 +35,9 @@ that sends people to the film. The model is `shorts/15-lust-hook/short.js` (31.1
 7. **The ending**: weeks later, the mirror, its eyes, its last line, the cold line and its answer.
 
 Each opens on a word-bearing frame, keeps one idea, and ends on the end card (the film's title, its hook line,
-"FULL FILM ON THE CHANNEL", an arrow down to the Related video link).
+"FULL FILM ON THE CHANNEL", an arrow down to the Related video link). Each is its own piece: its own stretches, framings,
+sound plan and title, never an earlier Short with the words swapped (YouTube's partner review rejects mass-produced,
+repetitive channels), and no sexual wording in its title or description.
 
 ## Safe area (measured on the owner's iPhone, 30 Sep 2026)
 

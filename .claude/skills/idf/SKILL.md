@@ -41,11 +41,17 @@ Unattended runs (the cloud routines) never ask a question: decide, act, fix what
    never hides the screen (it pushes the page down).
 9. **Times on screen are normal waking hours** for the comeback (6:00 AM, 6:30 AM, 7:15 AM…), and the comeback shows
    real training: push-ups, a run, and at the gym pull-ups, squats and curls.
-10. **Generic English, YouTube-safe, never graphic**: no gore, no blood, no self-harm, nothing sexual drawn.
+10. **Generic English, YouTube-safe, never graphic**: no gore, no blood, no self-harm, nothing sexual drawn, and no sexual
+    wording in titles, descriptions, tags or thumbnails beyond the topic word itself. Gambling, drinking and vaping are
+    shown as harm, never glamorised, and never with a real brand (an app, a casino, a bottle label, a vape).
 11. **Code-drawn animation only** (the engine). No AI video, no stock footage, no copyrighted music. ChatGPT images are
     for thumbnails only.
-12. **Thumbnails are extreme**: the topic word huge in fat white letters with a red edge, the hook small under it ("IT …",
-    never naming the devil), drawn by ChatGPT from film frames on the Mac. The cloud uploads a code-drawn one first.
+12. **Thumbnails are extreme**: the topic word huge in fat white letters with a red edge, the hook small under it. The
+    hook never names the devil: it is always "IT …" (LUST: "IT WATCHES"); if one ever has to name it, "THE DEVIL …" with
+    "the", never a bare "Devil …". Drawn by ChatGPT from film frames on the Mac; the cloud uploads a code-drawn one first.
+13. **Every video is its own piece.** YouTube's partner review rejects mass-produced, repetitive channels: each film
+    brings a new vice device, new places and props, a new cold line and last line; each Short its own cut, framing,
+    words and title. Never the same Short or film with the words swapped.
 
 ## Where you are
 

@@ -12,7 +12,8 @@
 ## Film titles
 
 `WORD | Hook line`: the vice in capitals, then a short ominous line (LUST | It Watches Back; GAMBLING | The House Always
-Wins). Under 50 characters. The hook is about IT or what it does, never names the devil, and is never "Devil Mode".
+Wins). Under 50 characters. The hook is about IT or what it does, never names the devil (if it must, "THE DEVIL …"
+with "the"), and is never "Devil Mode". No sexual wording beyond the topic word, in titles, descriptions or tags.
 
 ## Film description
 
@@ -53,7 +54,8 @@ The owner wants extreme thumbnails drawn by ChatGPT from film frames, and the cl
    Make it extreme and scary: the devil's face huge on the right, leaning over the man; the man on the left, terrified,
    lit red by his phone. The word "<WORD>" huge in fat white letters with a thick red edge at the top left, and
    "<HOOK>" small under it. Deep red and black, high contrast, readable at small size. Nothing explicit, no real logos or
-   brands, no blood." Ask for a fix if a face is off-model, a word is misspelled, or it fails the 320 px test.
+   brands, no blood, nothing sexual." Ask for a fix if a face is off-model, a word is misspelled, or it fails the 320 px
+   test. The hook is always "IT …" (never naming the devil; if it must, "THE DEVIL …").
 4. Check it at 320 px wide (the word must read at a glance), convert to JPEG under 2 MB, save `films/NN-slug/thumb.jpg`
    (the code one stays as `thumb_code.jpg`), then `node .claude/skills/idf/bin/yt.mjs thumb <videoId> films/NN-slug/thumb.jpg`.
 5. Note it in the film's README and `reference/log.md`, push with `bin/push.sh`, and leave the clone light again.

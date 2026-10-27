@@ -21,7 +21,13 @@ Every topic in `topics.md` says its own vice, its device, the cost and its last 
 props: GAMBLING's phone shows a betting app and the balance; its banners are the landlord and his sister's fees; its
 reveal is in a dark screen full of zeros; he deletes the app and works double shifts. Keep the bedroom, the clock, the
 phone, the devil's approach, the reveal in black glass (or the film's own dark mirror), the training comeback, the
-ending in the mirror: the audience learns the channel by them.
+ending in the mirror: the audience learns the channel by them. Everything else is new each time (YouTube rejects
+mass-produced, repetitive channels at partner review): the vice's device and screen, places, props, banners, the cold
+line, the devil's lines and its last line.
+
+**Ads.** Advertisers accept hard themes shown as harm. GAMBLING, THE BOTTLE and NICOTINE show what the vice costs, never
+make it look fun or glamorous, and never show a real brand (an app, a casino, a bottle label, a vape); nothing sexual is
+ever drawn, and LUST-like topics keep sexual wording out of titles, tags and thumbnails.
 
 ## The story (before any code)
 

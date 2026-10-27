@@ -121,5 +121,5 @@ node engine/render.mjs film films/NN-slug                    # -> films/NN-slug/
 node engine/qa.mjs shorts/NN-slug/shortNN.mp4                # streams, length, loudness, black stretches, contact sheet
 ```
 
-Speed on the Mac (4 browsers): about 270 ms a frame for a Short (31 s in about 4 minutes); a 1:50 film is 3,300 frames.
-Long renders run in the background with a log (`reference/cloud.md`).
+Speed: in the cloud about 60 ms a frame (a 31 s Short in a minute, a 1:50 film in about 4 minutes); the Mac is about 10
+times slower. Long renders run in the background with a log (`reference/cloud.md`).

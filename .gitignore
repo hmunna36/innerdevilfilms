@@ -13,3 +13,6 @@ films/*/audio/mix.wav
 shorts/*/mix.wav
 *.rendering.mp4
 __pycache__/
+# engine/qa.mjs contact sheets (made beside the MP4; look at them, don't commit them)
+shorts/*/*_sheet.png
+films/*/*_sheet.png

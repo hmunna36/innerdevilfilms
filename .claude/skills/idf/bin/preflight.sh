@@ -18,6 +18,9 @@ need="YT_CLIENT_ID YT_CLIENT_SECRET IDF_YT_REFRESH_TOKEN"
 for v in $need; do
   if [ -n "${!v:-}" ]; then echo "  $v: set"; else echo "  $v: NOT SET"; [ "$(uname -s)" = "Linux" ] && rc=2; fi
 done
+if [ "$JOB" = film ]; then   # either name works (music.mjs); the cloud environment has ELEVENLABS_API_KEY (27 Oct 2026)
+  if [ -n "${ELEVENLABS_API_KEY:-}${IDF_ELEVENLABS_API_KEY:-}" ]; then echo "  ELEVENLABS_API_KEY: set"; else echo "  ELEVENLABS_API_KEY: NOT SET"; [ "$(uname -s)" = "Linux" ] && rc=2; fi
+fi
 echo "== network"
 hosts="https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest https://oauth2.googleapis.com/token https://registry.npmjs.org/"
 [ "$JOB" = film ] && hosts="$hosts https://api.elevenlabs.io/v1/models"
@@ -33,6 +36,9 @@ fi
 echo "== YouTube"; node "$HERE/yt.mjs" whoami 2>&1 | sed 's/^/  /'; [ "${PIPESTATUS[0]}" = 0 ] || rc=2
 [ $rc = 2 ] || node "$HERE/yt.mjs" upcoming 2>&1 | sed 's/^/  /'
 echo "== git"
-if git -C "$REPO" push --dry-run origin HEAD:refs/heads/main >/dev/null 2>&1; then echo "  push to main: allowed"; else echo "  push to main: NOT allowed (push.sh falls back to a claude/ branch)"; fi
+git -C "$REPO" fetch -q origin main 2>/dev/null
+if git -C "$REPO" push --dry-run origin HEAD:refs/heads/main >/dev/null 2>&1; then echo "  push to main: allowed"
+elif ! git -C "$REPO" merge-base --is-ancestor origin/main HEAD 2>/dev/null; then echo "  push to main: main has moved on since the clone (push.sh rebases onto it before pushing)"
+else echo "  push to main: NOT allowed (push.sh falls back to a claude/ branch)"; fi
 case $rc in 0) echo "PREFLIGHT: GO";; 2) echo "PREFLIGHT: BLOCKED (needs the owner: see NOT SET / BLOCKED above)";; *) echo "PREFLIGHT: TOOLCHAIN BROKEN";; esac
 exit $rc

@@ -18,7 +18,7 @@
 |---|---|---|
 | `YT_CLIENT_ID`, `YT_CLIENT_SECRET` | the Google OAuth client shared by the owner's channels | both jobs |
 | `IDF_YT_REFRESH_TOKEN` | this channel's refresh token (`yt.mjs whoami` checks the channel id UCMWgThNed--oMhcPwyDKceA) | both jobs |
-| `ELEVENLABS_API_KEY` (or `IDF_ELEVENLABS_API_KEY`) | the paid ElevenLabs account's key (the film's music) | the film job |
+| `ELEVENLABS_API_KEY` (or `IDF_ELEVENLABS_API_KEY`) | the paid ElevenLabs account's key (the film's music); already in the environment (CurioPulse's long-form uses it too: Creator tier, checked 27 Oct 2026) | the film job |
 
 Never print them: no `env`, `printenv`, `echo $VAR`, no key in a URL, commit, log or report. A missing key is a blocker
 only the owner can clear: report its name and stop. `YT_REFRESH_TOKEN` in the same environment belongs to CurioPulse:
@@ -35,9 +35,10 @@ films, api.elevenlabs.io (`preflight.sh film` checks it).
   then wait inside one call: `until grep -q '^EXIT' /tmp/render.log; do sleep 20; done; tail -3 /tmp/render.log`.
   Keep working while it runs (README, publish.json); never end the turn with a job running.
 - The renderer writes `<name>.rendering.mp4` and renames it when it is done, so a cut-off render leaves no broken file.
-- Speed: the Mac renders a Short (933 frames) in about 5 minutes with 4 browsers (about 340 ms a frame all in); expect
-  the cloud's 4 CPUs to be about the same, and a 1:50 film (3,300 frames) in 20-35 minutes. Sheets and stills take
-  seconds: use them for every look before a full render.
+- Speed, measured in the cloud on 27 Oct 2026: a Short (933 frames) in 60 s, 900 frames of a film in 51 s (about 60 ms a
+  frame), so a 1:50 film renders in about 4 minutes; the setup (preflight) takes about 40 s and a fresh clone about 2
+  minutes. The Mac is about 10 times slower (a Short in 5 minutes) and has only 8 GB: never render a whole film there
+  with more than 2 browsers. Sheets and stills take seconds: use them for every look before a full render.
 
 ## Git
 

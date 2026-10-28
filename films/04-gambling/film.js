@@ -158,6 +158,17 @@ function houseScreen(x, y, w, h, s, t, a, dy = 0) {
     ctx.restore();
   }
   if (res === 'win' && done) glassGrin(x + w / 2, y + 400 * s, 330 * s, .3 * win(t, rt + .05, rt + .75, .12, .35) * a);
+  const dep = DELTA.find(q => q[2] && t >= q[0] && t < q[0] + 1.1);
+  if (dep) {                                  // the necklace's money arrives: a big gold toast over the table
+    const k = E.out(inv(dep[0], dep[0] + .15, t)) * (1 - inv(dep[0] + .8, dep[0] + 1.1, t)), cy = y + 300 * s;
+    ctx.save(); ctx.globalAlpha = a * k; ctx.translate(x + w / 2, cy); ctx.scale(.9 + .1 * k, .9 + .1 * k);
+    ctx.fillStyle = 'rgba(20,14,4,.94)'; rrect(-176 * s, -36 * s, 352 * s, 72 * s, 36 * s); ctx.fill();
+    ctx.strokeStyle = rgba(GOLD); ctx.lineWidth = 3 * s; ctx.stroke();
+    ctx.lineWidth = 3 * s; ctx.beginPath(); ctx.arc(-132 * s, -12 * s, 16 * s, .15 * Math.PI, .85 * Math.PI); ctx.stroke();
+    icon('heart', -132 * s, 10 * s, 16 * s, GOLD);
+    font(28 * s, SANS, '900'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = rgba(GOLD); ctx.fillText('DEPOSIT ' + usd0(dep[1]), 16 * s, 2 * s);
+    ctx.restore();
+  }
   // the buttons
   const press = rt && t > rt - .32 && t < rt - .12 && H0[6] === 'bet', dbl = rt && t > rt - .45 && t < rt - .1 && H0[6] === 'dbl', empty = t >= BROKE;
   ctx.lineWidth = 2.5 * s; ctx.strokeStyle = rgba(empty ? [90, 90, 90] : GOLD, a);
@@ -435,8 +446,8 @@ defShot('lastcard', (t, p, L) => {
   const rim = [255, 110, 110];
   ctx.lineCap = 'round';
   for (const [x0, x1] of [[560, 800], [1360, 1120]]) {             // his thighs, running away from us to his knees
-    ctx.strokeStyle = rgba(rim, .45); ctx.lineWidth = 290; line(x0, 1300, x1 + (x1 < 960 ? -8 : 8), 520);
-    ctx.strokeStyle = 'rgb(7,6,8)'; ctx.lineWidth = 280; line(x0, 1300, x1, 520);
+    ctx.strokeStyle = rgba(rim, .2); ctx.lineWidth = 262; line(x0, 1300, x1 + (x1 < 960 ? -8 : 8), 560);
+    ctx.strokeStyle = 'rgb(7,6,8)'; ctx.lineWidth = 252; line(x0, 1300, x1, 560);
   }
   ctx.save(); ctx.translate(960, 760); ctx.rotate(-.06);                // the dead phone in his hands
   ctx.fillStyle = '#0c0b0e'; rrect(-130, -230, 260, 460, 34); ctx.fill();
@@ -549,12 +560,19 @@ defShot('gmirror', (t, p, L) => {
   const ea = win(t, p.eyes[0], p.eyes[1], .2, .01);
   if (ea > 0) { additive(() => glow(SPR.red, dx + 85, dy + 160, 220, .35 * ea)); redEyes(dx + 85, dy + 140, 16, ea); }
   if (p.coin && t > p.coin - .3 && ea > 0) {
-    const u = t - p.coin, hand = [dx + 62, dy + 330];
-    ctx.save(); ctx.strokeStyle = '#000'; ctx.lineCap = 'round'; ctx.shadowColor = rgba(C.red, .9 * ea); ctx.shadowBlur = 14 * VP.k;
-    for (let f = 0; f < 3; f++) { ctx.lineWidth = 7; line(hand[0] - 30, hand[1] + 26, hand[0] - 4 + f * 12, hand[1] - 8 + f * 6); }
+    const u = t - p.coin, hand = [dx + 66, dy + 350];
+    ctx.save(); ctx.fillStyle = ctx.strokeStyle = '#000'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.shadowColor = rgba(C.red, .95 * ea); ctx.shadowBlur = 18 * VP.k;
+    ctx.lineWidth = 24; line(hand[0] + 14, hand[1] + 14, hand[0] + 44, hand[1] + 190);          // its arm, out of the dark
+    ctx.beginPath(); ctx.ellipse(hand[0], hand[1], 26, 18, -.4, 0, Math.PI * 2); ctx.fill();
+    for (let f = 0; f < 4; f++) {                 // long fingers, curled up; the first one flicks
+      const flick = f === 0 ? .9 * win(u, -.05, .25, .05, .2) : 0, ang = -Math.PI / 2 - .7 + f * .36 - flick, L1 = 50 + (f % 2) * 12;
+      const k1 = [hand[0] + Math.cos(ang) * L1 * .55, hand[1] + Math.sin(ang) * L1 * .55], tip = [k1[0] + Math.cos(ang + .6) * L1 * .5, k1[1] + Math.sin(ang + .6) * L1 * .5];
+      ctx.lineWidth = 8; ctx.beginPath(); ctx.moveTo(hand[0], hand[1]); ctx.lineTo(k1[0], k1[1]); ctx.lineTo(tip[0], tip[1]); ctx.stroke();
+    }
     ctx.restore();
     if (u > 0) {
-      const cx = hand[0] + 14 * E.out(clamp(u / .7)), cy = hand[1] - 250 * E.out(clamp(u / .7)) + 8 * Math.sin(u * 3), r = 24, sp = Math.cos(u * 22);
+      const e = E.out(clamp(u / .6)), cx = lerp(hand[0] - 6, dx + 40, e), cy = lerp(hand[1] - 40, dy + 238, e) + 6 * Math.sin(u * 3), r = 32, sp = Math.cos(u * 22);
       additive(() => glow(SPR.gold, cx, cy, 90, .95));
       ctx.save(); ctx.translate(cx, cy); ctx.scale(Math.max(.06, Math.abs(sp)), 1);
       ctx.fillStyle = rgba(sp > 0 ? [246, 206, 110] : [200, 150, 56]); ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
@@ -618,6 +636,14 @@ defShot('momchat', (t, p, L) => {
     }
   });
 }
+// the engine's phone, pushed in toward the part of the screen that matters (p.focus: the y of the push's centre)
+defShot('gphone', (t, p, L) => {
+  const pc = PC;
+  if (!OUT.vertical && p.focus) PC = [W / 2, p.focus];
+  SHOT.phone.draw(t, p, L);
+  PC = pc;
+}, (t, p, L) => SHOT.phone.subject(t, p, L));
+
 // the money-green light of the app on his face, the warehouse's work light
 LOOKS.felt = { bg: [[4, 12, 9], [12, 30, 22]], fill: [5, 7, 6], light: [206, 232, 168], la: .34, lc: [.45, .75], glow: 'gold', gl: [1220, 1080], ga: .38, rim: [190, 226, 160], turn: .9 };
 LOOKS.ware = { bg: [[30, 32, 36], [56, 54, 52]], fill: [10, 10, 12], light: [244, 236, 220], la: .36, lc: [.3, -.9], glow: 'cream', gl: [960, -60], ga: .42, rim: [236, 230, 214], turn: .85 };
@@ -681,12 +707,12 @@ defineFilm({
     [4.6, 'phone', { screen: 'vice' }],
     [6.8, 'face', 'felt'],
     [7.8, 'groom', { spot: 'window', felt: true, o: t => ({ a: .35 + .15 * inv(7.8, 9.6, t), eyes: .9 }) }],
-    [9.6, 'phone', { screen: 'vice', notif: [9.8, 'msg', 'Sis', 'Did you send my college fees? ♥'], swipe: 11.5 }],
+    [9.6, 'gphone', { z: 1.18, focus: 300, screen: 'vice', notif: [9.8, 'msg', 'Sis', 'Did you send my college fees? ♥'], swipe: 11.5 }],
     [11.9, 'groom', { fr: [2.2, 975, 640], spot: 'window', felt: true }],
     [13.4, 'groom', { lit: false, spot: 'window', fr: [1.35, 800, 700], o: t => ({ eyes: 1 - win(t, 14.25, 14.45, .08, .08) }) }],
     // night 2: at the foot of the bed, it deals; the landlord
     [15, 'clock', '12:47 AM'],
-    [15.8, 'phone', { screen: 'vice', notif: [16.6, 'warn', 'Landlord', 'Pay today or you’re out.'], swipe: 18.2 }],
+    [15.8, 'gphone', { z: 1.18, focus: 300, screen: 'vice', notif: [16.6, 'warn', 'Landlord', 'Pay today or you’re out.'], swipe: 18.2 }],
     [18.4, 'groom', { spot: 'foot', creep: 40, hunch: .72, felt: true, o: () => ({ a: .7, eyes: 1, grin: .2, reach: .3 }) }],
     [20.2, 'face', 'felt'],
     [21.2, 'devilface', { spot: 'foot', o: () => ({ a: .8, grin: .5, lean: .3 }) }],
@@ -694,14 +720,14 @@ defineFilm({
     // night 3: beside him; its claw takes his mother's chain; DOUBLE OR NOTHING takes the rest
     [23.8, 'clock', '2:16 AM'],
     [24.6, 'chain', { reach: [24.95, 25.45], pull: [25.55, 26.2] }],
-    [26.4, 'phone', { screen: 'vice' }],
+    [26.4, 'gphone', { z: 1.15, focus: 430, screen: 'vice' }],
     [28.6, 'groom', { spot: 'beside', creep: 30, hunch: .82, o: t => ({ a: .85, eyes: 1, grin: .4, reach: .25, lean: .5 + .5 * inv(28.6, 30.4, t) }) }],
-    [30.4, 'phone', { screen: 'vice', notif: [30.5, 'mom', 'Mom', 'Have you seen Grandma’s chain?'], swipe: 32.2 }],
+    [30.4, 'gphone', { z: 1.18, focus: 300, screen: 'vice', notif: [30.5, 'mom', 'Mom', 'Have you seen Grandma’s chain?'], swipe: 32.2 }],
     [32.4, 'face', 'night'],
     [33.3, 'devilface', { spot: 'beside', o: () => ({ a: .9, grin: .75, lean: 1 }) }],
     // night 4: nothing left; his sister drops out; it is right behind him, its hands on his shoulders, the cards like snow
     [34.5, 'clock', '3:58 AM'],
-    [35.3, 'phone', { screen: 'vice', notif: [35.45, 'msg', 'Sis', 'I had to drop out. It’s okay ♥'], swipe: 37.3 }],
+    [35.3, 'gphone', { z: 1.18, focus: 300, screen: 'vice', notif: [35.45, 'msg', 'Sis', 'I had to drop out. It’s okay ♥'], swipe: 37.3 }],
     [37.5, 'groom', { spot: 'behind', hunch: .9, o: t => ({ a: 1, eyes: 1, grin: .6, reach: .2 + .45 * inv(37.5, 39.7, t), lean: 1 }) }],
     [40.1, 'face', 'night'],
     [41.1, 'devilface', { spot: 'behind', o: () => ({ grin: 1, lean: 1 }) }],
@@ -743,10 +769,10 @@ defineFilm({
     [85.6, 'gym', { move: 'curl', fr: [1.75, 960, 650] }],
     [87.2, 'face', 'gym'],
     [88.1, 'clock', '9:45 PM'],
-    [88.7, 'phone', { screen: 'home', notif: [88.8, 'vice', 'HOUSE', 'Payday! Your table is waiting.'] }],
+    [88.7, 'gphone', { z: 1.18, focus: 300, screen: 'home', notif: [88.8, 'vice', 'HOUSE', 'Payday! Your table is waiting.'] }],
     [90.6, 'devilface', { spot: 'behind', scare: true, o: () => ({ grin: 1, lean: 1 }) }],
     [91.4, 'face', 'red'],
-    [92.3, 'phone', { screen: 'home', del: 92.3 }],
+    [92.3, 'gphone', { z: 1.2, focus: 480, screen: 'home', del: 92.3 }],
     [94.5, 'devilface', { spot: 'behind', o: t => ({ a: 1 - .7 * inv(94.5, 95.7, t), scream: 1, lean: -.6 }) }],
     [95.7, 'phone', { z: 1.15, screen: 'chat', chat: { name: 'Sis', items: [
       { at: -1, text: 'I had to drop out. It’s okay.', y: 150 },

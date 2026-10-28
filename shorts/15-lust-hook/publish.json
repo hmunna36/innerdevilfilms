@@ -17,12 +17,15 @@
     "shorts"
   ],
   "youtube": {
-    "publishAt": "auto",
+    "publishAt": "2026-10-28T14:30:00.000Z",
     "privacy": "private",
     "categoryId": "1",
     "language": "en",
     "madeForKids": false,
     "syntheticMedia": false,
-    "notifySubscribers": true
+    "notifySubscribers": true,
+    "id": "ngv3Y26JGyM",
+    "url": "https://youtu.be/ngv3Y26JGyM",
+    "uploaded": "2026-10-28T04:38:16.810Z"
   }
 }

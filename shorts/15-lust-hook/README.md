@@ -1,8 +1,8 @@
 # Short 15: lust-hook (31.1 s, 1080 x 1920)
 
 The first Short in the new style, and the test of the engine's vertical mode (27 Oct 2026). Built on the Mac; it passed
-QA and was NOT uploaded (the owner decides). `publish.json` is ready: `yt.mjs upload shorts/15-lust-hook/publish.json
---schedule=auto` puts it in the next free 20:00 IST slot.
+QA there, and the cloud routine of 28 Oct 2026 re-rendered it from source, re-ran `qa.mjs` (all ok: 31.10 s, -13.8 LUFS,
+-1.6 dBTP) and uploaded it: **YouTube ngv3Y26JGyM** (https://youtu.be/ngv3Y26JGyM), public 28 Oct 2026 20:00 IST.
 
 - **Film:** 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg), times from `films/03-lust/film.js`.
 - **The cut** (`short.js`): the cold line (already typed), its eyes opening in the window (a push-in on them), LUST,

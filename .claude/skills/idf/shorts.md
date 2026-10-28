@@ -19,7 +19,7 @@ Dropped 27 Oct 2026: Shorts 09-14 (cuts of JUST ONE MORE). The user made every e
 
 From film 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg, public 27 Oct 2026 22:30 IST), planned 27 Oct 2026. Times refer to the film (110.5 s, `films/03-lust/film.js`).
 
-- [built] 15 lust-hook: the cold line, its eyes opening in the window, the four nights with it closer each time, the black screen and "I WAS NEVER IN THE PHONE.", end card; `shorts/15-lust-hook/` (31.1 s), built and QA'd on the Mac 27 Oct 2026, NOT uploaded: the next run uploads it
+- [x] 15 lust-hook: the cold line, its eyes opening in the window, the four nights with it closer each time, the black screen and "I WAS NEVER IN THE PHONE.", end card; `shorts/15-lust-hook/` (31.1 s), built and QA'd on the Mac 27 Oct 2026; YT ngv3Y26JGyM, public 28 Oct 2026 20:00 IST (re-rendered, QA'd and uploaded from the cloud routine 28 Oct)
 - [ ] 16 lust-reveal: the black glass, "I WAS ALWAYS... IN YOU.", it steps into the room, "NOW YOU'RE MINE.", the phone smashed against the wall, the scream, end card (43-60.6)
 - [ ] 17 lust-closer: one shot per night, window, foot of the bed, beside him, behind him with its claws, set to the horror score, end card (4-40)
 - [ ] 18 lust-comeback: the music turns at 6:00 AM: push-ups, the shower, the run, pull-ups, squats, curls, his face, end card (60.6-78.8)

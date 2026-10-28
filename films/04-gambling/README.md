@@ -45,8 +45,9 @@ All in `film.js`, drawn in the engine's style:
 
 ## Sound
 
-- **Made by ElevenLabs** (`music.json`, through `engine/audio/music.mjs`, about 2,280 credits on 28 Oct 2026; the
-  account went from 16,867 to 14,584):
+- **Made by ElevenLabs** (`music.json`, through `engine/audio/music.mjs`, 28 Oct 2026). The plan was about 2,160
+  credits. The shared account read 16,867 before, 14,584 right after, and 13,680 at the end of the run; its counter lags
+  and the daily channels use it too, so the spend was between about 2,300 and 3,200:
   - SCORE: 66.2 s, three chunks: intro, nights with a sour detuned casino chime, and reveal;
   - RISE: the comeback anthem, 35 s;
   - ENDING: a calm piano, 16 s;

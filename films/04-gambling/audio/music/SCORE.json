@@ -1,0 +1,72 @@
+{
+ "id": "SCORE",
+ "hash": "b6b1755f84",
+ "model": "music_v2_5",
+ "song_id": "8ozyooQHhtIvTT8TQqTD",
+ "chunks": [
+  {
+   "text": "[Intro]\n{a cold sub-bass drone, a single detuned chime ringing in the dark}\n{a reversed riser that slams into a massive deep brass blast on the last beat}",
+   "duration_ms": 3800,
+   "positive_styles": [
+    "dark cinematic horror",
+    "cinematic",
+    "deep brass",
+    "sub bass",
+    "extreme",
+    "great production quality"
+   ],
+   "negative_styles": [
+    "vocals with words",
+    "lyrics",
+    "singing",
+    "rap",
+    "spoken word",
+    "narration"
+   ],
+   "context_adherence": "high"
+  },
+  {
+   "text": "[Nights]\n{relentless dark horror pulse: distorted 808 sub bass, pounding toms, trap hi-hats in half-time}\n{a sour, detuned casino-chime melody on top, like a slot machine bell played wrong, a dissonant string ostinato}\n{the tension rises non-stop and hits harder every 8 bars, peaking in the last three seconds}",
+   "duration_ms": 44100,
+   "positive_styles": [
+    "dark phonk",
+    "horror trap",
+    "aggressive",
+    "distorted 808",
+    "detuned chimes",
+    "140 bpm",
+    "intense"
+   ],
+   "negative_styles": [
+    "vocals with words",
+    "lyrics",
+    "singing",
+    "rap",
+    "spoken word",
+    "narration"
+   ],
+   "context_adherence": "high"
+  },
+  {
+   "text": "[Reveal]\n{one second of dead silence, then a colossal horror explosion}\n{huge deep brass blasts, a wordless dark choir, distorted drums, screeching strings, maximum terror}\n{a first massive hit at 6 seconds, a brutal hit at 12.7 seconds, then a ringing aftermath}",
+   "duration_ms": 18300,
+   "positive_styles": [
+    "epic horror",
+    "deep brass",
+    "wordless dark choir",
+    "distorted",
+    "terrifying",
+    "extreme"
+   ],
+   "negative_styles": [
+    "vocals with words",
+    "lyrics",
+    "singing",
+    "rap",
+    "spoken word",
+    "narration"
+   ],
+   "context_adherence": "high"
+  }
+ ]
+}

@@ -29,26 +29,30 @@ def mute(x, t0, a, b, ramp=.02, back=.02):  # silence a stretch of a clip placed
     return x * g[:, None]
 
 
-# ---------- the horror score: 0:00-1:01.8, its sections change on the film's turns ----------
+# ---------- the cold open: the score's own riser and hit, moved so the hit lands on the title (3.2) ----------
 score_all = W('music_SCORE')
+HIT0 = 1.0                                       # in SCORE.mp3 the intro rises from 0.1 s into its hit at 1.0 s
+put(music, 0, fade(stereo(drone(2.6)), .4, .4), -18)                                    # a low drone under the cold line
+put(music, .1, fade(score_all[int(1.1 * SR):int(3.3 * SR)][::-1], .5, .25), -12)        # the hit's tail reversed: a swell
+put(music, 3.2 - HIT0, fade(score_all[:int((4.45 - (3.2 - HIT0)) * SR)], .01, .2))      # the riser from 2.3, THE HIT at 3.2
+# ---------- the horror score from night 1 to 6:00 AM, its sections changing on the film's turns ----------
 score = score_all[:int(TURN * SR)]
-score = mute(score, 0, 47.9, 48.85)            # the zeros pour down the dead phone: dead silence
-score = mute(score, 0, 59.0, 60.6, .25)        # silence before he snaps the card
-put(music, 0, fade(score, .01, .05))           # ...and it stops dead at 6:00 AM
-# ---------- he starts to change: the anthem ----------
+score = mute(score, 0, 0, 4.3, .01, .2)          # (its own intro is the one above)
+score = mute(score, 0, 47.9, 48.85)              # the zeros pour down the dead phone: dead silence
+score = mute(score, 0, 59.0, 60.6, .25)          # silence before he snaps the card
+put(music, 0, fade(score, .01, .05))             # ...and it is gone by 6:00 AM (its own aftermath fades out by 64 s)
+# ---------- he starts to change: the anthem, its opening impact on 6:00 AM ----------
+RISE0 = .95                                      # RISE.mp3 rises for .95 s into its first impact
 rise = W('music_RISE')
-rise = rise[:int((101.1 - TURN) * SR)]
-rise = mute(rise, TURN, ATTACK, BACK, .01, .15)  # it drops out while the devil attacks, back when he deletes the app
-put(music, TURN, fade(rise, .01, .4))
+rise = mute(rise, TURN - RISE0, ATTACK, BACK, .01, .15)   # it drops out while the devil attacks, back when he deletes the app
+put(music, TURN - RISE0, fade(rise, .3, .4))      # (it fades out on its own as he goes to sleep, about 97-98 s)
 # ---------- weeks later: calm piano, then it comes back ----------
 ending = W('music_ENDING')
-put(music, 101.1, fade(ending[:int(5.9 * SR)], .3, .6), -5)
-chime = score_all[int(6.0 * SR):int(8.2 * SR)]                                         # the casino chime of the nights
-put(music, 106.8, fade(stereo(varispeed(chime, .95, .88)), .02, .3), -4)              # ...detuned, as its eyes open
+put(music, 101.1, fade(ending[:int(5.9 * SR)], .05, .6), -5)
+chime = filt(score_all[int(4.4 * SR):int(7.6 * SR)], 'high', 450)                       # the casino chime over the first pulse
+put(music, 106.8, fade(stereo(varispeed(chime, .95, .88)), .02, .4), 6)                 # ...detuned, as its eyes open
 put(music, 106.8, fade(stereo(drone(2.4)), .1, .2), -14)
-hit_at = 47.9 + 6.0                                                                     # the reveal's first massive hit
-slam = score_all[int((hit_at - .15) * SR):int((hit_at + 2.4) * SR)]
-put(music, 111.2 - .15, fade(slam, .005, .8))                                           # the score's biggest hit, again
+put(music, 111.2 - .25, fade(score_all[int((HIT0 - .25) * SR):int((HIT0 + 2.4) * SR)], .005, .8))   # the title's hit, again
 put(music, 113.3, fade(stereo(drone(3.7)), .2, 1.2), -12)
 
 # ---------- a few heavy hits on top ----------
@@ -71,6 +75,6 @@ write(os.path.join(HERE, 'audio', 'mix.wav'), mix)
 lv = lambda a, b: round(20 * np.log10(np.sqrt((mix[int(a * SR):int(b * SR)] ** 2).mean()) + 1e-9), 1)
 print(json.dumps({'lufs': round(lufs(mix), 2), 'true_peak_dbtp': round(true_peak(mix), 2), 'seconds': len(mix) / SR,
                   'lengths_s': {'SCORE': round(len(score_all) / SR, 2), 'RISE': round(len(W('music_RISE')) / SR, 2), 'ENDING': round(len(ending) / SR, 2)},
-                  'silences_dbfs': {'zeros 48.0-48.7': lv(48.0, 48.7), 'before the snap 59.2-60.5': lv(59.2, 60.5), 'attack gap 91.5-92.2': lv(91.5, 92.2)},
+                  'chime_dbfs': lv(106.9, 108.9), 'title_hit_dbfs': lv(3.2, 3.6), 'still_me_dbfs': lv(111.2, 111.6), 'silences_dbfs': {'zeros 48.0-48.7': lv(48.0, 48.7), 'before the snap 59.2-60.5': lv(59.2, 60.5), 'attack gap 91.5-92.2': lv(91.5, 92.2)},
                   'sections_dbfs': {'intro 0-3.1': lv(0, 3.1), 'nights 3.8-47.8': lv(3.8, 47.8), 'reveal 48.9-58.9': lv(48.9, 58.9),
                                     'anthem 66.5-90.5': lv(66.5, 90.5), 'ending 101.1-106.7': lv(101.1, 106.7)}}))

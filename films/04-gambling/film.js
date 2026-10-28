@@ -469,7 +469,7 @@ function poseCarry(x, y, s, ph) {             // walking with a box held at his 
 }
 function poseLift(x, y, s, k) {               // standing, lifting a box from his chest up onto a shelf
   const hip = [x, y - 196 * s], sh = [x + 8 * s, y - 370 * s];
-  const hand = [sh[0] + lerp(70, 96, k) * s, sh[1] + lerp(56, -150, k) * s], el = [sh[0] + lerp(30, 70, k) * s, sh[1] + lerp(90, -40, k) * s];
+  const hand = [sh[0] + lerp(70, 96, k) * s, sh[1] + lerp(56, -131, k) * s], el = [sh[0] + lerp(30, 70, k) * s, sh[1] + lerp(90, -30, k) * s];
   return { head: [x + 18 * s, y - 436 * s, 38 * s], box: [hand[0] - 30 * s, hand[1] - 98 * s, 124 * s, 100 * s],
     near: [[sh, [el[0] + 6 * s, el[1]], [hand[0] + 8 * s, hand[1]]], 21 * s],
     parts: [[[[x - 14 * s, y], [x - 10 * s, y - 100 * s], hip], 34 * s], [[[x + 16 * s, y], [x + 20 * s, y - 100 * s], hip], 34 * s],
@@ -480,11 +480,11 @@ function box(bx, by, bw, bh, light, a = 1) {
   ctx.fillStyle = rgba(mix([90, 72, 50], [214, 186, 140], light), a); ctx.fillRect(bx + bw * .42, by, bw * .16, bh * .5);
   ctx.strokeStyle = rgba([20, 14, 8], .5 * a); ctx.lineWidth = 2; ctx.strokeRect(bx, by, bw, bh);
 }
-function rack(x0, x1, light, seed) {
+function rack(x0, x1, light, seed, gap = 0) {   // gap: an empty slot at the left of the top shelf
   ctx.strokeStyle = rgba([150, 156, 170], .5); ctx.lineWidth = 6; line(x0, 150, x0, FLOORW); line(x1, 150, x1, FLOORW);
   ctx.lineWidth = 5; ctx.strokeStyle = rgba([210, 120, 40], .55);
   for (const y of [340, 600]) line(x0, y, x1, y);
-  for (const y of [340, 600]) { let x = x0 + 14, i = 0; while (x < x1 - 60) { const bw = 80 + 70 * rnd(seed + i), bh = 60 + 70 * rnd(seed + i + 40); if (x + bw > x1 - 10) break; box(x, y - bh - 3, bw, bh, light * (.6 + .4 * rnd(seed + i + 9)), .9); x += bw + 10; i++; } }
+  for (const y of [340, 600]) { let x = x0 + 14 + (y === 340 ? gap : 0), i = 0; while (x < x1 - 60) { const bw = 80 + 70 * rnd(seed + i), bh = 60 + 70 * rnd(seed + i + 40); if (x + bw > x1 - 10) break; box(x, y - bh - 3, bw, bh, light * (.6 + .4 * rnd(seed + i + 9)), .9); x += bw + 10; i++; } }
 }
 function shiftBoard(day, light) {             // the roster on the wall: SHIFT 1 and SHIFT 2, ticked day by day
   const x = 700, y = 170, w = 520, h = 250;
@@ -504,7 +504,7 @@ defShot('work', (t, p, L) => {
   const late = p.shift === 2, light = late ? .75 : .9, fr = p.fr || [1, 960, 540];
   fill(late ? [46, 34, 26] : [36, 40, 48], late ? [22, 16, 12] : [18, 19, 23]);
   cam(...fr);
-  rack(-200, 420, light, 11); rack(1500, 2100, light, 37);
+  rack(-200, 420, light, 11); rack(1500, 2100, light, 37, 150);
   shiftBoard(late ? 4 : 3, light);
   for (const lx of [560, 1360]) {
     ctx.strokeStyle = 'rgba(20,20,24,.9)'; ctx.lineWidth = 3; line(lx, -300, lx, 70);
@@ -514,18 +514,20 @@ defShot('work', (t, p, L) => {
   ctx.fillStyle = '#141417'; ctx.fillRect(-600, FLOORW, W + 1200, 500);
   ctx.strokeStyle = rgba([210, 170, 40], .35); ctx.lineWidth = 8; line(-600, 960, W + 600, 960);
   ctx.strokeStyle = rgba([200, 200, 210], .14); ctx.lineWidth = 2; line(-600, FLOORW, W + 600, FLOORW);
-  ctx.fillStyle = '#0d0d10'; ctx.fillRect(1240, 830, 300, 30);                     // a pallet
-  box(1260, 720, 130, 108, light * .9); box(1396, 740, 120, 88, light * .8); box(1300, 618, 120, 100, light * .85);
+  if (p.move === 'carry') {                                                          // a pallet
+    ctx.fillStyle = '#0d0d10'; ctx.fillRect(1240, 830, 300, 30);
+    box(1260, 720, 130, 108, light * .9); box(1396, 740, 120, 88, light * .8); box(1300, 618, 120, 100, light * .85);
+  }
   const rim = late ? [255, 190, 120] : [230, 232, 240];
   let P;
   if (p.move === 'carry') P = poseCarry(520 + L * 140, FLOORW, 1.05, L * 1.7 * Math.PI * 2);
-  else P = poseLift(1010, FLOORW, 1.05, E.io(clamp(L / 1.2)));
+  else P = poseLift(1440, FLOORW, 1.05, E.io(clamp(L / 1.2)));      // onto the top shelf of the rack
   drawPerson(P, [9, 8, 9], rim, .55, 0, -1);
   face(P.head[0], P.head[1], P.head[2], exprAt(t), { turn: 1, light: rim, la: .32, lc: [.3, -.8] });
   box(...P.box, light);
   ctx.strokeStyle = 'rgb(9,8,9)'; limb(P.near[0], P.near[1]);
 }, (t, p, L) => {
-  const P = p.move === 'carry' ? poseCarry(520 + L * 140, FLOORW, 1.05, 0) : poseLift(1010, FLOORW, 1.05, .5), b = poseBox(P, 60);
+  const P = p.move === 'carry' ? poseCarry(520 + L * 140, FLOORW, 1.05, 0) : poseLift(1440, FLOORW, 1.05, .5), b = poseBox(P, 60);
   return toScreenBox(p.fr || [1, 960, 540], [b[0], Math.min(b[1], P.box[1] - 20), Math.max(b[2], P.box[0] + P.box[2] + 20), b[3]]);
 });
 
@@ -731,7 +733,7 @@ defineFilm({
     [72.5, 'run', { fr: [1.9, 800, 470], run: RUN }], [73.7, 'run', { fr: [1, 960, 540], run: RUN }],
     [74.9, 'clock', '8:00 AM'],
     [75.5, 'work', { move: 'carry', shift: 1, fr: [1.2, 820, 560] }],
-    [77.2, 'work', { move: 'stack', shift: 1, fr: [1.3, 1040, 560] }],
+    [77.2, 'work', { move: 'stack', shift: 1, fr: [1.25, 1400, 540] }],
     [78.8, 'clock', '2:00 PM'],
     [79.4, 'work', { move: 'carry', shift: 2, fr: [1.15, 900, 560] }],
     [81, 'face', 'ware'],

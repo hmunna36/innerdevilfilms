@@ -640,12 +640,12 @@ defineFilm({
   words: [
     { id: 'W01', t: .1, d: 1.6, text: 'Every night you bet… who do you think is dealing?', show: false },   // the cold line has its own type
     { id: 'W02', t: 4.7, d: 1.8, text: 'Just one bet. For fun.' },
-    { id: 'W03', t: 7.85, d: 1.6, text: 'See? You’re good at this.' },
+    { id: 'W03', t: 7.8, d: 1.45, text: 'See? You’re good at this.' },
     { id: 'W04', t: 12, d: 2, text: 'Win a little more. Then send it.' },
     { id: 'W05', t: 18.5, d: 2, text: 'He can wait. You’re due for a win.' },
     { id: 'W06', t: 21.3, d: 1.8, text: 'Double it. Then stop.' },
     { id: 'W07', t: 24.7, d: 1.6, text: 'Mom won’t miss it.' },
-    { id: 'W08', t: 28.65, d: 1.6, text: 'You’ll win it back by morning.' },
+    { id: 'W08', t: 28.6, d: 1.35, text: 'You’ll win it back by morning.' },
     { id: 'W09', t: 37.6, d: 2.2, text: 'You still have something to bet…' },
     { id: 'W10', t: 44.9, d: 2.9, text: 'win it back… win it back…', show: false },   // the montage writes it
     { id: 'W11', t: 49.2, d: 2, text: 'I let you win.', real: true },
@@ -671,7 +671,7 @@ defineFilm({
     [87.2, 'calm'], [90.7, 'strain'], [92.3, 'resolve'], [95.7, 'calm'], [102.5, 'smile'], [104.9, 'calm']],
   // the cut: [start, shot, settings]
   shots: [
-    [0, 'cold', { lines: [[COLD1, .1, .7], ['…' + COLD, .8, 1.6]], out: [1.7, 1.9] }],
+    [0, 'cold', { lines: [[COLD1, .1, .65], ['…' + COLD, .75, 1.45]], out: [1.75, 1.9] }],
     [1.9, 'groom', { spot: 'window', felt: true, o: t => ({ eyes: win(t, 2.2, 3.4, .25, .01), a: .25 * win(t, 2.2, 3.4, .35, .01) }) }],
     [3.2, 'sting'],
     // night 1: it watches from the window; the first win is the bait; his sister's fees

@@ -460,10 +460,10 @@ defShot('photo', (t, p, L) => {
   const gs = ctx.createLinearGradient(-230, -290, 230, 290); gs.addColorStop(.35, 'rgba(255,255,255,0)'); gs.addColorStop(.48, 'rgba(255,255,255,.1)'); gs.addColorStop(.6, 'rgba(255,255,255,0)');
   ctx.fillStyle = gs; ctx.fillRect(-200, -260, 400, 520);
   ctx.restore();
-  if (night) { const u = clamp(L / 1.8); hourClock(lerp(1560, 260, u), lerp(860, 160, u) + Math.sin(u * 7) * 30, 26 + 10 * Math.sin(Math.PI * u), t, Math.sin(Math.PI * u), 3); }
+  if (night) { const u = clamp(L / 1.8); hourClock(lerp(1650, 250, u), 905 - 700 * u ** 3 + Math.sin(u * 7) * 14, 26 + 10 * Math.sin(Math.PI * u), t, Math.sin(Math.PI * u), 3); }
   else {                                                            // his hand, from the right: lifts it, lets go, and goes
-    const off = E.io(inv(p.at + .95, p.at + 1.45, t)), top = base - 580 * sy;     // it holds the frame's top edge, then lets go
-    mittR(cx + 300 + 420 * off, top + 30 - 120 * off, .5, 1.1, 'back', [10, 7, 6], [255, 204, 146], .5);
+    const off = E.io(inv(p.at + .95, p.at + 1.45, t)), side = base - 580 * sy * .55;   // it holds the frame's side, then lets go
+    mittR(cx + 236 + 560 * off, side + 40 * off, .08, .82, 'back', [10, 7, 6], [255, 204, 146], .5);
   }
 }, () => [640, 140, 1220, 800]);
 
@@ -581,13 +581,16 @@ function ageMarks(x, y, r, turn, k) {
   ctx.strokeStyle = rgba(C.cream, .38 * Math.min(1, k * 3)); ctx.lineWidth = .016 * r;
   for (const ex of [e1, e2]) { ctx.beginPath(); ctx.arc(ex, ey + .11 * r, .1 * r, .2 * Math.PI, .8 * Math.PI); ctx.stroke(); }
   const g = clamp((k - .3) / .3);
-  if (g > 0) {
+  if (g > 0) {                                   // grey at the temple, spreading back over the side of his head
     ctx.save(); ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.clip();
-    ctx.strokeStyle = rgba([212, 212, 218], .75); ctx.lineWidth = .022 * r;
-    const n = Math.round(5 + 15 * g);
+    const gx = x - r * .5, gy = y - r * .42, rg = ctx.createRadialGradient(gx, gy, 0, gx, gy, r * (.35 + .4 * g));
+    rg.addColorStop(0, rgba([196, 196, 202], .42 * g)); rg.addColorStop(1, rgba([196, 196, 202], 0));
+    ctx.fillStyle = rg; ctx.fillRect(x - r, y - r, 2 * r, 2 * r);
+    ctx.strokeStyle = rgba([222, 222, 228], .62); ctx.lineWidth = .014 * r;
+    const n = Math.round(6 + 16 * g), a0 = Math.PI * (1.28 - .1 * g), a1 = Math.PI * (1.36 + .26 * g);
     for (let i = 0; i < n; i++) {
-      const u = i / Math.max(1, n - 1), sx = x - r * (.3 + .62 * u * g), sy = y - r * (1.02 - .25 * u * g);
-      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.quadraticCurveTo(sx - .05 * r, sy + .3 * r, sx - .03 * r + .05 * r * (i % 2), sy + (.42 + .25 * g) * r); ctx.stroke();
+      const u = (i + .5) / n, rr = r * (.8 + .17 * rnd(i + 40)), ang = lerp(a0, a1, u), span = .1 + .08 * rnd(i + 41);
+      ctx.beginPath(); ctx.arc(x, y, rr, ang - span, ang + span); ctx.stroke();
     }
     ctx.restore();
   }
@@ -821,8 +824,8 @@ defShot('lake', (t, p, L) => {
   };
   const G = poseSit(1010, 780, 1.2, .42), M = poseSit(740, 780, 1.08, .3);
   rod(M, 300, -.7, Math.sin(t * 2.4 + 1) * 3);
-  const gs = G.parts[3][0][0], up = E.out(inv(.15, .7, L)), fh = [gs[0] + lerp(60, 30, up), gs[1] - lerp(20, 190, up)];   // the fish goes up
-  G.parts[3] = [[gs, [gs[0] + 50, gs[1] - lerp(10, 90, up)], fh], 24 * 1.2];
+  const gs = G.parts[3][0][0], up = E.out(inv(.15, .7, L)), fh = [gs[0] + lerp(40, -95, up), gs[1] - lerp(20, 175, up)];   // the fish goes up, between them
+  G.parts[3] = [[gs, [gs[0] + lerp(40, 10, up), gs[1] - lerp(10, 105, up)], fh], 24 * 1.2];
   ctx.strokeStyle = '#1a1416'; ctx.lineWidth = 7; ctx.lineCap = 'round'; line(G.hand[0] - 20, G.hand[1] + 30, G.hand[0] + 210, G.hand[1] - 230);   // his rod, leaning
   drawPerson(G, [14, 10, 14], rim, .6, 1, -.3);
   ctx.save(); ctx.translate(fh[0], fh[1] + 66); ctx.rotate(Math.sin(t * 5) * .08);                // the fish, silver in the sun
@@ -838,7 +841,8 @@ defShot('lake', (t, p, L) => {
   const mx = G.head[0] + G.head[2] * lerp(.08, .33, laugh), my = G.head[1] + G.head[2] * .34;
   ctx.fillStyle = rgba([226, 222, 214], .95); ctx.beginPath(); ctx.ellipse(mx, my, G.head[2] * .2, G.head[2] * .07, 0, 0, Math.PI * 2); ctx.fill();
   ctx.restore();
-  ctx.fillStyle = 'rgba(206,204,200,.8)'; ctx.beginPath(); ctx.ellipse(G.head[0] + G.head[2] * .7, G.head[1] - G.head[2] * .12, G.head[2] * .2, G.head[2] * .3, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = 'rgba(206,204,200,.8)'; ctx.lineWidth = G.head[2] * .16; ctx.beginPath(); ctx.arc(G.head[0], G.head[1], G.head[2] * .9, -.55, .45); ctx.stroke();   // grey hair under the hat
+  ctx.fillStyle = 'rgba(0,0,0,0)'; ctx.beginPath(); ctx.ellipse(G.head[0] + G.head[2] * .7, G.head[1] - G.head[2] * .12, G.head[2] * .2, G.head[2] * .3, 0, 0, Math.PI * 2); ctx.fill();
   drawPerson(M, [10, 8, 11], rim, .55, 1, -.3);
   face(M.head[0], M.head[1], M.head[2], exprAt(t), { turn: .95, light: rim, la: .36, lc: [.7, -.2] });
 }, (t, p) => toScreenBox(p.fr || [1, 960, 540], [600, 300, 1500, 920]));
@@ -874,7 +878,7 @@ defShot('dmirror', (t, p, L) => {
     smallGrin(dx + 88, dy + 196, 64, .9 * pa, [120, 150, 230]);
     ctx.save(); ctx.translate(px, py); ctx.rotate(-.18); ctx.globalAlpha = pa;
     ctx.strokeStyle = '#000'; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.shadowColor = rgba(C.red, .9); ctx.shadowBlur = 14 * VP.k;
-    ctx.lineWidth = 15; ctx.beginPath(); ctx.moveTo(24, 8); ctx.lineTo(78, -16); ctx.lineTo(134, 44); ctx.stroke();   // its arm, out of the dark
+    ctx.lineWidth = 14; ctx.beginPath(); ctx.moveTo(24, 8); ctx.quadraticCurveTo(96, 24, 158, -46); ctx.stroke();   // its arm, out of the dark
     ctx.lineWidth = 7; for (let f = 0; f < 4; f++) { const fy = -30 + f * 19; ctx.beginPath(); ctx.moveTo(26, 6); ctx.lineTo(4, fy); ctx.stroke(); }   // fingers behind the phone
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#0d0c10'; rrect(-24, -44, 48, 88, 8); ctx.fill();

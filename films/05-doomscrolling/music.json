@@ -1,0 +1,97 @@
+{
+ "model": "music_v2_5",
+ "note": "DOOMSCROLLING | It Eats Your Hours. SCORE runs 0:00-1:07.2 (Intro to the title at 0:03.35, Nights from 0:04.0 to the end of the montage at 0:48.4, Reveal to the turn); RISE is the comeback anthem from 1:07.2 (6:00 AM) to 1:41.8; ENDING is the calm piano of WEEKS LATER. The vice's colour: a relentless ticking clock and a glitchy looping digital arpeggio, like a feed that never ends. New sound: the drawer slammed shut (the clock's tick is mixlib's own tick(), free).",
+ "score": {
+  "id": "SCORE",
+  "chunks": [
+   {
+    "text": "[Intro]\n{a cold sub-bass drone and a loud old clock ticking in the dark}\n{a reversed riser that slams into a massive deep brass blast on the last beat}",
+    "duration_ms": 4000,
+    "positive_styles": [
+     "dark cinematic horror",
+     "cinematic",
+     "deep brass",
+     "sub bass",
+     "extreme",
+     "great production quality"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Nights]\n{relentless dark horror pulse: distorted 808 sub bass, pounding toms, trap hi-hats in half-time}\n{a ticking clock locked to the beat and a glitchy, looping digital arpeggio on top that never resolves, a dissonant string ostinato}\n{the tension rises non-stop and hits harder every 8 bars, peaking in the last three seconds}",
+    "duration_ms": 44400,
+    "positive_styles": [
+     "dark phonk",
+     "horror trap",
+     "aggressive",
+     "distorted 808",
+     "ticking clock",
+     "glitch arpeggio",
+     "140 bpm",
+     "intense"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Reveal]\n{one second of dead silence, then a colossal horror explosion}\n{huge deep brass blasts, a wordless dark choir, distorted drums, screeching strings, maximum terror}\n{a first massive hit at 8.6 seconds, a brutal hit at 13.1 seconds, then a ringing aftermath}",
+    "duration_ms": 18800,
+    "positive_styles": [
+     "epic horror",
+     "deep brass",
+     "wordless dark choir",
+     "distorted",
+     "terrifying",
+     "extreme"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   }
+  ]
+ },
+ "cues": {
+  "RISE": {
+   "ms": 35000,
+   "prompt": "Euphoric, heroic comeback anthem for a dawn training montage: opens on one huge impact, then pounding drums and claps at 130 BPM, a driving pulsing bass, a bright rising synth arpeggio, soaring strings and bold horns in a bright major key, building to a triumphant peak. Determined, free, unstoppable. Instrumental, no vocals."
+  },
+  "ENDING": {
+   "ms": 16000,
+   "prompt": "Calm, warm solo piano at sunrise in a major key at 72 BPM, gentle and hopeful, sparse notes with a soft room tone, and a faint, slow clock ticking underneath that turns slightly unsettling near the end. No drums, no vocals."
+  }
+ },
+ "sfx": {
+  "drawer": {
+   "sec": 1.2,
+   "text": "a heavy wooden desk drawer slammed shut hard, one loud wooden bang with a short rattle, close up"
+  }
+ },
+ "shared_sfx": [
+  "scream",
+  "shriek",
+  "scare",
+  "stinger",
+  "swell"
+ ]
+}

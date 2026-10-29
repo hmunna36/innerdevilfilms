@@ -1,6 +1,7 @@
 # Film 05: DOOMSCROLLING | It Eats Your Hours
 
-- **YouTube:** (filled in at upload)
+- **YouTube:** https://youtu.be/3Kdysv-5uwA, uploaded 29 Oct 2026 by the cloud routine, private until it goes public on
+  9 Nov 2026 at 05:30 IST (Sunday 8 Nov 19:00 New York), with the code-drawn thumbnail (`thumb.jpg` = `thumb_code.jpg`).
 - **What it is:** 1:58 (117.6 s), 16:9, 1920 x 1080, 30 fps, in the house style of LUST (`films/03-lust`). There is no
   narration; an ElevenLabs score carries the film, and the devil's words are on screen (pink whispers, then red slammed
   capitals). 76 shots, average 1.55 s.
@@ -44,7 +45,9 @@ All in `film.js`, drawn in the engine's style:
 
 ## Sound
 
-- **Made by ElevenLabs** (`music.json`, through `engine/audio/music.mjs`, 29 Oct 2026), planned about 1,974 credits:
+- **Made by ElevenLabs** (`music.json`, through `engine/audio/music.mjs`, 29 Oct 2026), planned about 1,974 credits (the
+  shared account read 8,153 at preflight and 7,783 just before the music, as the daily channels use it too; its counter
+  lags, so the exact spend shows only later):
   - SCORE: 67.2 s, three chunks: the intro, the nights (a ticking clock and a looping glitch arpeggio), the reveal;
   - RISE: the comeback anthem, 35 s;
   - ENDING: a calm piano, 16 s;
@@ -62,7 +65,41 @@ All in `film.js`, drawn in the engine's style:
 
 ## QA
 
-(filled in at the end of QA)
+**Story:** two critic rounds.
+- Round 1: cold line 7, stake 6, devil 9, banners 7, reveal 5, comeback 7, last line 6, safety 7, pace 9. Changed:
+  Grandpa's photo from 0:08, SATURDAY 17 eaten, "I WAS EATING YOU." with his face ageing night by night, "HE DOESN'T
+  HAVE YEARS.", "JUST SCROLL." kept for the end, a logo no brand owns (chevrons), the call declined by his thumb, the
+  whole cut retimed to its own rhythm.
+- Round 2: 8, 9, 9, 9, 8, 8, 8, 10, 9; its polish applied (the photo's own close-up into its teeth, the blink after the
+  line, the photo face down, SATURDAY held 0.7 s).
+
+**Sheets:** three rounds of stills and contact sheets. Fixed: the banner heart overflowing its tile, the aged hair (a
+cap with a receding hairline, then strands along the skull), the devil over his shoulder clear of the words, the
+reading arm, the drawer's fingers over the edge, the clock face kept off the photo's faces, the hand that stands the
+photo up, the fish held between them, the claw's arm in the doorway, the last mirror framed with his whole face.
+
+**Video v1:** `qa.mjs` all ok (117.60 s, H.264/AAC, -14.19 LUFS, -1.33 dBTP; the one black stretch, 110.13-110.43 s, is
+the planned glitch to black). The sound measured in the MP4 at every turn (title hit -7.8 dB, the dead phone -150 dB,
+the hush before the drawer -38 dB, the attack gap -53 dB). Every phone text checked at 1080p. A blind sound-off viewer,
+given only 2-fps sheets, told the story back: FEED and its timer, the months, the devil closer each night eating his
+time, Grandpa's photo and the declined call, the ageing reflection, "HE DOESN'T HAVE YEARS.", the drawer, the training,
+the deleted app, fishing with Grandpa, the ending as a lingering threat. Its gaps were banner text too small on the
+sheets (readable in the MP4). Shipped.
+
+**Ship bar (v1):**
+
+| # | Item | Score | Why |
+|---|---|---|---|
+| 1 | Cold open | 8 | the cold line from 0.1 s; its eyes open outside the window at 2.4 s and its grin snaps a calendar page; DOOMSCROLLING on the score's hit at 3.35 s |
+| 2 | Story with the sound off | 8 | a blind viewer told it back; Grandpa in the photo, the call and the chat; the date cards make the months read |
+| 3 | Pace | 9 | 76 shots, 1.55 s average, none over 2.6 s but the text cards; flashes on the cards, its face, the calendar, the clock, the bite; glitches on every turn; the montage every .375 s |
+| 4 | The devil | 9 | red rim, smoke, burning eyes and grin; outside the window, the foot of the bed, beside him, behind him; kind pink whispers, then red capitals |
+| 5 | His face | 8 | glazed, tired, empty with a tear, ashamed, fear, shock, resolve, strain, focus, calm, smile; a notch older each night, young again; never cut off |
+| 6 | The phone | 9 | an invented app and logo, abstract posts; banners push the page down; every text readable at 1080p |
+| 7 | The comeback | 9 | 6:00, 6:20, 7:05 AM, 7:50, 9:40, 10:45 PM; push-ups, a run, pull-ups, squats, curls, a book; RISE's impact on 6:00 AM |
+| 8 | The ending | 9 | "JUST SCROLL." over the phone in its claw and the blink to his old face; "HOW MANY HOURS DID IT EAT?" "NOT ENOUGH."; the title spelled right |
+| 9 | Sound | 8 | the sections change on the turns, the anthem clearly different, silences only where planned (measured, not heard) |
+| 10 | Mechanics | 10 | `qa.mjs` all ok |
 
 ## Files
 

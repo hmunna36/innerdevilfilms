@@ -1,7 +1,7 @@
 # Film 04: GAMBLING | The House Always Wins
 
 - **YouTube:** https://youtu.be/-Hvb4y2juGk, uploaded 28 Oct 2026 by the cloud routine, private until it goes public on
-  2 Nov 2026 at 05:30 IST (Sunday 1 Nov 19:00 New York), with the code-drawn thumbnail (`thumb.jpg` = `thumb_code.jpg`).
+  2 Nov 2026 at 05:30 IST (Sunday 1 Nov 19:00 New York), first with the code-drawn thumbnail; since 30 Oct 2026 the ChatGPT one (`thumb.jpg`).
 - **What it is:** 1:57 (117 s), 16:9, 1920 x 1080, 30 fps, in the house style of LUST (`films/03-lust`). There is no
   narration; an ElevenLabs score carries the film, and the devil's words are on screen (pink whispers, then red slammed
   capitals). 75 shots, average 1.56 s.
@@ -108,7 +108,7 @@ and the warehouse box now going onto the shelf.
 - `music.json`: what ElevenLabs made; the mp3s and their prompts are in `audio/music` and `audio/sfx`.
 - `mix.py`: the sound.
 - `publish.json`: the upload sheet with the video id.
-- `thumb.jpg` / `thumb_code.jpg`: the code-drawn thumbnail.
+- `thumb.jpg`: the ChatGPT thumbnail (30 Oct 2026, from `thumb/chatgpt_v1.png`, drawn from the `thumb/ref_*.jpg` frames with LUST's thumbnail as the style reference); `thumb_code.jpg`: the code-drawn one.
 - `film04_phone.mp4`: the 720p archive copy.
 
 **Rebuild:** `python films/04-gambling/mix.py`, then `.claude/skills/idf/bin/render.sh film films/04-gambling` (writes
@@ -118,6 +118,4 @@ and the warehouse box now going onto the shelf.
 
 ## Left for the owner
 
-- The ChatGPT thumbnail: `/idf thumb 04` on the Mac, before the release on Sunday 1 Nov 19:00 New York. Word "GAMBLING",
-  hook "IT ALWAYS WINS".
 - In Studio: the end screen (the next film or the channel) and the pinned comment.

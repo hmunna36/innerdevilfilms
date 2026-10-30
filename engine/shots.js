@@ -21,7 +21,7 @@ defShot('clock', (t, p, L = 1) => {
   fill([4, 5, 8]);
   additive(() => glow(SPR.blue, W / 2, 840, 760, .3 * (.92 + .08 * Math.sin(t * 11))));
   if (!OUT.vertical) slam(label, W / 2, 540, 240, [214, 224, 238], .95, t - L, t, 0, '200');
-  else { ui(); slam(label, OUT.w / 2, 960, fitSize(label, 240, 860, 0, '200'), [214, 224, 238], .95, t - L, t, 0, '200'); }
+  else { ui(); slam(label, OUT.w / 2, 880, fitSize(label, 240, 780, 0, '200'), [214, 224, 238], .95, t - L, t, 0, '200'); }   // inside the Shorts safe area (x 100-980 above y 1000)
 });
 // a typed card ('WEEKS LATER'): p is the label
 defShot('card', (t, p, L) => {

@@ -16,7 +16,7 @@ Three jobs:
 
     short next:  preflight -> the next Short in shorts.md -> short.js (segments of the film, framed for 9:16) -> sound
                  -> sheets with the safe area -> render -> QA (loop) -> upload, 20:00 IST -> push -> report
-    film next:   preflight film -> the topic (topics.md) -> STORY (beat table on the LUST spine, critic, lock) -> music.json
+    film next:   preflight film -> the topic (topics.md) -> STORY (its own structure and look, beat table, critic, lock) -> music.json
                  -> ElevenLabs -> film.js on the engine -> sheets (loop) -> mix -> render -> QA (loop) -> code thumbnail
                  + title -> upload, Sunday 19:00 New York -> plan its 7 Shorts -> push -> report
     thumb NN:    (the Mac, with the owner's Chrome) film frames -> ChatGPT draws the thumbnail -> check -> swap it in -> push
@@ -34,22 +34,26 @@ Unattended runs (the cloud routines) never ask a question: decide, act, fix what
 4. **Pace beats length.** Cuts every 1-3 s, a push-in on every shot, flash frames and glitches on the turns. LUST is 1:50;
    films are 1:40-2:20. Never hold a shot for a line: cut on it.
 5. **The opening line is very cold** (it speaks to the viewer about the vice), and the ending calls it back with its answer.
-6. **The devil is properly visible**, with a highly scary aura (red rim, smoke, burning eyes, the grin), and comes
-   closer every night: the window, the foot of the bed, beside him, behind him with its hands on his shoulders.
+6. **The devil is properly visible**, with a highly scary aura (red rim, smoke, burning eyes, the grin), and visibly
+   closes in on him (in LUST every night: the window, the foot of the bed, beside him, behind him; each film its own
+   way, `reference/film.md`).
 7. **The hero shows clear facial expressions**, changing with the story.
 8. **The phone shows the vice safely**: never explicit, an original logo, no real brands or logos, and a notification
    never hides the screen (it pushes the page down).
 9. **Times on screen are normal waking hours** for the comeback (6:00 AM, 6:30 AM, 7:15 AM…), and the comeback shows
-   real training: push-ups, a run, and at the gym pull-ups, squats and curls.
+   real training (LUST: push-ups, a run, pull-ups, squats and curls), in the film's own place.
 10. **Generic English, YouTube-safe, never graphic**: no gore, no blood, no self-harm, nothing sexual drawn, and no sexual
     wording in titles, descriptions, tags or thumbnails beyond the topic word itself. Gambling, drinking and vaping are
     shown as harm, never glamorised, and never with a real brand (an app, a casino, a bottle label, a vape).
 11. **Code-drawn animation only** (the engine). No AI video, no stock footage, no copyrighted music. ChatGPT images are
     for thumbnails only.
-12. **Thumbnails are extreme**: the topic word huge in fat white letters with a red edge, the hook small under it. The
+12. **Thumbnails are extreme**: the topic word huge in fat white letters with a red edge, the hook small next to it (above
+    or under), and each film its own composition and colours (never the last three films' layouts). The
     hook never names the devil: it is always "IT …" (LUST: "IT WATCHES"); if one ever has to name it, "THE DEVIL …" with
     "the", never a bare "Devil …". Drawn by ChatGPT from film frames on the Mac; the cloud uploads a code-drawn one first.
-13. **Every video is its own piece.** YouTube's partner review rejects mass-produced, repetitive channels: each film
+13. **Every video is its own piece** (the owner, 30 Oct 2026: "all 3 videos are same style"). Each film has its own
+    structure, main place, palette, reveal, comeback setting and thumbnail composition, different from the last three
+    films (`reference/film.md`, "Every film is its own film"). YouTube's partner review rejects mass-produced, repetitive channels: each film
     brings a new vice device, new places and props, a new cold line and last line; each Short its own cut, framing,
     words and title. Never the same Short or film with the words swapped.
 
@@ -89,7 +93,7 @@ A Short is `shorts/NN-slug/short.js`: segments of the film, framed for 9:16. `$K
    its last checkpoint (STORY.md locked -> the music; music.json and mp3s -> the build; film.js -> the render), never
    from scratch. Check demand once (`node $K/bin/yt.mjs demand "<WORD> animated short film"`): it informs the title;
    the hook line must differ from every exact title found.
-3. The story (`reference/film.md`, "The story"): the beat table on the LUST spine with times, every word on screen, the
+3. The story (`reference/film.md`, "The story"): a structure and look the last three films did not use (`reference/film.md`), the beat table on it with times, every word on screen, the
    cold line and its callback, the vice's screen, the banners, the reveal lines, the comeback, the last line. The critic
    sub-agent until every score is 8+ (three rounds at most). Lock `films/NN-slug/STORY.md`. Checkpoint push.
 4. The music (`reference/film.md`, "The music"): `music.json` timed to the beat table, `music.mjs --dry-run`, then make

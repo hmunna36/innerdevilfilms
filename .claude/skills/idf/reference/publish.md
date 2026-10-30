@@ -35,7 +35,8 @@ The owner wants extreme thumbnails drawn by ChatGPT from film frames, and the cl
 
 1. **The cloud film run** uploads with the code-drawn thumbnail: `render.sh thumb films/NN-slug` draws the film's
    `thumb` settings (`{ word, hook, expr }`): the topic word huge in fat white letters with a red edge, the hook small
-   under it, its face huge with the grin, his terrified face lit red. Copy it to `films/NN-slug/thumb.jpg` (the cover in
+   under it, its face huge with the grin, his terrified face lit red. It is only a stand-in until the Mac swaps in the
+   ChatGPT one; set the film's own palette in it where the engine allows. Copy it to `films/NN-slug/thumb.jpg` (the cover in
    `publish.json`) and keep `thumb_code.jpg`. The film never goes out with a random frame.
 2. **The Mac** (`/idf thumb NN`, the owner's Chrome, any day before the Sunday release) makes the real one and swaps it
    in. The report of every film run says so.
@@ -48,14 +49,28 @@ The owner wants extreme thumbnails drawn by ChatGPT from film frames, and the cl
    films/NN-slug/thumb` (they are committed as `ref_*.jpg`, as LUST's are).
 3. ChatGPT in the owner's Chrome, a new chat, the method in `~/.claude/skills/be/reference/chatgpt.md` (load the Chrome
    tools in one ToolSearch call, work in a tab you create, attach the three frames, wait for the image, download it).
-   The prompt: "Make a YouTube thumbnail, 16:9, for my animated horror short film. Use the attached frames from the film
-   for the characters and keep their exact design: the devil (black, long horns, burning slit eyes, a huge glowing grin
-   full of teeth, red rim light, black smoke) and the man (a dark round head with simple cream eyes, brows and mouth).
-   Make it extreme and scary: the devil's face huge on the right, leaning over the man; the man on the left, terrified,
-   lit red by his phone. The word "<WORD>" huge in fat white letters with a thick red edge at the top left, and
-   "<HOOK>" small under it. Deep red and black, high contrast, readable at small size. Nothing explicit, no real logos or
-   brands, no blood, nothing sexual." Ask for a fix if a face is off-model, a word is misspelled, or it fails the 320 px
-   test. The hook is always "IT …" (never naming the devil; if it must, "THE DEVIL …").
+   Attach the three frames and LUST's `films/03-lust/thumb.jpg` as the finish to match (glossy, high contrast, rim
+   light), then write the prompt: "Make a YouTube thumbnail, 16:9, for my animated horror short film. Use the attached
+   frames for the characters and keep their exact design: the devil (black, long horns, a cracked head, burning slit
+   eyes, a huge glowing grin full of teeth, red rim light, black smoke, long claws) and the man (a dark round head with
+   simple cream eyes, brows and mouth). Match the fourth image's finish and intensity but NOT its layout. Scene: <the
+   film's own composition>. Palette: <the film's palette>, with only the devil's eyes and grin red. The word "<WORD>"
+   huge in fat white letters with a thick glowing red edge <top or bottom>, and "<HOOK>" small next to it. Spell both
+   exactly. Readable at small size. Nothing explicit, no real logos or brands, no blood, nothing sexual." Ask for a fix
+   if a face is off-model, a word is misspelled, or it fails the 320 px test. The hook is always "IT …" (never naming
+   the devil; if it must, "THE DEVIL …").
+
+   **The composition is the film's own** (the owner, 30 Oct 2026): a single image from its strongest idea, never a layout
+   the last three films used. Used so far:
+
+   | Film | Composition | Palette | Word |
+   |---|---|---|---|
+   | 03 LUST | the man on the left lit by his phone, the devil over his shoulder with its claws on him | red | top |
+   | 04 GAMBLING | the devil as the dealer across a green table, holding up a card with his face on it | casino green, gold lamp | bottom |
+   | 05 DOOMSCROLLING | one giant phone; in its black glass his face split young/old, the devil grinning behind | icy blue | bottom |
+
+   Add each new film's row. Ideas not used yet: its giant hand holding him tiny; its point of view looking down on
+   him; the object of the vice huge in the foreground with him trapped inside it; a split frame of the two of him.
 4. Check it at 320 px wide (the word must read at a glance), convert to JPEG under 2 MB, save `films/NN-slug/thumb.jpg`
    (the code one stays as `thumb_code.jpg`), then `node .claude/skills/idf/bin/yt.mjs thumb <videoId> films/NN-slug/thumb.jpg`.
 5. Note it in the film's README and `reference/log.md`, push with `bin/push.sh`, and leave the clone light again.

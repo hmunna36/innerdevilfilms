@@ -108,7 +108,7 @@ sheets (readable in the MP4). Shipped.
 - `music.json`: what ElevenLabs made; the mp3s and their prompts are in `audio/music` and `audio/sfx`.
 - `mix.py`: the sound.
 - `publish.json`: the upload sheet with the video id.
-- `thumb.jpg`: the ChatGPT thumbnail (30 Oct 2026, from `thumb/chatgpt_v1.png`, drawn from the `thumb/ref_*.jpg` frames with LUST's thumbnail as the style reference); `thumb_code.jpg`: the code-drawn one.
+- `thumb.jpg`: the ChatGPT thumbnail (30 Oct 2026, from `thumb/chatgpt_v2.png`, its own layout so it does not repeat LUST; v1 was LUST's layout); `thumb_code.jpg`: the code-drawn one.
 - `film05_phone.mp4`: the 720p archive copy.
 
 **Rebuild:** `python films/05-doomscrolling/mix.py`, then `.claude/skills/idf/bin/render.sh film films/05-doomscrolling`

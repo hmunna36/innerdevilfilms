@@ -55,9 +55,9 @@ put(fx, 103.9, boom(), -6)
 put(fx, 105.9, boom(), -10)
 
 # ---------- master ----------
-mix = master(filt(music + fx, 'high', 25)[:int(DUR * SR)])
+mix = master((music + fx)[:int(DUR * SR)])
 end = int((DUR - 1.4) * SR); mix[end:] *= np.linspace(1, 0, len(mix) - end)[:, None]
 write(os.path.join(HERE, 'audio', 'mix.wav'), mix)
 lv = lambda a, b: round(20 * np.log10(np.sqrt((mix[int(a * SR):int(b * SR)] ** 2).mean()) + 1e-9), 1)
-print(json.dumps({'lufs': round(lufs(mix), 2), 'true_peak_dbtp': round(true_peak(mix), 2), 'seconds': len(mix) / SR,
+print(json.dumps({'loudness': report(mix), 'seconds': len(mix) / SR,
                   'silences_dbfs': {'phone dies 43.1-43.7': lv(43.1, 43.7), 'before the throw 54-55': lv(54, 55), 'attack gap 85.0-85.9': lv(85.0, 85.9)}, 'anthem_dbfs': lv(61, 84), 'horror_nights_dbfs': lv(4, 43)}))

@@ -54,7 +54,8 @@ Faces should sit between y 400 and 1500.
 3. Words readable at phone size (whispers 66 px, real lines 92 px, clocks and cards fitted to the width) and held 1.2 s+.
 4. The Short's story reads with the sound off.
 5. Sound: the music runs under the cuts, a boom on each big jump, silences only where the film has them
-   (`short_mix.py`: no phone-band gap over 2 s unless planned), -14 LUFS ±1, true peak at most -1 dBTP (`qa.mjs`).
+   (`short_mix.py`: no phone-band gap over 2 s unless planned), -16 LUFS ±1 (SKILL.md rule 14: never too loud), true peak
+   at most -1 dBTP (`qa.mjs`).
 6. The end card names the film and points to it.
 
 ## Publishing a Short

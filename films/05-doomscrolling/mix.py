@@ -102,11 +102,11 @@ put(fx, 111.9, boom(), -6)                       # NOT ENOUGH.
 put(fx, 114.0, boom(), -10)                      # the title
 
 # ---------- master ----------
-mix = master(filt(music + fx, 'high', 25)[:int(DUR * SR)])
+mix = master((music + fx)[:int(DUR * SR)])
 end = int((DUR - 1.4) * SR); mix[end:] *= np.linspace(1, 0, len(mix) - end)[:, None]
 write(os.path.join(HERE, 'audio', 'mix.wav'), mix)
 lv = lambda a, b: round(20 * np.log10(np.sqrt((mix[int(a * SR):int(b * SR)] ** 2).mean()) + 1e-9), 1)
-print(json.dumps({'lufs': round(lufs(mix), 2), 'true_peak_dbtp': round(true_peak(mix), 2), 'seconds': len(mix) / SR,
+print(json.dumps({'loudness': report(mix), 'seconds': len(mix) / SR,
                   'lengths_s': {'SCORE': round(len(score_all) / SR, 2), 'RISE': round(len(W('music_RISE')) / SR, 2), 'ENDING': round(len(ending) / SR, 2)},
                   'title_hit_dbfs': lv(3.35, 3.75), 'not_enough_dbfs': lv(111.9, 112.3), 'doorway_dbfs': lv(107.6, 109.6), 'piano_lift_db': round(float(lift), 1),
                   'silences_dbfs': {'dead phone 48.45-49.3': lv(48.45, 49.3), 'before the drawer 60.0-61.45': lv(60.0, 61.45), 'attack gap 92.2-92.9': lv(92.2, 92.9)},

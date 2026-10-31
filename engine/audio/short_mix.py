@@ -1,6 +1,7 @@
 """A Short's sound, cut from its film's finished mix by the Short's plan (short.js `audio`, or by default the picture's own
 stretches): each piece is the film's mix from `from` to `to` placed at `at` (Short time), with short fades; `hits` are
-booms that cover a jump in the music; the end fades out; then -14 LUFS, -2.5 dBTP (the AAC upload must stay under -1).
+booms that cover a jump in the music; the end fades out; then master(): -16 LUFS (a film is -18), -2.5 dBTP (AAC can add a
+full dB on a hard transient, and the upload must stay under -1).
 run: python engine/audio/short_mix.py shorts/15-lust-hook   (from anywhere; builds the film's mix first if it is missing)
 writes shorts/NN-slug/mix.wav and prints a report: loudness, true peak, and every stretch where the phone band
 (300 Hz-6 kHz) stays under -38 dBFS for more than 2 s (only a planned silence may)."""
@@ -34,7 +35,7 @@ for h in plan['hits']:
 out = out[:N]
 fo = int(plan.get('fadeOut', .8) * SR)
 out[N - fo:] *= np.linspace(1, 0, fo)[:, None]
-out = master(filt(out, 'high', 25), ceiling=-2.5)   # AAC can add a full dB on a hard transient (Short 19: +1.07)
+out = master(out, target=-16.0, ceiling=-2.5)   # AAC can add a full dB on a hard transient (Short 19: +1.07)
 dest = os.path.join(REPO, folder, 'mix.wav')
 write(dest, out)
 
@@ -47,5 +48,5 @@ for k, r in enumerate(20 * np.log10(rms + 1e-9) < -38):
         if k - run > 20: quiet.append((round(run / 10, 1), round(k / 10, 1)))
         run = None
 if run is not None and len(rms) - run > 20: quiet.append((round(run / 10, 1), round(len(rms) / 10, 1)))
-print(json.dumps({'wrote': os.path.relpath(dest, REPO), 'seconds': round(len(out) / SR, 2), 'lufs': round(lufs(out), 2),
-                  'true_peak_dbtp': round(true_peak(out), 2), 'phone_band_quiet_over_2s': quiet}))
+print(json.dumps({'wrote': os.path.relpath(dest, REPO), 'seconds': round(len(out) / SR, 2), 'loudness': report(out),
+                  'phone_band_quiet_over_2s': quiet}))

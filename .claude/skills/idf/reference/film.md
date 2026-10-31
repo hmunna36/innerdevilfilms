@@ -113,7 +113,8 @@ Write `films/NN-slug/music.json` from the beat table's times (copy `films/03-lus
 - Look at it: `render.sh sheet film films/NN-slug --every 1 --cols 6 --width 320 --out /tmp/s.jpg` and LOOK; then
   `--at` the cuts ±0.1 s. Fix, repeat. The player (`engine/player.html?film=films/NN-slug`) plays it in a browser.
 - `mix.py` (copy LUST's): the score from 0 to the turn with its dead silences muted, RISE from the turn (muted during
-  the attack), the ending, the hits on top, `master()` to -14 LUFS / -2 dBTP. It writes `audio/mix.wav` (git-ignored).
+  the attack), the ending, the hits on top, `master()`: -18 LUFS, the rumble under 60 Hz held down, no 3 s stretch over
+  -13 LUFS and no burst over -10, -2 dBTP (SKILL.md rule 14). It writes `audio/mix.wav` (git-ignored) and prints `report()`.
 
 ## Ship bar (score each 1-10 from the sheets, spot frames and the MP4; every item 8+)
 
@@ -129,8 +130,9 @@ Write `films/NN-slug/music.json` from the beat table's times (copy `films/03-lus
    text readable.
 7. The comeback: waking hours on the clocks; push-ups, a run, pull-ups, squats, curls; the music turns on its first frame.
 8. The ending: its last line, the cold line called back with its answer, the title spelled right.
-9. Sound: the score's sections change on the turns, the anthem clearly different, silences only where planned.
-10. Mechanics (`node engine/qa.mjs films/NN-slug/filmNN.mp4`): 1:30-2:30, H.264/AAC, -14 LUFS ±1, true peak at most
+9. Sound: the score's sections change on the turns, the anthem clearly different, silences only where planned; never
+   too loud (mix.py's report: lufs -18, max_short_term at most -13, max_momentary at most -10, sub_share_pct under 30).
+10. Mechanics (`node engine/qa.mjs films/NN-slug/filmNN.mp4`): 1:30-2:30, H.264/AAC, -18 LUFS ±1, true peak at most
     -1 dBTP, every black stretch planned.
 
 Record the scores and rounds in `films/NN-slug/README.md`.

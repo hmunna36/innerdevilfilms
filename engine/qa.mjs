@@ -2,7 +2,8 @@
 // The mechanical checks on a finished MP4 (the eye checks are in reference/qa.md):
 //   node engine/qa.mjs <video.mp4> [--sheet out.png] [--every 1]
 // streams (H.264 yuv420p 30 fps, AAC 48 kHz stereo), the size (1920x1080 film, 1080x1920 Short), the length (film
-// 1:30-2:30, Short 25-40 s), the delivered loudness (-14 LUFS +-1, true peak at most -1 dBTP), every black stretch
+// 1:30-2:30, Short 25-40 s), the delivered loudness (film -18 LUFS, Short -16, each +-1; true peak at most -1 dBTP;
+// the owner, 31 Oct 2026: the first films at -14 were "very loud"), every black stretch
 // over .25 s (each must be a planned one), and a contact sheet of one frame a second. Exit 1 if a check fails.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -33,8 +34,8 @@ check(a && a.codec_name === 'aac' && +a.sample_rate === 48000 && a.channels === 
 check(short ? dur >= 25 && dur <= 40 : dur >= 90 && dur <= 150, `length: ${dur.toFixed(2)} s (${short ? 'Short 25-40 s' : 'film 1:30-2:30'})`);
 // loudness as delivered (loudnorm's measurement of the AAC track; it is in every ffmpeg build)
 const ln = spawnSync(FF, ['-nostats', '-hide_banner', '-i', mp4, '-vn', '-af', 'loudnorm=print_format=json', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
-const lj = JSON.parse(ln.slice(ln.lastIndexOf('{'), ln.lastIndexOf('}') + 1) || '{}'), I = +lj.input_i, TP = +lj.input_tp;
-check(Math.abs(I + 14) <= 1, `loudness: ${I} LUFS (target -14 +-1)`);
+const lj = JSON.parse(ln.slice(ln.lastIndexOf('{'), ln.lastIndexOf('}') + 1) || '{}'), I = +lj.input_i, TP = +lj.input_tp, T = short ? -16 : -18;
+check(Math.abs(I - T) <= 1, `loudness: ${I} LUFS (target ${T} +-1), range ${lj.input_lra} LU`);
 check(TP <= -1, `true peak: ${TP} dBTP (at most -1)`);
 // frames as raw pixels at a small size (needs only the scale filter and the rawvideo encoder: the Mac's small ffmpeg has both)
 // keep(i) picks which frames to hold (every frame is decoded, so frame i is exactly at i / 30 s)

@@ -69,11 +69,11 @@ put(fx, 111.2, boom(), -6)                      # STILL ME.
 put(fx, 113.3, boom(), -10)                     # the title
 
 # ---------- master ----------
-mix = master(filt(music + fx, 'high', 25)[:int(DUR * SR)])
+mix = master((music + fx)[:int(DUR * SR)])
 end = int((DUR - 1.4) * SR); mix[end:] *= np.linspace(1, 0, len(mix) - end)[:, None]
 write(os.path.join(HERE, 'audio', 'mix.wav'), mix)
 lv = lambda a, b: round(20 * np.log10(np.sqrt((mix[int(a * SR):int(b * SR)] ** 2).mean()) + 1e-9), 1)
-print(json.dumps({'lufs': round(lufs(mix), 2), 'true_peak_dbtp': round(true_peak(mix), 2), 'seconds': len(mix) / SR,
+print(json.dumps({'loudness': report(mix), 'seconds': len(mix) / SR,
                   'lengths_s': {'SCORE': round(len(score_all) / SR, 2), 'RISE': round(len(W('music_RISE')) / SR, 2), 'ENDING': round(len(ending) / SR, 2)},
                   'chime_dbfs': lv(106.9, 108.9), 'title_hit_dbfs': lv(3.2, 3.6), 'still_me_dbfs': lv(111.2, 111.6), 'silences_dbfs': {'zeros 48.0-48.7': lv(48.0, 48.7), 'before the snap 59.2-60.5': lv(59.2, 60.5), 'attack gap 91.5-92.2': lv(91.5, 92.2)},
                   'sections_dbfs': {'intro 0-3.1': lv(0, 3.1), 'nights 3.8-47.8': lv(3.8, 47.8), 'reveal 48.9-58.9': lv(48.9, 58.9),

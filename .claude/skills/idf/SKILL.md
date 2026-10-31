@@ -56,6 +56,10 @@ Unattended runs (the cloud routines) never ask a question: decide, act, fix what
     films (`reference/film.md`, "Every film is its own film"). YouTube's partner review rejects mass-produced, repetitive channels: each film
     brings a new vice device, new places and props, a new cold line and last line; each Short its own cut, framing,
     words and title. Never the same Short or film with the words swapped.
+14. **The sound is never too loud** (the owner, 31 Oct 2026: the first three films were "very loud"; they were mastered to
+    -14 LUFS with three quarters of their energy in the sub-bass). `master()` in `engine/audio/mixlib.py` does it for
+    every mix: films -18 LUFS, Shorts -16, the rumble under 60 Hz shelved down, no 3 s stretch more than 5 LU over the
+    target and no burst more than 8 LU over it. The jump scares still jump; they never hurt. `qa.mjs` checks the level.
 
 ## Where you are
 

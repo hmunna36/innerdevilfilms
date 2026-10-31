@@ -16,7 +16,8 @@
     bundled fonts the letters differ slightly.
   - `music.json`: what ElevenLabs made (`engine/audio/music.mjs`); the mp3s and their prompts are in `audio/music`,
     `audio/sfx` (and the unused narration takes in `audio/takes`).
-  - `mix.py`: the sound, rebuilt bit for bit from the mp3s into `audio/mix.wav` (git-ignored).
+  - `mix.py`: the sound, rebuilt from the mp3s into `audio/mix.wav` (git-ignored). Until 31 Oct 2026 it rebuilt the uploaded
+    -14 LUFS mix bit for bit; since then `master()` makes the channel's quieter mix (-18 LUFS, less rumble; SKILL.md rule 14).
   - `SCREENPLAY.md`: the shot-by-shot timeline and the music plan. `lust_phone.mp4`: a 720p copy.
   - `original/`: the single-file page that rendered the uploaded film (`lust.html`), the devil look test
     (`devil_test.html`) and the first tools (`original/tools`: el.mjs, score.mjs, gen.mjs, tts.mjs, mix.py,

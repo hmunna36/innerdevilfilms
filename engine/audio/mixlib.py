@@ -37,10 +37,46 @@ def src(film_dir, name):
     return load(wav)
 
 
-def master(x, target=-14.0, ceiling=-2.0):
-    """loudness to target LUFS, then a true-peak ceiling (AAC adds about half a dB, so -2 dBTP keeps the upload under -1)"""
+def master(x, target=-18.0, ceiling=-2.0, sub=-6.0):
+    """the channel's sound (the owner, 31 Oct 2026: the first three films were "very loud"; they were mastered to -14 LUFS
+    with three quarters of their energy in the sub-bass): nothing under 28 Hz, the rumble under 60 Hz shelved down by
+    `sub` dB, then `target` LUFS with no 3 s stretch more than 5 LU over it and no burst more than 8 LU over it (ride: the
+    jump scares still jump, they just don't hurt), then a true-peak ceiling. Films -18 LUFS, Shorts -16 (short_mix.py).
+    AAC adds about half a dB of peak, so -2 dBTP keeps the upload under -1."""
+    x = lowshelf(filt(x, 'high', 28, 4), 60, sub)
+    for _ in range(2):
+        x = x * db(target - lufs(x)); x = ride(x, target)
     x = x * db(target - lufs(x)); x = limit(x, ceiling)
     x = x * db(target - lufs(x)); return limit(x, ceiling)
+
+
+def lowshelf(x, f0=60.0, gain_db=-6.0, q=0.707):
+    """RBJ low shelf: gain_db below f0"""
+    A = 10 ** (gain_db / 40); w0 = 2 * np.pi * f0 / SR; cw = np.cos(w0); sa = 2 * np.sqrt(A) * np.sin(w0) / (2 * q)
+    b = np.array([A * ((A + 1) - (A - 1) * cw + sa), 2 * A * ((A - 1) - (A + 1) * cw), A * ((A + 1) - (A - 1) * cw - sa)])
+    a = np.array([(A + 1) + (A - 1) * cw + sa, -2 * ((A - 1) + (A + 1) * cw), (A + 1) + (A - 1) * cw - sa])
+    return signal.lfilter(b / a[0], a / a[0], x, axis=0)
+
+
+def ride(x, target, st_over=5.0, m_over=8.0):
+    """turn down only what would be too loud: any 3 s stretch more than st_over LU over the target, any 0.4 s burst more
+    than m_over LU over it; the turn-down is held and eased over 0.3 s so it never pumps"""
+    from scipy.ndimage import maximum_filter1d, uniform_filter1d
+    M, cm = loudness_curve(x, .4); S, cs = loudness_curve(x, 3.0); i = np.arange(len(x))
+    gr = np.maximum(np.interp(i, cm, np.maximum(0, M - (target + m_over))), np.interp(i, cs, np.maximum(0, S - (target + st_over))))
+    w = int(.3 * SR)
+    return x * db(-uniform_filter1d(maximum_filter1d(gr, w), w))[:, None]
+
+
+def report(x):
+    """the numbers the ship bar checks: integrated loudness, loudness range, the loudest 3 s and 0.4 s, true peak, and the
+    share of the energy under 60 Hz (the rumble)"""
+    M, _ = loudness_curve(x, .4); S, _ = loudness_curve(x, 3.0)
+    s = S[S > -70]; g = 10 * np.log10(np.mean(10 ** (s / 10))); s = s[s > g - 20]
+    f, P = signal.welch(mono(x), SR, nperseg=8192); band = (f >= 20) & (f < 16000)
+    return {'lufs': round(lufs(x), 1), 'lra': round(float(np.percentile(s, 95) - np.percentile(s, 10)), 1),
+            'max_short_term': round(float(S.max()), 1), 'max_momentary': round(float(M.max()), 1),
+            'true_peak': round(true_peak(x), 1), 'sub_share_pct': round(float(100 * P[(f >= 20) & (f < 60)].sum() / P[band].sum()), 1)}
 
 
 def write(path, x):
@@ -208,9 +244,20 @@ def varispeed(x, r0, r1):
 
 
 # ---------- loudness (ITU-R BS.1770) and a true-peak limiter ----------
-def lufs(x):
+def kweight(x):
     k = signal.lfilter([1.53512485958697, -2.69169618940638, 1.19839281085285], [1, -1.69065929318241, 0.73248077421585], x, axis=0)
-    k = signal.lfilter([1.0, -2.0, 1.0], [1, -1.99004745483398, 0.99007225036621], k, axis=0)
+    return signal.lfilter([1.0, -2.0, 1.0], [1, -1.99004745483398, 0.99007225036621], k, axis=0)
+
+
+def loudness_curve(x, win, hop=.01):
+    """loudness of every win-second window (0.4 momentary, 3 short-term), one every hop s; and each window's centre sample"""
+    k = kweight(x if x.ndim == 2 else x[:, None]); p = (k ** 2).sum(axis=1); c = np.concatenate([[0], np.cumsum(p)])
+    n, h = int(win * SR), int(hop * SR); st = np.arange(0, max(1, len(p) - n + 1), h)
+    return -0.691 + 10 * np.log10(np.maximum((c[np.minimum(st + n, len(p))] - c[st]) / n, 1e-12)), st + n // 2
+
+
+def lufs(x):
+    k = kweight(x)
     blk, hop = int(.4 * SR), int(.1 * SR)
     z = np.array([(k[i:i + blk] ** 2).mean(axis=0).sum() for i in range(0, len(k) - blk, hop)])
     l = -0.691 + 10 * np.log10(np.maximum(z, 1e-12)); z = z[l > -70]

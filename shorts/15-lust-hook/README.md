@@ -4,7 +4,7 @@ The first Short in the new style, and the test of the engine's vertical mode (27
 QA there, and the cloud routine of 28 Oct 2026 re-rendered it from source, re-ran `qa.mjs` (all ok: 31.10 s, -13.8 LUFS,
 -1.6 dBTP) and uploaded it: **YouTube ngv3Y26JGyM** (https://youtu.be/ngv3Y26JGyM), public 28 Oct 2026 20:00 IST.
 
-- **Film:** 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg), times from `films/03-lust/film.js`.
+- **Film:** 03 LUST | It Watches Back (https://youtu.be/_UwESHNcD7A), times from `films/03-lust/film.js`.
 - **The cut** (`short.js`): the cold line (already typed), its eyes opening in the window (a push-in on them), LUST,
   then four nights with it closer each time: 11:48 PM, the phone ("Shh… it's okay."), his face, it in the window;
   12:31 AM, the foot of the bed, its face; 1:47 AM, beside him, its grin; 3:05 AM, behind him with its hands on his

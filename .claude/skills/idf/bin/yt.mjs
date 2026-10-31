@@ -415,6 +415,19 @@ async function stats(ids) {
   const j = await (await api('GET', `https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet,status&id=${ids.join(',')}`)).json();
   for (const v of j.items ?? []) console.log(`${v.id}  ${v.status.privacyStatus}  views ${v.statistics.viewCount ?? 0}  likes ${v.statistics.likeCount ?? 0}  comments ${v.statistics.commentCount ?? 0}  ${v.snippet.title}`);
 }
+// after a film is re-uploaded: swap its old link for the new one in the descriptions of some videos (its Shorts)
+async function relink(oldId, newId, ids) {
+  if (!oldId || !newId || !ids.length) die('usage: yt.mjs relink <oldId> <newId> <videoId>...');
+  const j = await (await api('GET', `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${ids.join(',')}`)).json();
+  for (const v of j.items ?? []) {
+    const sn = v.snippet;
+    if (!sn.description.includes(oldId)) { console.log(`${v.id}: no link to ${oldId}`); continue; }
+    const snippet = {title: sn.title, description: sn.description.split(oldId).join(newId), tags: sn.tags, categoryId: sn.categoryId,
+      defaultLanguage: sn.defaultLanguage, defaultAudioLanguage: sn.defaultAudioLanguage};
+    await api('PUT', 'https://www.googleapis.com/youtube/v3/videos?part=snippet', {json: {id: v.id, snippet}});
+    console.log(`${v.id}: "${sn.title}" now links ${newId}`);
+  }
+}
 async function demand(questions) {
   if (!questions.length) die('usage: yt.mjs demand "<question>" ["<another>" ...]   (about 100 quota units each)');
   if (questions.length > 4) die('at most 4 questions in one call: each costs about 100 of the 10,000 units a day the uploads share');
@@ -451,11 +464,12 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
     else if (cmd === 'reschedule') await reschedule(args[0], args[1]);
     else if (cmd === 'status') await status(args);
     else if (cmd === 'stats') await stats(args);
+    else if (cmd === 'relink') await relink(args[0], args[1], args.slice(2));
     else if (cmd === 'list') await listAll();
     else if (cmd === 'private') await makePrivate(args);
     else if (cmd === 'demand') await demand(args);
     else if (cmd === 'thumb') await setThumb(args[0], args[1]);
-    else console.log('usage: yt.mjs auth | whoami | upcoming | next-free | reschedule <id> <time> | upload <publish.json> [--dry-run] [--schedule=auto] | status <videoId>... | stats <videoId>... | demand "<question>"...');
+    else console.log('usage: yt.mjs auth | whoami | upcoming | next-free | reschedule <id> <time> | upload <publish.json> [--dry-run] [--schedule=auto] | status <videoId>... | stats <videoId>... | relink <oldId> <newId> <videoId>... | demand "<question>"...');
   } catch (e) {
     die(e.message);
   }

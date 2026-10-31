@@ -119,3 +119,5 @@ sheets (readable in the MP4). Shipped.
 ## Left for the owner
 
 - In Studio: the end screen (the next film or the channel) and the pinned comment.
+
+**Re-made and replaced, 31 Oct 2026** (the owner: the sound was "very loud", "black figure on black background is a bad idea", the devil was "not looking good"; then "Replace all three"): rendered again with the Shadow Twin devil, the lit sets and the -18 LUFS mix, uploaded as 4cDycr2W4p0 (https://youtu.be/4cDycr2W4p0); the old upload 3Kdysv-5uwA is private, not deleted.

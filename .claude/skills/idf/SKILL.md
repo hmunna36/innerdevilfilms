@@ -10,7 +10,7 @@ effort: max
 **The channel** (youtube.com/@TheDevilYouFeed, id UCMWgThNed--oMhcPwyDKceA; it was Inner Devil Films until 27 Oct
 2026): every bad habit has a devil. It whispers that it's fine, and every night you feed it, it gets closer. In every
 film someone finally stops feeding it. Animated horror short films, no narration. The model film is **LUST | It Watches
-Back** (`films/03-lust`, https://youtu.be/aqiuimf3dCg, 1:50), approved by the owner (Harshad) after many rounds.
+Back** (`films/03-lust`, https://youtu.be/_UwESHNcD7A, 1:50), approved by the owner (Harshad) after many rounds.
 
 Three jobs:
 

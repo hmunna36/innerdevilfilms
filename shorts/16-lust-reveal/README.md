@@ -3,7 +3,7 @@
 The moment LUST's devil drops its kind voice. Built, QA'd and uploaded by the cloud routine of 28 Oct 2026:
 **YouTube uWRSbx31Zhw** (https://youtu.be/uWRSbx31Zhw), public 29 Oct 2026 20:00 IST.
 
-- **Film:** 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg), times from `films/03-lust/film.js`.
+- **Film:** 03 LUST | It Watches Back (https://youtu.be/_UwESHNcD7A), times from `films/03-lust/film.js`.
 - **The cut** (`short.js`, 12 segments): two of its kind whispers first: its grin beside him, "I'll never leave you."
   (the first frame); behind him with its hands on his shoulders, "She'd never understand you… not like I do.", his
   ashamed face; its claws around him, close. Then the phone dies, and the black glass shows it behind him: "I WAS NEVER

@@ -20,16 +20,32 @@
   ],
   "cover": "thumb.jpg",
   "youtube": {
-    "publishAt": "2026-11-02T00:00:00.000Z",
-    "privacy": "private",
+    "privacy": "public",
     "categoryId": "1",
     "language": "en",
     "madeForKids": false,
     "syntheticMedia": false,
-    "notifySubscribers": true,
-    "id": "-Hvb4y2juGk",
-    "url": "https://youtu.be/-Hvb4y2juGk",
-    "uploaded": "2026-10-28T17:30:06.723Z",
+    "notifySubscribers": false,
+    "id": "kfhGpirPNsk",
+    "url": "https://youtu.be/kfhGpirPNsk",
+    "uploaded": "2026-10-31T12:23:41.768Z",
     "thumbnailSet": true
+  },
+  "replaced": {
+    "id": "-Hvb4y2juGk",
+    "why": "the owner, 31 Oct 2026: re-made with the Shadow Twin devil, lit sets and the quieter mix; the old upload is private, not deleted",
+    "was": {
+      "publishAt": "2026-11-02T00:00:00.000Z",
+      "privacy": "private",
+      "categoryId": "1",
+      "language": "en",
+      "madeForKids": false,
+      "syntheticMedia": false,
+      "notifySubscribers": true,
+      "id": "-Hvb4y2juGk",
+      "url": "https://youtu.be/-Hvb4y2juGk",
+      "uploaded": "2026-10-28T17:30:06.723Z",
+      "thumbnailSet": true
+    }
   }
 }

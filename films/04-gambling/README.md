@@ -119,3 +119,5 @@ and the warehouse box now going onto the shelf.
 ## Left for the owner
 
 - In Studio: the end screen (the next film or the channel) and the pinned comment.
+
+**Re-made and replaced, 31 Oct 2026** (the owner: the sound was "very loud", "black figure on black background is a bad idea", the devil was "not looking good"; then "Replace all three"): rendered again with the Shadow Twin devil, the lit sets and the -18 LUFS mix, uploaded as kfhGpirPNsk (https://youtu.be/kfhGpirPNsk); the old upload -Hvb4y2juGk is private, not deleted.

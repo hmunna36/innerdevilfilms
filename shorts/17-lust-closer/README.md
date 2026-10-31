@@ -3,7 +3,7 @@
 One idea: watch where it stands. Built, QA'd and uploaded by the cloud routine of 29 Oct 2026:
 **YouTube MQoXmEmeoxU** (https://youtu.be/MQoXmEmeoxU), public 30 Oct 2026 20:00 IST.
 
-- **Film:** 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg), times from `films/03-lust/film.js` (8.3-40.0).
+- **Film:** 03 LUST | It Watches Back (https://youtu.be/_UwESHNcD7A), times from `films/03-lust/film.js` (8.3-40.0).
 - **The cut** (`short.js`, 15 segments): four nights, each framed as a two-shot (him and it in one picture, so the
   distance between them is the story), its kind whispers the only words, his face emptier each night. Night 1: him on
   the bed and its eyes in the window, "You worked hard today. You deserve this." (the first frame); him close, "Just

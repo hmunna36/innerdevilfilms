@@ -25,3 +25,6 @@
     `original/lust.html`.
 - **Rebuild:** `python films/03-lust/mix.py`, then `.claude/skills/idf/bin/render.sh film films/03-lust`.
 - **Shorts:** 15-21 in `.claude/skills/idf/shorts.md`; Short 15 (lust-hook) is built and passed QA.
+
+**Re-made and replaced, 31 Oct 2026** (the owner: the sound was "very loud", "black figure on black background is a bad idea", the devil was "not looking good"; then "Replace all three"): rendered again with the Shadow Twin devil, the lit sets and the -18 LUFS mix, uploaded as _UwESHNcD7A (https://youtu.be/_UwESHNcD7A); the old upload aqiuimf3dCg is private, not deleted.
+A first re-upload broke at 27% on a network error and left a stuck video, UGghaMVHjrk, set to private (it can be deleted in Studio). The channel trailer and the Related video of Shorts 15-19 point to the new upload, and their "Full film" links were swapped with `yt.mjs relink`.

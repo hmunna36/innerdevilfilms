@@ -4,9 +4,9 @@
 |---|---|---|---|---|
 | 01 | TOMORROW \| He Kept Saying It | 2:32 | https://youtu.be/0GEqZ5t3Ci8 | 19 Oct 2026 20:00 IST (private since 27 Oct) |
 | 02 | JUST ONE MORE \| The Phone Ate His Nights | 2:54 | https://youtu.be/GVoVv5A5kOE | 26 Oct 2026 04:30 IST (private since 27 Oct) |
-| 03 | LUST \| It Watches Back | 1:50 | https://youtu.be/aqiuimf3dCg | 27 Oct 2026 22:30 IST |
-| 04 | GAMBLING \| The House Always Wins | 1:57 | https://youtu.be/-Hvb4y2juGk | 2 Nov 2026 05:30 IST (Sun 1 Nov 19:00 New York) |
-| 05 | DOOMSCROLLING \| It Eats Your Hours | 1:58 | https://youtu.be/3Kdysv-5uwA | 9 Nov 2026 05:30 IST (Sun 8 Nov 19:00 New York) |
+| 03 | LUST \| It Watches Back | 1:50 | https://youtu.be/_UwESHNcD7A | 27 Oct 2026 22:30 IST |
+| 04 | GAMBLING \| The House Always Wins | 1:57 | https://youtu.be/kfhGpirPNsk | 2 Nov 2026 05:30 IST (Sun 1 Nov 19:00 New York) |
+| 05 | DOOMSCROLLING \| It Eats Your Hours | 1:58 | https://youtu.be/4cDycr2W4p0 | 9 Nov 2026 05:30 IST (Sun 8 Nov 19:00 New York) |
 
 Films 01-02 are the old Devil Mode style (Remotion, `anim/`; `01-tomorrow/tomorrow.mp4` is its master). From 03 on, every
 film is made on the canvas engine (`engine/`, `.claude/skills/idf/reference/engine.md`): `film.js` is the film,

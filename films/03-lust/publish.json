@@ -1,6 +1,6 @@
 {
   "kind": "film",
-  "file": "LUST - It Watches Back.mp4 (master kept on the Mac in ~/Desktop/lust-film; lust_phone.mp4 here is the 720p copy)",
+  "file": "film03.mp4",
   "title": "LUST | It Watches Back",
   "description": "Every night, a kind voice told him it was fine. Every night, the thing behind him got a little closer.\n\nLUST | It Watches Back is an animated short film about the habit that feeds on you in the dark, and the morning he finally fought back.\n\nWhen did you last feel watched by your own habit? Tell me in the comments.\n\n#shortfilm #animation #horror #selfimprovement #motivation",
   "tags": [
@@ -20,17 +20,34 @@
   ],
   "cover": "thumb.jpg",
   "youtube": {
-    "publishAt": "2026-10-27T22:30:00+05:30",
-    "privacy": "private",
+    "privacy": "public",
     "categoryId": "1",
     "language": "en",
     "madeForKids": false,
     "syntheticMedia": false,
-    "notifySubscribers": true,
+    "notifySubscribers": false,
+    "id": "_UwESHNcD7A",
+    "url": "https://youtu.be/_UwESHNcD7A",
+    "uploaded": "2026-10-31T16:38:29.315Z",
+    "thumbnailSet": true
+  },
+  "replaced": {
     "id": "aqiuimf3dCg",
-    "url": "https://youtu.be/aqiuimf3dCg",
-    "uploaded": "2026-10-27T15:01:23.797Z",
-    "thumbnailSet": true,
-    "rescheduled": "27 Oct 2026 21:21 IST, at the user's request (was 2026-10-28T20:00:00+05:30)"
+    "why": "the owner, 31 Oct 2026: re-made with the Shadow Twin devil, lit sets and the quieter mix; the old upload is private, not deleted",
+    "was": {
+      "publishAt": "2026-10-27T22:30:00+05:30",
+      "privacy": "private",
+      "categoryId": "1",
+      "language": "en",
+      "madeForKids": false,
+      "syntheticMedia": false,
+      "notifySubscribers": true,
+      "id": "aqiuimf3dCg",
+      "url": "https://youtu.be/aqiuimf3dCg",
+      "uploaded": "2026-10-27T15:01:23.797Z",
+      "thumbnailSet": true,
+      "rescheduled": "27 Oct 2026 21:21 IST, at the user's request (was 2026-10-28T20:00:00+05:30)"
+    },
+    "broken_attempt": "UGghaMVHjrk (31 Oct 2026: the first re-upload broke at 27% on a network error; the video is private and can be deleted)"
   }
 }

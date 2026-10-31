@@ -3,7 +3,7 @@
 One idea: the day he stops feeding it. Built, QA'd and uploaded by the cloud routine of 30 Oct 2026:
 **YouTube _5Eh35rT0HE** (https://youtu.be/_5Eh35rT0HE), public 31 Oct 2026 20:00 IST.
 
-- **Film:** 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg), times from `films/03-lust/film.js` (53.6-54.8,
+- **Film:** 03 LUST | It Watches Back (https://youtu.be/_UwESHNcD7A), times from `films/03-lust/film.js` (53.6-54.8,
   60.6-82.4, 91.8-94.5).
 - **The cut** (`short.js`, 20 segments): it opens on his red face and its real line "NOW YOU'RE MINE." (the first
   frame), a flicker of it engulfing him, then the hard turn to 6:00 AM. Push-ups ("Come back… just once."), his face

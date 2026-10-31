@@ -3,7 +3,7 @@
 One idea: it comes back for him, and it will always come back. Built, QA'd and uploaded by the cloud routine of 31 Oct
 2026: **YouTube N7ymztwn2OI** (https://youtu.be/N7ymztwn2OI), public 1 Nov 2026 20:00 IST.
 
-- **Film:** 03 LUST | It Watches Back (https://youtu.be/aqiuimf3dCg), times from `films/03-lust/film.js` (81.5-93.1,
+- **Film:** 03 LUST | It Watches Back (https://youtu.be/_UwESHNcD7A), times from `films/03-lust/film.js` (81.5-93.1,
   95.6-105.45, and a 0.8 s flash of 37.45-38.25).
 - **Why it also takes Short 21's ending:** the planned stretch (82.4-89.4) is 7 s and the ending planned as Short 21
   (95.5-108) is 12.5 s; neither reaches 25 s without padding or repeating Short 18. Together they make one arc: the

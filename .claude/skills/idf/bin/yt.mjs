@@ -409,6 +409,12 @@ async function status(ids) {
 }
 
 // ---- demand: is this question already watched by the million? (reference/long-form.md, "Which questions get made")
+// views, likes and comments of some videos (read-only)
+async function stats(ids) {
+  if (!ids.length) die('usage: yt.mjs stats <videoId>...');
+  const j = await (await api('GET', `https://www.googleapis.com/youtube/v3/videos?part=statistics,snippet,status&id=${ids.join(',')}`)).json();
+  for (const v of j.items ?? []) console.log(`${v.id}  ${v.status.privacyStatus}  views ${v.statistics.viewCount ?? 0}  likes ${v.statistics.likeCount ?? 0}  comments ${v.statistics.commentCount ?? 0}  ${v.snippet.title}`);
+}
 async function demand(questions) {
   if (!questions.length) die('usage: yt.mjs demand "<question>" ["<another>" ...]   (about 100 quota units each)');
   if (questions.length > 4) die('at most 4 questions in one call: each costs about 100 of the 10,000 units a day the uploads share');
@@ -444,11 +450,12 @@ if (import.meta.url === `file://${process.argv[1]}` || process.argv[1]?.endsWith
     else if (cmd === 'latest-film') await latestFilm();
     else if (cmd === 'reschedule') await reschedule(args[0], args[1]);
     else if (cmd === 'status') await status(args);
+    else if (cmd === 'stats') await stats(args);
     else if (cmd === 'list') await listAll();
     else if (cmd === 'private') await makePrivate(args);
     else if (cmd === 'demand') await demand(args);
     else if (cmd === 'thumb') await setThumb(args[0], args[1]);
-    else console.log('usage: yt.mjs auth | whoami | upcoming | next-free | reschedule <id> <time> | upload <publish.json> [--dry-run] [--schedule=auto] | status <videoId>... | demand "<question>"...');
+    else console.log('usage: yt.mjs auth | whoami | upcoming | next-free | reschedule <id> <time> | upload <publish.json> [--dry-run] [--schedule=auto] | status <videoId>... | stats <videoId>... | demand "<question>"...');
   } catch (e) {
     die(e.message);
   }

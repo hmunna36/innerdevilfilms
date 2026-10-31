@@ -130,7 +130,7 @@ function devilFaceFrame(t, p, L) {
   placeDevil(p.spot);
   const o = devilO(Object.assign({ a: 1, eyes: 1 }, p.o(t))), [hx, hy] = devilHead(t, o), s = DEVIL.s;
   const tw = p.twitch && ((L > 1.1 && L < 1.16) || (L > 1.9 && L < 1.95)) ? 1 : 0;
-  return { o, fr: [(p.scare ? 2.1 : 1.5 + .12 * clamp(L / 3)) * DEVIL_FACE_ZOOM / s, hx + tw * 10 * s, hy - (p.scare ? 4 : 14) * s] };
+  return { o, fr: [(p.scare ? 2.1 : 1.5 + .12 * clamp(L / 3)) * DEVIL_FACE_ZOOM / s, hx + tw * 10 * s, hy + (p.scare ? 4 : 16) * s] };
 }
 defShot('devilface', (t, p, L) => {
   fill([5, 3, 4]);

@@ -310,7 +310,7 @@ function devilHead(t, o) {
   const { x, y, s } = DEVIL;
   return [x + (40 + 60 * o.lean) * s + sway(t), y - 830 * s + o.lean * 40 * s];
 }
-const TWIN = { R: 64, shoulders: -712, hips: -500, knees: -350, feet: -200, torso: 52, neck: 32, arm: 22, leg: 26, finger: 7 };
+const TWIN = { R: 64, shoulders: -712, hips: -500, feet: -200, upper: 170, fore: 165, thigh: 162, shin: 150 };
 const TWIN_COL = { rim: [255, 58, 40], edge: [100, 10, 12], body: [9, 4, 6] };
 const DEVIL_FACE_ZOOM = 2.3;      // its head is his size, not the old devil's: close-ups go this much closer
 const headTilt = o => -.16 - .18 * o.lean;
@@ -328,31 +328,44 @@ function inHead(g, t, o, fn) {        // draw fn in the head's own frame (head u
 }
 const ARM_TARGETS = [[905, 612], [1004, 690]];
 const reachFront = o => inv(.2, .45, o.reach);       // reaching hands come in front of him, resting ones stay behind
-// its joints now, in world px: the head from devilHead, the body hunched toward it, arms hanging or reaching
+// a two-bone limb from a toward b (bones l1, l2): its joint and its end. pick(j) scores the two ways it can bend; the
+// higher one wins. Out of reach, it stretches up to 15 % and then stops short.
+function ik(a, b, l1, l2, pick) {
+  const dx = b[0] - a[0], dy = b[1] - a[1], d = Math.hypot(dx, dy) || 1, k = clamp(d / (l1 + l2), 1, 1.15);
+  l1 *= k; l2 *= k;
+  const dc = Math.min(d, (l1 + l2) * .999), ux = dx / d, uy = dy / d;
+  const an = Math.acos(clamp((l1 * l1 + dc * dc - l2 * l2) / (2 * l1 * dc), -1, 1));
+  const j = sg => [a[0] + (ux * Math.cos(an * sg) - uy * Math.sin(an * sg)) * l1, a[1] + (ux * Math.sin(an * sg) + uy * Math.cos(an * sg)) * l1];
+  const j1 = j(1), j2 = j(-1);
+  return [pick(j1) >= pick(j2) ? j1 : j2, [a[0] + ux * dc, a[1] + uy * dc]];
+}
+// its joints now, in world px: the head from devilHead, the spine bending toward it, arms hanging or reaching
+// (elbows out, like something about to pounce), legs standing or striding (o.stride)
 function twinPose(t, o) {
   const { x, y, s } = DEVIL, tw = sway(t), [hx, hy] = devilHead(t, o), R = TWIN.R * s, br = Math.sin(t * 1.6) * 3 * s;
-  const sc = [x + (14 + 34 * o.lean) * s + tw * .8, y + (TWIN.shoulders + 34 * o.lean) * s + br];   // between the shoulders
-  const hc = [x + tw * .3, y + TWIN.hips * s];                                                     // between the hips
-  const chin = headPt(t, o, -4, 52);
+  const hc = [x + tw * .3, y + TWIN.hips * s];                                                      // between the hips
+  const sc = [x + (16 + 62 * o.lean) * s + tw * .8, y + (TWIN.shoulders + 30 * Math.max(0, o.lean)) * s + br];   // between the shoulders
+  const chin = headPt(t, o, -2, 50), run = o.stride != null;
   const legs = [-1, 1].map(sd => {
-    const run = o.stride != null, ph = run ? o.stride + (sd > 0 ? Math.PI : 0) : 0;
-    const sw = run ? Math.sin(ph) : 0, lift = run ? Math.max(0, Math.cos(ph)) : 0;
-    const hip = [hc[0] + sd * 14 * s, hc[1]];
-    const knee = [hip[0] + sd * 10 * s + sw * 64 * s + (run ? 26 * s * lift : 0), y + TWIN.knees * s - lift * 34 * s];
-    const foot = [hip[0] + sd * 16 * s + sw * 118 * s, y + TWIN.feet * s - lift * 54 * s];
-    return { hip, knee, foot, toe: [foot[0] + (run ? 30 : sd * 22) * s, foot[1] + 3 * s] };
+    const hip = [hc[0] + sd * 15 * s, hc[1] + 8 * s];
+    let foot;
+    if (run) { const ph = o.stride + (sd > 0 ? Math.PI : 0); foot = [hip[0] + Math.sin(ph) * 130 * s, y + TWIN.feet * s - Math.max(0, Math.cos(ph)) * 56 * s]; }
+    else foot = [hip[0] + sd * 20 * s, y + TWIN.feet * s];
+    const [knee, ankle] = ik(hip, foot, TWIN.thigh * s, TWIN.shin * s, j => run ? j[0] : sd * j[0]);
+    return { sd, hip, knee, ankle, toe: [ankle[0] + (run ? 34 : sd * 24) * s, ankle[1] + 4 * s] };
   });
   const targets = o.targets || ARM_TARGETS;
   const arms = [-1, 1].map((sd, i) => {
-    const sh = [sc[0] + sd * 34 * s, sc[1] + 10 * s], rest = [sh[0] + sd * 30 * s, y - 420 * s];
-    const run = o.stride != null ? Math.sin(o.stride + (sd > 0 ? 0 : Math.PI)) * 60 * s : 0;
-    const wr = [lerp(rest[0] + run, targets[i][0], o.reach), lerp(rest[1], targets[i][1] - 20, o.reach)];
-    const el = [(sh[0] + wr[0]) / 2 + sd * (40 + 50 * o.reach) * s, (sh[1] + wr[1]) / 2 - 110 * s * o.reach];
-    // four long fingers, bent at the knuckle, each ending in a hooked claw; hanging, they point down and a little out
+    const sh = [sc[0] + sd * 36 * s, sc[1] + 12 * s];
+    const swing = run ? Math.sin(o.stride + (sd > 0 ? 0 : Math.PI)) * 70 * s : 0;
+    const rest = [sh[0] + sd * 26 * s + swing, sh[1] + 312 * s];
+    const want = [lerp(rest[0], targets[i][0], o.reach), lerp(rest[1], targets[i][1] - 14, o.reach)];
+    const [el, wr] = ik(sh, want, TWIN.upper * s, TWIN.fore * s, j => sd * j[0] - .3 * j[1]);
+    // four long fingers bent at the knuckle, each ending in a hooked claw; hanging, they point down and a little out
     const fa = Math.atan2(wr[1] - el[1], wr[0] - el[0]), fingers = [];
     for (let f = 0; f < 4; f++) {
-      const ang = lerp(fa, Math.PI / 2 + sd * .12, .45 * (1 - o.reach)) + (f - 1.5) * .26 + Math.sin(t * 3 + f + i) * .04;
-      const L = (66 + (f % 2) * 12) * s, curl = -sd * (.42 + .25 * o.reach);
+      const ang = lerp(fa, Math.PI / 2 + sd * .1, .5 * (1 - o.reach)) + (f - 1.5) * .24 + Math.sin(t * 3 + f + i) * .04;
+      const L = (64 + (f % 2) * 12) * s, curl = -sd * (.4 + .25 * o.reach);
       const k1 = [wr[0] + Math.cos(ang) * L * .56, wr[1] + Math.sin(ang) * L * .56];
       const k2 = [k1[0] + Math.cos(ang + curl) * L * .44, k1[1] + Math.sin(ang + curl) * L * .44];
       fingers.push({ k1, k2, ca: ang + curl * 1.7 });
@@ -361,37 +374,39 @@ function twinPose(t, o) {
   });
   return { hx, hy, R, sc, hc, chin, legs, arms };
 }
-// every part of it as a painter: part(g, grow) paints the part grown by grow px on every side
+// every part of it as a painter: part(g, grow) paints the part grown by grow px on every side. Limbs are tapered
+// (thick at the hip and the shoulder, thin at the ankle and the wrist), the joints rounded, the shoulders sloped.
 function twinParts(t, o, P, which = 'all') {
   const s = DEVIL.s, parts = [];
-  const line = (pts, w) => parts.push((g, k) => {
-    g.lineWidth = w + 2 * k; g.beginPath(); g.moveTo(pts[0][0], pts[0][1]);
-    for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]); g.stroke();
-  });
   const shape = pts => parts.push((g, k) => {
     g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (const q of pts.slice(1)) g.lineTo(q[0], q[1]); g.closePath();
     if (k > 0) { g.lineWidth = 2 * k; g.stroke(); } g.fill();
   });
-  const disc = (c, r) => parts.push((g, k) => { g.beginPath(); g.arc(c[0], c[1], r + k, 0, Math.PI * 2); g.fill(); });
+  const limb = (pts, ws) => shape(stripPts(pts, ws.map(w => w * s)));
+  const disc = (c, r) => parts.push((g, k) => { g.beginPath(); g.arc(c[0], c[1], r * s + k, 0, Math.PI * 2); g.fill(); });
   if (which !== 'arms') {
-    for (const L of P.legs) { line([L.hip, L.knee, L.foot], TWIN.leg * s); line([L.foot, L.toe], TWIN.leg * .8 * s); }
-    const mid = [lerp(P.hc[0], P.sc[0], .55) + (8 + 14 * o.lean) * s, lerp(P.hc[1], P.sc[1], .55)];
-    line([P.hc, mid, P.sc], TWIN.torso * s);
-    line([[P.sc[0] - 34 * s, P.sc[1] + 10 * s], P.sc, [P.sc[0] + 34 * s, P.sc[1] + 10 * s]], TWIN.arm * 1.15 * s);   // shoulders
-    line([P.sc, lerp2(P.sc, P.chin, .5), P.chin], TWIN.neck * s);
+    for (const L of P.legs) {
+      disc(L.hip, 16); limb([L.hip, L.knee], [16, 10]); disc(L.knee, 10); limb([L.knee, L.ankle], [10, 6]);
+      limb([L.ankle, L.toe], [6.5, 3]); disc(L.ankle, 6.5);
+    }
+    const mid = [lerp(P.hc[0], P.sc[0], .5) + 10 * s * (1 + o.lean), lerp(P.hc[1], P.sc[1], .5)];
+    limb([[P.hc[0], P.hc[1] + 14 * s], P.hc, mid, P.sc], [16, 22, 15, 26]);   // the pelvis, hips, waist, chest
+    const nb = [P.sc[0], P.sc[1] - 10 * s];                                  // the base of the neck
+    for (const sd of [-1, 1]) { const sh = [P.sc[0] + sd * 36 * s, P.sc[1] + 12 * s]; limb([nb, sh], [12, 12]); disc(sh, 13); }
+    limb([nb, lerp2(nb, P.chin, .55), P.chin], [13, 10, 9]);
   }
   for (const A of P.arms) {
-    line([A.sh, A.el], TWIN.arm * s); line([A.el, A.wr], TWIN.arm * .82 * s);
-    disc(A.wr, 11 * s);
+    limb([A.sh, A.el], [12, 8.5]); disc(A.el, 8.5); limb([A.el, A.wr], [8.5, 5.5]);
+    disc(A.wr, 8);
     for (const F of A.fingers) {
-      line([A.wr, F.k1, F.k2], TWIN.finger * s);
-      const c = [Math.cos(F.ca), Math.sin(F.ca)], n = [-c[1], c[0]], w = 3.6 * s, L = 17 * s;   // the claw
-      shape([[F.k2[0] + n[0] * w, F.k2[1] + n[1] * w], [F.k2[0] + c[0] * L * .6 + n[0] * w * .5, F.k2[1] + c[1] * L * .6 + n[1] * w * .5],
+      limb([A.wr, F.k1, F.k2], [3.8, 3.2, 2.4]); disc(F.k1, 3.4);
+      const c = [Math.cos(F.ca), Math.sin(F.ca)], n = [-c[1], c[0]], w = 2.6 * s, L = 16 * s;   // the claw
+      shape([[F.k2[0] + n[0] * w, F.k2[1] + n[1] * w], [F.k2[0] + c[0] * L * .6 + n[0] * w * .45, F.k2[1] + c[1] * L * .6 + n[1] * w * .45],
         [F.k2[0] + c[0] * L, F.k2[1] + c[1] * L], [F.k2[0] - n[0] * w, F.k2[1] - n[1] * w]]);
     }
   }
   if (which !== 'arms') {
-    disc([P.hx, P.hy], P.R);
+    disc([P.hx, P.hy], TWIN.R);
     for (const sd of [-1, 1]) {        // two short horns: up from the crown, leaning out, the tips turning up
       const C = [[sd * 28, -54], [sd * 46, -72], [sd * 68, -92], [sd * 62, -126]], pts = [], ws = [];
       for (let i = 0; i <= 14; i++) { const u = i / 14; pts.push(bez3(C, u)); ws.push(11.5 * Math.pow(1 - u, .8) + .6); }

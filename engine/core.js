@@ -316,6 +316,7 @@ function defineFilm(f) {
 const shotIndex = t => { const S = FILM.shots; let i = 0; while (i + 1 < S.length && t >= S[i + 1][0]) i++; return i; };
 // one frame of the film at film time t (a Short sets SEG first)
 function renderFilm(t) {
+  FRAME_NO++;
   px(); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; ctx.shadowBlur = 0;
   ctx.fillStyle = '#000'; ctx.fillRect(0, 0, OUT.w, OUT.h);      // every frame stands alone (frames render out of order)
   setShake(t);

@@ -10,7 +10,7 @@ data.
 | File | What |
 |---|---|
 | `engine/core.js` | the canvas, the 16:9 / 9:16 formats, maths (`clamp lerp inv win keys E rnd mix rgba`), camera (`cam screen ui px`), push-ins, shake, flash, glitch, vignette, text (`slam spaced typeLine typeBlock wrapText fitSize`), the devil's words, `defineFilm`, `defShot`, `renderFilm` |
-| `engine/cast.js` | the man (`drawPerson`, poses `poseSit poseStand poseWalk poseLie posePushup posePullup poseSquat poseCurl`, `rep`), his face (`face`, `EXPR`, `exprAt`, `faceShot`, `LOOKS`), the devil (`drawDevil devilEyes devilGrin devilArms devilSmoke tether redEyes`, `SPOTS`, `placeDevil`, `devilO`) |
+| `engine/cast.js` | the man (`drawPerson`, poses `poseSit poseStand poseWalk poseLie posePushup posePullup poseSquat poseCurl`, `rep`), his face (`face`, `EXPR`, `exprAt`, `faceShot`, `LOOKS`), the devil, the Shadow Twin (`drawDevil devilEyes devilGrin devilArms devilSmoke tether redEyes devilHead devilMouth devilBox`, `SPOTS`, `placeDevil`, `devilO`, `DEVIL_FACE_ZOOM`) |
 | `engine/sets.js` | `fill`, the bedroom (`drawRoom drawWindow`, `BED`, `SIT`, `FILM.roomProps`), `shards`, the dawn road (`roadWorld hills embers`), the gym (`gymBg plate`), `toScreenBox unionBox` |
 | `engine/phone.js` | `phoneFrame`, banners (`notif notifDrop`, kinds `mom call mail msg vice bank warn`), `callScreen chatScreen homeScreen`, icons drawn as shapes (`icon`, `textHeart`), pieces for a vice screen (`mosaic badge18 statusClock progressBar feed`) |
 | `engine/shots.js` | the shot library (below) |
@@ -38,7 +38,7 @@ defineFilm({
   app: { name: 'Lucky7', label: '7', icon: '7', color: [20, 150, 70] },   // the vice's app: its banner, home-screen icon, delete dialog
   viceScreen: (x, y, w, h, s, t, a, dy) => { … },   // what his phone shows (dy: how far a banner pushed it down)
   handScreen: t => { … },                            // the tiny phone in his hand in the room (draw in -13..13 x -23..21)
-  roomProps: (a, col) => { … },                      // optional: what this film adds to his room (thin lines, same style)
+  roomProps: (a, col) => { … },                      // optional: what this film adds to his room (filled and lit, like the room)
   phases: [{ name, a, b }],                          // the player's chapter buttons
   words: [{ id, t, d, text, real, show }],           // the devil's lines (below)
   slams: [3.4, …],  glitch: [[a, b, strength]],  flash: { clock: [255, 255, 255], devilface: [255, 60, 60], sting: [255, 60, 60] },
@@ -57,7 +57,13 @@ defineFilm({
 - **Looks** for face close-ups (`LOOKS`): night, grey, red, sun, shower, lamp, dawn, gym. Add one in the film the same
   way (`LOOKS.casino = {…}`).
 - **Spots** where the devil stands in the bedroom (`SPOTS`): window, foot, beside, behind, chase. `placeDevil([x, y,
-  scale])` for any other place.
+  scale])` for any other place: its feet stand at y - 200·scale, its head is at `devilHead()`, its mouth at
+  `devilMouth()` (aim what it eats there). In the bedroom (`drawRoom` that frame) the engine stages it: over the bed's
+  width the bed hides its legs; with its feet above the floor line it is outside, seen only through the window.
+  `o.stride` (radians) makes it run (the `run` shot does); `o.targets` moves its hands; `o.reach` puts them on him (in
+  front of him from 0.45). It is his size in the head: close-ups frame it `DEVIL_FACE_ZOOM` times closer than a wide.
+- **Light** (SKILL.md rule 15): sets are filled and lit like `drawRoom` (mid-tone walls, a lit window or lamp, solid
+  furniture with lit edges); `drawPerson` gives him a glowing rim and puts his light on the wall behind him.
 - A new shot: `defShot('name', (t, p, L) => { fill(…); cam(…); … }, (t, p, L, len) => [x0, y0, x1, y1])`. The second
   function is its subject in screen pixels (what a Short frames); leave it out for a text-only shot.
 

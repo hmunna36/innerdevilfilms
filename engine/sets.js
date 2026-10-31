@@ -1,6 +1,7 @@
 'use strict';
-// The sets: his bedroom in thin lines, the dawn road, the gym, the floor where the phone shatters. A film may add its
-// own (films/NN/film.js) in the same style: dark, a few thin lines, one practical light, glows instead of detail.
+// The sets: his bedroom, the dawn road, the gym, the floor where the phone shatters. A film may add its own
+// (films/NN/film.js) in the same style: filled shapes in lit mid-tones, a window or a lamp, lit edges on the furniture,
+// so that his dark figure and the devil always stand against something lighter (the owner, 31 Oct 2026).
 
 // a flat or vertical-gradient background over the whole frame (and past it, for a Short's taller window)
 function fill(top, bottom) {
@@ -11,33 +12,91 @@ function fill(top, bottom) {
 }
 
 // ---------- the bedroom ----------
+// Filled and lit, never a wireframe on black (the owner, 31 Oct 2026: "black figure on black background is a bad
+// idea"): a mid-tone wall with the window glowing in it, solid furniture with lit edges, moonlight on the floor, so his
+// dark figure and the devil always stand against something lighter than they are. drawWindow(m, a) says what the window
+// shows (m: 0 night … 1 grey morning); drawRoom(a, col) paints the room with it: a, how much light (.14 a night … .3 a
+// morning), col, its colour.
 const BED = { x0: 600, x1: 1250, y: 760 };
 const SIT = { x: 860, y: 760, s: 1.1 };           // where he sits on the bed edge
-function drawWindow(m, a) {          // m: 0 night … 1 grey morning
-  if (a <= .003) return;
-  const x = 300, y = 220, w = 260, h = 290, v = Math.min(1, a * 4);
-  ctx.fillStyle = rgba(mix([26, 34, 64], [176, 182, 192], m), (.12 + .4 * m) * v);
-  ctx.fillRect(x, y, w, h);
-  if (m > .01) {
-    ctx.fillStyle = rgba([196, 200, 210], .06 * m * v);
-    ctx.beginPath(); ctx.moveTo(x, 860); ctx.lineTo(x + w, 860); ctx.lineTo(x + w + 380, H); ctx.lineTo(x + 220, H); ctx.closePath(); ctx.fill();
+let WIN = null;
+function drawWindow(m, a) { WIN = a > .003 ? { m, a } : null; }
+const tone = (col, k) => mix([7, 7, 10], col, clamp(k));
+function paintWindow(L, col) {
+  const { m } = WIN, x = 300, y = 220, w = 260, h = 290, night = 1 - m;
+  additive(() => glow(m > .5 ? SPR.cream : SPR.blue, x + w / 2, y + h / 2, 520, (.1 + .1 * m) * Math.min(1.5, L)));   // its light on the wall
+  const sky = ctx.createLinearGradient(0, y, 0, y + h);
+  sky.addColorStop(0, rgba(mix([34, 48, 96], [196, 200, 210], m))); sky.addColorStop(1, rgba(mix([70, 92, 150], [238, 228, 212], m)));
+  ctx.fillStyle = sky; ctx.fillRect(x, y, w, h);
+  ctx.fillStyle = rgba(mix([14, 18, 34], [120, 124, 134], m));       // roofs across the street
+  ctx.beginPath(); ctx.moveTo(x, y + h);
+  for (const [u, v] of [[0, .78], [.18, .78], [.18, .66], [.34, .66], [.34, .82], [.52, .82], [.52, .6], [.62, .6], [.62, .74], [.8, .74], [.8, .7], [1, .7]]) ctx.lineTo(x + u * w, y + v * h);
+  ctx.lineTo(x + w, y + h); ctx.closePath(); ctx.fill();
+  if (night > .3) {
+    additive(() => glow(SPR.cream, x + w * .72, y + h * .24, 90, .5 * night));
+    ctx.fillStyle = rgba([240, 236, 222], .9 * night); ctx.beginPath(); ctx.arc(x + w * .72, y + h * .24, 17, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = rgba([255, 214, 140], .7 * night);                 // two windows still lit across the street
+    ctx.fillRect(x + w * .4, y + h * .7, 9, 11); ctx.fillRect(x + w * .86, y + h * .78, 9, 11);
   }
-  ctx.strokeStyle = rgba(C.cream, Math.min(1, a * 1.6)); ctx.lineWidth = 3;
-  ctx.strokeRect(x, y, w, h); line(x + w / 2, y, x + w / 2, y + h); line(x, y + h / 2, x + w, y + h / 2);
+  ctx.fillStyle = rgba(mix([110, 130, 190], [210, 206, 196], m), (.07 + .05 * m) * Math.min(1.4, L));   // light on the floor
+  ctx.beginPath(); ctx.moveTo(x - 10, 862); ctx.lineTo(x + w + 10, 862); ctx.lineTo(x + w + 420, H + 60); ctx.lineTo(x + 200, H + 60); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = rgba(tone(col, .12 * L)); ctx.lineWidth = 16; ctx.strokeRect(x - 4, y - 4, w + 8, h + 8);   // the frame
+  ctx.lineWidth = 8; line(x + w / 2, y, x + w / 2, y + h); line(x, y + h / 2, x + w, y + h / 2);
+  ctx.strokeStyle = rgba(mix([150, 170, 220], [255, 250, 240], m), .35); ctx.lineWidth = 2;      // the lit inner edge
+  ctx.strokeRect(x + 4, y + 4, w - 8, h - 8);
+  ctx.fillStyle = rgba(tone(col, .3 * L)); ctx.fillRect(x - 20, y + h + 4, w + 40, 12);           // the sill
+}
+// the bed's outline: the devil standing behind the bed is cut by it, so the bed stands in front of its legs
+function bedSilhouette() {
+  const p = new Path2D();
+  p.roundRect(BED.x0 - 30, BED.y - 166, 34, 250, 12);
+  p.rect(BED.x0, BED.y - 6, BED.x1 - BED.x0, 96);
+  p.rect(BED.x0 + 10, BED.y + 88, 16, 12); p.rect(BED.x1 - 26, BED.y + 88, 16, 12);
+  p.moveTo(BED.x0 + 120, BED.y + 44); p.lineTo(BED.x0 + 120, BED.y - 4);
+  p.bezierCurveTo(BED.x0 + 260, BED.y - 26, BED.x0 + 360, BED.y + 2, BED.x0 + 470, BED.y - 14);
+  p.bezierCurveTo(BED.x0 + 560, BED.y - 26, BED.x1 - 40, BED.y - 10, BED.x1, BED.y - 8); p.lineTo(BED.x1, BED.y + 44); p.closePath();
+  p.roundRect(BED.x0 + 6, BED.y - 46, 108, 46, 20);
+  return p;
 }
 function drawRoom(a, col) {
-  if (a <= .003) return;
-  ctx.strokeStyle = rgba(col, a); ctx.lineWidth = 2.5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  line(0, 860, W, 860);                                                  // floor
-  ctx.strokeRect(BED.x0, BED.y, BED.x1 - BED.x0, 64);                    // mattress
-  line(BED.x0 + 14, BED.y + 64, BED.x0 + 14, 860); line(BED.x1 - 14, BED.y + 64, BED.x1 - 14, 860);
-  rrect(BED.x0 - 26, BED.y - 160, 26, 224, 10); ctx.stroke();            // headboard
-  ctx.strokeRect(1590, 330, 180, 530);                                   // door
-  ctx.beginPath(); ctx.arc(1612, 610, 7, 0, Math.PI * 2); ctx.stroke();
-  rrect(1462, 806, 104, 54, 16); ctx.stroke();                           // gym bag
-  ctx.beginPath(); ctx.moveTo(1488, 806); ctx.quadraticCurveTo(1514, 770, 1540, 806); ctx.stroke();
-  line(110, 650, 450, 650); line(130, 650, 130, 860); line(430, 650, 430, 860);   // desk
-  ctx.strokeRect(240, 632, 96, 18);                                      // the book
+  if (a <= .003) { WIN = null; return; }
+  ROOM_FRAME = FRAME_NO;
+  const L = a / .14, T = k => rgba(tone(col, k * L));
+  const wg = ctx.createLinearGradient(0, 0, 0, 860);                 // the wall, a little lighter toward the floor
+  wg.addColorStop(0, T(.17)); wg.addColorStop(1, T(.28));
+  ctx.fillStyle = wg; ctx.fillRect(-W, -H, 3 * W, H + 860);
+  const fg = ctx.createLinearGradient(0, 860, 0, 1240);              // the floor
+  fg.addColorStop(0, T(.2)); fg.addColorStop(1, T(.08));
+  ctx.fillStyle = fg; ctx.fillRect(-W, 860, 3 * W, 2 * H);
+  ctx.fillStyle = T(.36); ctx.fillRect(-W, 846, 3 * W, 14);         // the skirting board
+  if (WIN) paintWindow(L, col);
+  // the desk and its book
+  ctx.fillStyle = T(.12); ctx.fillRect(122, 656, 16, 204); ctx.fillRect(422, 656, 16, 204);
+  ctx.fillStyle = T(.42); ctx.fillRect(104, 640, 352, 16); ctx.fillStyle = T(.58); ctx.fillRect(104, 640, 352, 3);
+  ctx.fillStyle = T(.5); ctx.fillRect(240, 624, 96, 16); ctx.fillStyle = T(.7); ctx.fillRect(240, 624, 96, 3);
+  // the door
+  ctx.fillStyle = T(.34); ctx.fillRect(1576, 318, 208, 542);
+  ctx.fillStyle = T(.2); ctx.fillRect(1592, 334, 176, 526);
+  ctx.strokeStyle = T(.3); ctx.lineWidth = 3; ctx.strokeRect(1618, 368, 124, 190); ctx.strokeRect(1618, 600, 124, 220);
+  ctx.fillStyle = T(.8); ctx.beginPath(); ctx.arc(1614, 610, 8, 0, Math.PI * 2); ctx.fill();
+  // the gym bag
+  ctx.fillStyle = T(.24); rrect(1462, 806, 104, 54, 16); ctx.fill();
+  ctx.strokeStyle = T(.4); ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(1488, 808); ctx.quadraticCurveTo(1514, 772, 1540, 808); ctx.stroke();
+  // the bed: headboard, base, mattress, a rumpled blanket, the pillow
+  ctx.fillStyle = T(.22); rrect(BED.x0 - 30, BED.y - 166, 34, 250, 12); ctx.fill();
+  ctx.fillStyle = T(.38); ctx.fillRect(BED.x0 - 4, BED.y - 160, 4, 236);
+  ctx.fillStyle = T(.14); ctx.fillRect(BED.x0, BED.y + 40, BED.x1 - BED.x0, 50);
+  ctx.fillStyle = T(.1); ctx.fillRect(BED.x0 + 10, BED.y + 88, 16, 12); ctx.fillRect(BED.x1 - 26, BED.y + 88, 16, 12);
+  ctx.fillStyle = T(.3); ctx.fillRect(BED.x0, BED.y - 6, BED.x1 - BED.x0, 48);
+  ctx.fillStyle = T(.44); ctx.beginPath(); ctx.moveTo(BED.x0 + 120, BED.y + 44);
+  ctx.lineTo(BED.x0 + 120, BED.y - 4); ctx.bezierCurveTo(BED.x0 + 260, BED.y - 26, BED.x0 + 360, BED.y + 2, BED.x0 + 470, BED.y - 14);
+  ctx.bezierCurveTo(BED.x0 + 560, BED.y - 26, BED.x1 - 40, BED.y - 10, BED.x1, BED.y - 8); ctx.lineTo(BED.x1, BED.y + 44); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = T(.62); ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(BED.x0 + 120, BED.y - 4);
+  ctx.bezierCurveTo(BED.x0 + 260, BED.y - 26, BED.x0 + 360, BED.y + 2, BED.x0 + 470, BED.y - 14);
+  ctx.bezierCurveTo(BED.x0 + 560, BED.y - 26, BED.x1 - 40, BED.y - 10, BED.x1, BED.y - 8); ctx.stroke();
+  ctx.fillStyle = T(.56); rrect(BED.x0 + 6, BED.y - 46, 108, 46, 20); ctx.fill();
+  ctx.fillStyle = T(.72); rrect(BED.x0 + 14, BED.y - 46, 92, 8, 4); ctx.fill();
+  WIN = null;
   if (FILM.roomProps) FILM.roomProps(a, col);                            // what this film adds to his room
 }
 // the phone bursts off the wall at t0, the pieces fall and stay on the floor
@@ -102,17 +161,18 @@ function roadWorld(t, fr, p, d, ph, run) {   // p: light 0 … 1, d: distance ru
 
 // ---------- the gym ----------
 function gymBg(fr) {
-  fill([18, 18, 22], [32, 28, 30]);
+  fill([46, 42, 44], [84, 72, 62]);                    // a lit gym: the dark figure works out against light
   cam(...fr);
-  ctx.fillStyle = 'rgba(255,255,255,.03)'; ctx.fillRect(-600, 260, W + 1200, 380);          // the mirror wall
-  ctx.fillStyle = '#121214'; ctx.fillRect(-600, 860, W + 1200, 400);
-  ctx.strokeStyle = rgba([200, 200, 210], .14); ctx.lineWidth = 2; line(-600, 860, W + 600, 860);
-  additive(() => { for (let i = 0; i < 5; i++) glow(SPR.amber, 200 + i * 380, 110, 280, .28); });
+  ctx.fillStyle = 'rgba(255,240,220,.07)'; ctx.fillRect(-600, 260, W + 1200, 380);          // the mirror wall
+  ctx.fillStyle = 'rgba(255,240,220,.12)'; ctx.fillRect(-600, 256, W + 1200, 4); ctx.fillRect(-600, 640, W + 1200, 4);
+  ctx.fillStyle = '#2a2726'; ctx.fillRect(-600, 860, W + 1200, 400);
+  ctx.strokeStyle = rgba([230, 220, 210], .25); ctx.lineWidth = 3; line(-600, 860, W + 600, 860);
+  additive(() => { for (let i = 0; i < 5; i++) glow(SPR.amber, 200 + i * 380, 110, 340, .34); glow(SPR.amber, 960, 560, 900, .16); });
   ctx.fillStyle = rgba([255, 232, 196], .85); for (let i = 0; i < 5; i++) { rrect(150 + i * 380, 96, 100, 10, 5); ctx.fill(); }
-  ctx.fillStyle = '#0b0b0d'; ctx.fillRect(1560, 520, 24, 340); ctx.fillRect(1740, 520, 24, 340);   // a plate rack
+  ctx.fillStyle = '#17161a'; ctx.fillRect(1560, 520, 24, 340); ctx.fillRect(1740, 520, 24, 340);   // a plate rack
   for (const [px, py, r] of [[1572, 600, 56], [1572, 742, 66], [1752, 620, 48], [1752, 760, 70]]) {
-    ctx.fillStyle = '#0e0e11'; ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
-    ctx.strokeStyle = rgba([210, 200, 190], .2); ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = '#141317'; ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = rgba([230, 214, 196], .35); ctx.lineWidth = 3; ctx.stroke();
   }
 }
 function plate(x, y, r) {

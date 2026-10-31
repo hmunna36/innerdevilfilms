@@ -51,9 +51,10 @@ The owner wants extreme thumbnails drawn by ChatGPT from film frames, and the cl
    tools in one ToolSearch call, work in a tab you create, attach the three frames, wait for the image, download it).
    Attach the three frames and LUST's `films/03-lust/thumb.jpg` as the finish to match (glossy, high contrast, rim
    light), then write the prompt: "Make a YouTube thumbnail, 16:9, for my animated horror short film. Use the attached
-   frames for the characters and keep their exact design: the devil (black, long horns, a cracked head, burning slit
-   eyes, a huge glowing grin full of teeth, red rim light, black smoke, long claws) and the man (a dark round head with
-   simple cream eyes, brows and mouth). Match the fourth image's finish and intensity but NOT its layout. Scene: <the
+   frames for the characters and keep their exact design: the devil, the Shadow Twin (a much taller black copy of the
+   man: the same round head and stick body stretched thin, two short sharp horns, burning slanted red eyes, a grin far
+   too wide full of white teeth, long clawed fingers, a hot red rim light) and the man (a dark round head with simple
+   cream eyes, brows and mouth). Match the fourth image's finish and intensity but NOT its layout. Scene: <the
    film's own composition>. Palette: <the film's palette>, with only the devil's eyes and grin red. The word "<WORD>"
    huge in fat white letters with a thick glowing red edge <top or bottom>, and "<HOOK>" small next to it. Spell both
    exactly. Readable at small size. Nothing explicit, no real logos or brands, no blood, nothing sexual." Ask for a fix

@@ -122,7 +122,9 @@ Write `films/NN-slug/music.json` from the beat table's times (copy `films/03-lus
 2. The story reads with the sound off: who he is losing, it closing in, the reveal, the comeback, the
    ending. Show the sheet to a sub-agent with no context and ask it to tell the story back.
 3. Pace: no shot over 3 s (cards, title excepted), flashes and glitches on the turns, the montage lands.
-4. The devil: visible, scary (rim, smoke, eyes, grin), closing in the structure's way, its words kind then red.
+4. The devil: the Shadow Twin, visible against a lit set (its red edge and the red light it throws), its eyes and
+   grin reading at phone size, closing in the structure's way, its words kind then red. No frame where he or it is a
+   black shape on a black background (SKILL.md rule 15).
 11. Its own film: the structure, main place, palette, reveal and comeback setting differ from the last three films;
     a sheet next to the last film's sheet does not look like the same film.
 5. His face: a clear expression in every face shot, changing with the story; never cut off by the frame.

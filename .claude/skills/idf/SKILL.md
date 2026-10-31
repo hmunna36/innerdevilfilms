@@ -34,9 +34,11 @@ Unattended runs (the cloud routines) never ask a question: decide, act, fix what
 4. **Pace beats length.** Cuts every 1-3 s, a push-in on every shot, flash frames and glitches on the turns. LUST is 1:50;
    films are 1:40-2:20. Never hold a shot for a line: cut on it.
 5. **The opening line is very cold** (it speaks to the viewer about the vice), and the ending calls it back with its answer.
-6. **The devil is properly visible**, with a highly scary aura (red rim, smoke, burning eyes, the grin), and visibly
-   closes in on him (in LUST every night: the window, the foot of the bed, beside him, behind him; each film its own
-   way, `reference/film.md`).
+6. **The devil is properly visible**: the Shadow Twin (the owner's pick of 31 Oct 2026, from ten designs in
+   `design/devils-2026-10-31/`): a much taller copy of him in black, his round head and stick body stretched thin,
+   two short horns, burning slanted eyes, a grin far too wide full of white teeth, long clawed fingers, a hot red edge
+   and its own red light on the wall behind it. It visibly closes in on him (in LUST every night: the window, the foot
+   of the bed, beside him, behind him; each film its own way, `reference/film.md`). Never draw another devil.
 7. **The hero shows clear facial expressions**, changing with the story.
 8. **The phone shows the vice safely**: never explicit, an original logo, no real brands or logos, and a notification
    never hides the screen (it pushes the page down).
@@ -60,6 +62,10 @@ Unattended runs (the cloud routines) never ask a question: decide, act, fix what
     -14 LUFS with three quarters of their energy in the sub-bass). `master()` in `engine/audio/mixlib.py` does it for
     every mix: films -18 LUFS, Shorts -16, the rumble under 60 Hz shelved down, no 3 s stretch more than 5 LU over the
     target and no burst more than 8 LU over it. The jump scares still jump; they never hurt. `qa.mjs` checks the level.
+15. **Never a black figure on a black background** (the owner, 31 Oct 2026). Every place is lit: mid-tone walls,
+    a window or a lamp, solid furniture with lit edges, a pool of light behind each figure. He has a glowing rim and
+    the light he is in falls on the wall behind him (`drawPerson`); the devil brings its red light (`drawDevil`). A
+    film's own sets follow the bedroom in `engine/sets.js`: filled shapes, never thin lines on black.
 
 ## Where you are
 

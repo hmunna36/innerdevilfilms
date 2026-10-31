@@ -130,7 +130,7 @@ function devilFaceFrame(t, p, L) {
   placeDevil(p.spot);
   const o = devilO(Object.assign({ a: 1, eyes: 1 }, p.o(t))), [hx, hy] = devilHead(t, o), s = DEVIL.s;
   const tw = p.twitch && ((L > 1.1 && L < 1.16) || (L > 1.9 && L < 1.95)) ? 1 : 0;
-  return { o, fr: [(p.scare ? 2.1 : 1.5 + .12 * clamp(L / 3)) / s, hx + tw * 24 * s, hy - (p.scare ? 10 : 40) * s] };
+  return { o, fr: [(p.scare ? 2.1 : 1.5 + .12 * clamp(L / 3)) * DEVIL_FACE_ZOOM / s, hx + tw * 10 * s, hy - (p.scare ? 4 : 14) * s] };
 }
 defShot('devilface', (t, p, L) => {
   fill([5, 3, 4]);
@@ -167,7 +167,7 @@ const phoneSubject = (t, p, L) => {
   const f = phoneFrame(L), b = phoneBox(f);
   return p.focus === 'top' ? [b[0], b[1], b[2], f.y + f.h * .58] : b;
 };
-defShot('phone', (t, p, L) => { fill([3, 3, 5]); drawPhone(t, p, L); }, phoneSubject);
+defShot('phone', (t, p, L) => { fill([12, 12, 18], [24, 20, 30]); drawPhone(t, p, L); }, phoneSubject);
 // the screen is black: his face in the glass, and it, right behind him. p.appear: when it fades in (0: already there)
 defShot('reflection', (t, p) => {
   fill([3, 3, 5]);
@@ -196,7 +196,7 @@ defShot('reflection', (t, p) => {
 function montageSub(p, L) { const k = Math.floor(L / (p.step || .375)); return { k, sub: L - k * (p.step || .375), it: p.seq[Math.min(k, p.seq.length - 1)] }; }
 defShot('montage', (t, p, L) => {
   const { k, sub, it } = montageSub(p, L), [name, q] = it;
-  if (name === 'phone') { fill([3, 3, 5]); drawPhone(t, Object.assign({ screen: 'vice' }, q, q.notif ? { notif: [t - 9, ...q.notif] } : {}), 2); }
+  if (name === 'phone') { fill([12, 12, 18], [24, 20, 30]); drawPhone(t, Object.assign({ screen: 'vice' }, q, q.notif ? { notif: [t - 9, ...q.notif] } : {}), 2); }
   else if (name === 'face') faceShot(t, q.look, EXPR[q.expr]);
   else if (name === 'clock') SHOT.clock.draw(t, q[Math.min(q.length - 1, Math.floor(sub / ((p.step || .375) / q.length)))]);
   else if (name === 'devilface') SHOT.devilface.draw(t, q, sub);
@@ -234,7 +234,7 @@ defShot('run', (t, p) => {
   additive(() => glow(SPR.amber, 1500, GROUND - 30, 900, .55));
   roadWorld(t, fr, .55, d, ph, 1);
   placeDevil('chase');
-  const o = devilO({ a: .55 - .3 * fade, eyes: .9 - .5 * fade, grin: .3, lean: .4 });
+  const o = devilO({ a: .55 - .3 * fade, eyes: .9 - .5 * fade, grin: .3, lean: .4, stride: ph * .75 });   // it runs after him
   drawDevil(t, fr, o); devilEyes(t, o); devilGrin(t, o);
 }, (t, p) => {
   const fr = p.fr || [1, 960, 540], u = t - p.run[0];
@@ -316,7 +316,7 @@ defShot('mirror', (t, p) => {
 // the topic word is the biggest thing, in fat white letters with a red edge, the hook small under it, never naming the
 // devil ("IT …"). Its face huge on the right with the grin, his terrified face lower left lit red. Read it at 320 px.
 defShot('thumb', (t, p) => {
-  const q = Object.assign({ word: FILM.title, hook: '', expr: 'fear', spot: [1150, 1700, 1.4] }, p || FILM.thumb || {});
+  const q = Object.assign({ word: FILM.title, hook: '', expr: 'fear', spot: [1180, 2910, 2.9] }, p || FILM.thumb || {});
   fill([16, 2, 5], [70, 6, 12]);
   additive(() => { glow(SPR.red, 1300, 520, 1100, .55); glow(SPR.red, 600, 900, 700, .35); });
   placeDevil(q.spot);

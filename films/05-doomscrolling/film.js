@@ -189,7 +189,7 @@ function hourStream(t, from, to, a, q) {
     hourClock(x, y, r, t, a * Math.min(1, u * 7), i);
   }
 }
-const mouthAt = (t, o) => { const [hx, hy] = devilHead(t, o), s = DEVIL.s; return [hx + 8 * s, hy + 70 * s]; };
+const mouthAt = (t, o) => devilMouth(t, o);
 
 // ---------- his wall: a paper calendar losing months, a clock it spins ----------
 const MON = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
@@ -415,7 +415,7 @@ defShot('calendar', (t, p, L) => {
   ctx.fillStyle = '#05070f'; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
   ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, x1 - x0, y1 - y0); ctx.clip();
   additive(() => glow(SPR.red, 1400, 470, 620, .45 * (.85 + .15 * Math.sin(t * 6))));
-  placeDevil([1356, 1215, .95]);
+  placeDevil([1480, 1520, 1.45]);           // its head in the top of the glass, the bar under its chin
   const snap = win(L, 1.3, 1.56, .05, .1);
   const o = devilO({ a: .95, eyes: 1, grin: 1, scream: .2 + .2 * Math.abs(Math.sin(t * 13)) + .45 * snap, lean: .1 });
   drawDevil(t, [1, 960, 540], o); devilEyes(t, o); devilGrin(t, o);
@@ -918,7 +918,7 @@ defShot('thumb', (t, p) => {
   const q = Object.assign({ word: FILM.title, hook: '', expr: 'fear' }, p || FILM.thumb || {});
   fill([10, 4, 8], [60, 8, 14]);
   additive(() => { glow(SPR.red, 1350, 620, 1100, .55); glow(SPR.blue, 520, 980, 760, .45); });
-  placeDevil([1240, 1830, 1.36]);
+  placeDevil([1240, 2910, 2.9]);
   const o = devilO({ a: 1, eyes: 1, grin: 1, scream: .35, lean: .1, smoke: .25 }), fr = [1, W / 2, H / 2];
   drawDevil(t, fr, o); devilEyes(t, o); devilGrin(t, o);
   screen();

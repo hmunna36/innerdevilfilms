@@ -74,7 +74,7 @@
   let T = 0, playing = false, last = 0;
   scrub.max = DUR;
   const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-  const marks = kind === 'short' ? SHORT.segments.map((g, i) => ({ name: String(i + 1), a: g.start, b: g.start + g.to - g.from }))
+  const marks = kind === 'short' ? SHORT.segments.map((g, i) => ({ name: String(i + 1), a: g.start, b: g.start + g.len }))
     .concat(SHORT.end ? [{ name: 'end card', a: SHORT.endAt, b: DUR }] : []) : FILM.phases;
   marks.forEach(p => {
     const b = document.createElement('button');

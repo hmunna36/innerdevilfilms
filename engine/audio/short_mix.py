@@ -1,6 +1,6 @@
 """A Short's sound, cut from its film's finished mix by the Short's plan (short.js `audio`, or by default the picture's own
 stretches): each piece is the film's mix from `from` to `to` placed at `at` (Short time), with short fades; `hits` are
-booms that cover a jump in the music; the end fades out; then -14 LUFS, -2 dBTP like the film.
+booms that cover a jump in the music; the end fades out; then -14 LUFS, -2.5 dBTP (the AAC upload must stay under -1).
 run: python engine/audio/short_mix.py shorts/15-lust-hook   (from anywhere; builds the film's mix first if it is missing)
 writes shorts/NN-slug/mix.wav and prints a report: loudness, true peak, and every stretch where the phone band
 (300 Hz-6 kHz) stays under -38 dBFS for more than 2 s (only a planned silence may)."""
@@ -34,7 +34,7 @@ for h in plan['hits']:
 out = out[:N]
 fo = int(plan.get('fadeOut', .8) * SR)
 out[N - fo:] *= np.linspace(1, 0, fo)[:, None]
-out = master(filt(out, 'high', 25))
+out = master(filt(out, 'high', 25), ceiling=-2.5)   # AAC can add a full dB on a hard transient (Short 19: +1.07)
 dest = os.path.join(REPO, folder, 'mix.wav')
 write(dest, out)
 

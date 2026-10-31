@@ -3,8 +3,10 @@
 // the shot's subject, unless the segment says otherwise), then an end card that sends people to the full film.
 // shorts/NN-slug/short.js calls defineShort({
 //   film: 'films/03-lust',                         the film folder, from the repo root
-//   segments: [{ from, to, vf, slot }, …],         film time; vf [z, cx, cy] or keyframes [[u, z, cx, cy], …] (u = seconds
-//                                                  into the segment); slot 'top' | 'low' | 'mid' (where its words go)
+//   segments: [{ from, to, vf, slot, rate }, …],   film time; vf [z, cx, cy] or keyframes [[u, z, cx, cy], …] (u = seconds
+//                                                  into the segment); slot 'top' | 'low' | 'mid' (where its words go);
+//                                                  rate < 1 plays it slower (a still screen held long enough to read;
+//                                                  give such a Short its own audio pieces)
 //   end: { dur, title, line, cta },                the end card (defaults: the film's title and subtitle)
 //   audio: { pieces: [{ at, from, to, gain, fi, fo }], hits: [{ at, gain }] }   cut from the film's mix (default: the
 // })                                               picture's own stretches, then the film after the last one under the card)
@@ -12,7 +14,7 @@ let SHORT = null;
 function defineShort(s) {
   SHORT = Object.assign({ end: { dur: 2.8 } }, s);
   let at = 0;
-  for (const g of SHORT.segments) { g.start = at; at += g.to - g.from; }
+  for (const g of SHORT.segments) { g.start = at; g.len = (g.to - g.from) / (g.rate || 1); at += g.len; }
   SHORT.endAt = at; SHORT.dur = +(at + (SHORT.end ? SHORT.end.dur : 0)).toFixed(3);
   return SHORT;
 }
@@ -21,7 +23,7 @@ function renderShort(tau) {
   if (SHORT.end && tau >= SHORT.endAt) { SEG = null; return endCard(tau - SHORT.endAt); }
   const g = SHORT.segments[segIndex(tau)], u = tau - g.start;
   SEG = g;
-  renderFilm(g.from + u);
+  renderFilm(g.from + u * (g.rate || 1));
   if (u < .067 && g.start > 0 && !FILM.flash[CUR.kind]) {   // a two-frame flash on each of the Short's own cuts
     px(); ctx.fillStyle = `rgba(255,255,255,${.18 * (1 - u / .067)})`; ctx.fillRect(0, 0, OUT.w, OUT.h);
   }

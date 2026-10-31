@@ -100,6 +100,8 @@ defineShort({
   him and the devil when they fit, else a pan from him to it), with the devil's words above a phone or low in the
   frame. Override with `vf: [z, cx, cy]` (screen point at the centre; z 1 = the full screen height) or keyframes
   `[[u, z, cx, cy], …]` (u = seconds into the segment), and `slot: 'top' | 'low' | 'mid'`.
+- `rate: .6` plays a segment slower: a still screen (a chat, a dialog) held long enough to read, its push-in still
+  moving. Give such a Short its own `audio.pieces` (the default plan follows film time).
 - The sound comes from the film's own mix. By default each segment brings its own stretch; better, run the music
   unbroken under jump cuts (one long piece) and put a boom (`hits`) on each big jump.
 - Every cut of the Short gets a two-frame white flash; the film's own flashes and slams come with the shots.

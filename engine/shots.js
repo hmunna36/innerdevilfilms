@@ -45,9 +45,9 @@ defShot('end', (t, p) => {
     typeLine(p.line, 470, COLD_SIZE, inv(p.typeAt, p.typeAt + 1, t), COLD_COL, 1, t);
     slam(p.slam, W / 2, 610, 130, C.red, 1, p.slamAt, t, 12, '800', .6);
   } else {
-    ui();
-    const h = typeBlock([[p.line, inv(p.typeAt, p.typeAt + 1, t)]], 800, 64, COLD_COL, 1, t, OUT.w / 2, 860);
-    slam(p.slam, OUT.w / 2, 800 + h / 2 + 130, fitSize(p.slam, 150, 860, 12), C.red, 1, p.slamAt, t, 12, '800', .6);
+    ui();                              // all above y 1000, where the Shorts safe area is still x 100-980
+    const h = typeBlock([[p.line, inv(p.typeAt, p.typeAt + 1, t)]], 660, 64, COLD_COL, 1, t, OUT.w / 2, 860);
+    slam(p.slam, OUT.w / 2, 660 + h / 2 + 110, fitSize(p.slam, 150, 780, 12), C.red, 1, p.slamAt, t, 12, '800', .6);
   }
 });
 // the title card: FILM.title, then FILM.subtitle; p { at }

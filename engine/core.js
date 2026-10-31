@@ -149,8 +149,9 @@ const vfAt = (list, u) => {                     // keyframed framing [[u, z, cx,
 let SEG = null;                                 // the Short's current segment (short.js), null in a film
 function frameShot(kind, p, t, L, len) {
   let vf = SEG && SEG.vf;
-  if (typeof vf === 'function') vf = vf(t - SEG.from, t, L);
-  else if (vf && Array.isArray(vf[0])) vf = vfAt(vf, t - SEG.from);
+  const u = SEG ? (t - SEG.from) / (SEG.rate || 1) : 0;   // seconds into the segment
+  if (typeof vf === 'function') vf = vf(u, t, L);
+  else if (vf && Array.isArray(vf[0])) vf = vfAt(vf, u);
   if (vf) vframe(vf[0], vf[1], vf[2], vf[3]);
   else {
     const S = SHOT[kind], box = S.subject ? S.subject(t, p, L, len) : null;

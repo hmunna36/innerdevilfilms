@@ -270,7 +270,13 @@ function devilWords(t) {
   }
   ctx.textBaseline = 'middle';
   if (real) font(size, SANS, '800'); else font(size, SERIF, '400', 'italic');
-  const lines = wrapText(text, maxW), lh = size * 1.22, y0 = yc - (lines.length - 1) * lh / 2;
+  let lines = wrapText(text, maxW);
+  if (OUT.vertical && lines.length > 1) {   // balanced lines in the tall frame: no lone word left on the last line
+    let lo = 0, hi = maxW;
+    for (let i = 0; i < 12; i++) { const m = (lo + hi) / 2; if (wrapText(text, m).length > lines.length) lo = m; else hi = m; }
+    lines = wrapText(text, hi);
+  }
+  const lh = size * 1.22, y0 = yc - (lines.length - 1) * lh / 2;
   if (real) {
     const sc = 1 + .25 * (1 - E.out(clamp(L / .15))), jit = L < .35 ? 1 : .2, f = Math.floor(t * 30);
     ctx.textAlign = 'center';

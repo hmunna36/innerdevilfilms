@@ -231,7 +231,9 @@ function typeBlock(lines, cy, size, col, a, t, cx = OUT.w / 2, maxW = 820) {
     let done = [...txt].length * k;
     for (const r of rows) { const n = [...r].length; out.push([r, clamp(done / n)]); done -= n + 1; }
   }
-  const lh = size * 1.45, y0 = cy - (out.length - 1) * lh / 2;
+  const lh = size * 1.45;
+  let y0 = cy - (out.length - 1) * lh / 2;
+  if (OUT.vertical) y0 = Math.min(y0, 1000 - size * .6 - (out.length - 1) * lh);   // the whole block above y 1000, where the Shorts safe area narrows to x 870
   out.forEach(([r, k], i) => typeLine(r, y0 + i * lh, size, k, col, a, t, cx));
   return out.length * lh;
 }

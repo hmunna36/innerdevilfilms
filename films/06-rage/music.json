@@ -1,0 +1,102 @@
+{
+ "model": "music_v2_5",
+ "note": "RAGE | It Holds His Fists. SCORE runs 0:00-1:03.4 (Intro to the title at 0:02.6, Nights from 0:03.2 to the end of the cracked-mirror montage at 0:44.0, Reveal to the turn at 1:03.4); RISE is the comeback anthem (a boxing anthem with electric guitars, unlike the earlier films' strings or synths) from 1:03.4 to 1:40.5, out during the attack; ENDING is the calm piano of WEEKS LATER. The vice's colour: metal percussion like pans and doors slammed in time, a growling distorted low synth that swells, and a child's toy piano, detuned (his little brother). New sounds: the fist through the wall, the one blow on Sam's door; the pot's clang and the boxing bell are mixlib-made (free).",
+ "score": {
+  "id": "SCORE",
+  "chunks": [
+   {
+    "text": "[Intro]\n{a cold sub-bass drone with a low growl under it}\n{a reversed riser that slams into a massive deep brass blast on the last beat}",
+    "duration_ms": 4000,
+    "positive_styles": [
+     "dark cinematic horror",
+     "cinematic",
+     "deep brass",
+     "sub bass",
+     "extreme",
+     "great production quality"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Nights]\n{relentless industrial horror pulse: distorted 808 sub bass, pounding toms and metal percussion like pans and doors slammed in time}\n{a creepy detuned toy piano melody on top, a growling distorted low synth that swells, a dissonant string ostinato}\n{the tension rises non-stop and hits harder every 8 bars, peaking in the last three seconds}",
+    "duration_ms": 41000,
+    "positive_styles": [
+     "industrial horror",
+     "dark phonk",
+     "aggressive",
+     "distorted 808",
+     "metal percussion",
+     "toy piano",
+     "140 bpm",
+     "intense"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Reveal]\n{half a second of dead silence, then a colossal horror explosion}\n{huge deep brass blasts, a wordless dark choir, distorted drums, screeching strings, maximum terror}\n{a first massive hit at 4.7 seconds, a brutal hit at 10 seconds, then a ringing aftermath that fades to near silence by 15 seconds}",
+    "duration_ms": 19500,
+    "positive_styles": [
+     "epic horror",
+     "deep brass",
+     "wordless dark choir",
+     "distorted",
+     "terrifying",
+     "extreme"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   }
+  ]
+ },
+ "cues": {
+  "RISE": {
+   "ms": 37000,
+   "prompt": "Gritty, heroic boxing training anthem for a comeback montage: opens on one huge impact, then hard-hitting drums and sharp claps at 128 BPM, a driving distorted bass, chugging electric guitars, heroic brass and strings in a bright major key, rising, determined and triumphant. Instrumental, no vocals."
+  },
+  "ENDING": {
+   "ms": 16000,
+   "prompt": "Calm, warm solo piano in a major key at 70 BPM, gentle, hopeful and quiet, sparse notes with a soft room tone, with a faint low unsettling hum underneath near the end. No drums, no vocals."
+  }
+ },
+ "sfx": {
+  "wallpunch": {
+   "sec": 1.4,
+   "text": "a fist punching through a plaster wall, one heavy crunching impact and crumbling plaster debris falling, close up"
+  },
+  "doorthud": {
+   "sec": 0.8,
+   "text": "a single heavy fist blow on a closed wooden door, a deep thud with a short rattle of the door frame, close up"
+  }
+ },
+ "shared_sfx": [
+  "scream",
+  "shriek",
+  "scare",
+  "stinger",
+  "swell",
+  "smash"
+ ]
+}

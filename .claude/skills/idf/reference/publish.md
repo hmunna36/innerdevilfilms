@@ -69,6 +69,7 @@ The owner wants extreme thumbnails drawn by ChatGPT from film frames, and the cl
    | 03 LUST | the man on the left lit by his phone, the devil over his shoulder with its claws on him | red | top |
    | 04 GAMBLING | the devil as the dealer across a green table, holding up a card with his face on it | casino green, gold lamp | bottom |
    | 05 DOOMSCROLLING | one giant phone; in its black glass his face split young/old, the devil grinning behind | icy blue | bottom |
+   | 06 RAGE (planned; the code stand-in is uploaded) | the devil bent double under the kitchen ceiling, its claws round his fists; beside them on the wall his little brother's small shadow sprouting two tiny horns (no cowering child) | ember orange | top |
 
    Add each new film's row. Ideas not used yet: its giant hand holding him tiny; its point of view looking down on
    him; the object of the vice huge in the foreground with him trapped inside it; a split frame of the two of him.

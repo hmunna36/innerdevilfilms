@@ -18,9 +18,11 @@ TITLE, NIGHT1, POT, BIRTH, SHOUT, CRAYON, PUNCH, EYE = 2.6, 3.2, 11.8, 13.2, 20.
 HOLD0, HOLD1, BLOW, CRACK = 37.2, 38.6, 38.9, 39.0                  # Sam's room: the pulse holds its breath; the one blow
 MONT0, REVEAL, IT, HORNS, HUSH, PRY, SCREAM, AJAR = 41.0, 44.0, 44.45, 49.15, 52.8, 54.05, 55.3, 59.9
 TURN, PULLDROP, CLENCH, ATTACK, BACK, WEEKS, BELL, EYES, STARVE, END_TITLE = 63.4, 69.8, 89.6, 90.4, 93.1, 100.5, 103.1, 105.4, 109.6, 111.5
-# measured in the mp3s after they were made (films/06-rage/README.md, "Sound"): where the intro's hit lands, where the
-# nights' pulse starts, where the reveal's explosion lands, RISE's opening impact, the ending's first piano note
-HIT0, PULSE0, BOOM0, RISE0, PIANO0 = 3.9, 4.6, 46.5, .02, .3
+# measured in the mp3s (5 Nov 2026, the onsets in films/06-rage/README.md, "Sound"): SCORE's intro hit lands at 1.2 s; its
+# nights chunk starts at 4.0 s with a slow build and the pulse kicks in at 8.0 s; its reveal's silence is 45.2-45.8 s and
+# the explosion lands at 45.9 s; RISE's impact is at 0.0-0.1 s, its drums at 3.8 s, its last hit at 33.3 s; ENDING's piano at 0.5 s
+HIT0, PULSE0, BOOM0, RISE0, PIANO0 = 1.2, 4.05, 45.9, .05, .5
+PIANO_AT = 99.0                                   # the piano comes in with the drawings on the fridge
 W = lambda name: src(HERE, name)
 music, fx = (np.zeros((int(DUR * SR) + SR, 2)) for _ in range(2))
 
@@ -67,12 +69,12 @@ def creak(d=.6, f0=180):                     # the door opening a crack
 
 score_all = W('music_SCORE')
 # ---------- the cold open: a drone and a low growl under the cold line, the eyes, the score's own hit on the title ----------
-put(music, 0, fade(stereo(drone(2.6)), .2, .2), -16)
+put(music, 0, fade(stereo(drone(2.6)), .2, .2), -12)
 put(fx, .85, W('sfx_swell'), -12)                                                  # the eyes open in its shadow, on "GROWS"
 put(fx, 1.6, stereo(whoosh(.45, 300, 2600)), -14)                                  # its claws close on his fist
 tail = score_all[int(.2 * SR):int(2.4 * SR)][::-1]                                # the intro's swell, reversed into the hit
 put(music, TITLE - HIT0 - len(tail) / SR + HIT0, fade(tail, .6, .01), -14)
-put(music, TITLE - HIT0, fade(score_all[:int((HIT0 + 1.4) * SR)], .3, .5))        # THE HIT on the title
+put(music, TITLE - HIT0, fade(score_all[:int((HIT0 + 1.6) * SR)], .3, .7))        # THE HIT on the title (its riser under the claws)
 # ---------- the evening: the pulse from 7:02 PM to the end of the cracked-mirror montage ----------
 nights = score_all[int((PULSE0 - .05) * SR):int((PULSE0 - .05 + REVEAL - NIGHT1) * SR)]
 nights = gain_env(nights, NIGHT1, HOLD0, HOLD1 + .25, -9, .35)              # it holds its breath in Sam's room
@@ -85,15 +87,16 @@ put(music, IT, fade(rev[:int((TURN - IT) * SR)], .003, .4))
 rise = W('music_RISE')
 rise = gain_env(rise, TURN - RISE0, CLENCH, ATTACK, -9, .3)                         # it thins as his fist clenches
 rise = mute(rise, TURN - RISE0, ATTACK, BACK, .01)                                  # it drops out while the devil attacks
-rise = gain_env(rise, TURN - RISE0, 99.6, 999, -60, 1.0, hold=False)                # and fades as the day ends
+rise = gain_env(rise, TURN - RISE0, 99.2, 999, -60, 1.2, hold=False)                # and fades as the day ends
 put(music, TURN - RISE0, fade(rise, .003, .4))
 # ---------- weeks later: the calm piano, the bell, then it comes back in the doorway ----------
 ending = W('music_ENDING')
-pk = np.sqrt((ending[int(PIANO0 * SR):int((PIANO0 + 4) * SR)] ** 2).mean()); lift = -24 - 20 * np.log10(pk + 1e-9)
-put(music, WEEKS - PIANO0, fade(ending[:int((EYES + .2 - WEEKS + PIANO0) * SR)], .01, .6), lift)
+ending = gain_env(ending, 0, 2.0, 7.25, 8, .9)                                     # its soft notes between the two chords, brought up
+pk = np.sqrt((ending[int(PIANO0 * SR):int((PIANO0 + 4) * SR)] ** 2).mean()); lift = -17 - 20 * np.log10(pk + 1e-9)   # calm, but clearly there
+put(music, PIANO_AT - PIANO0, fade(ending[:int((EYES + .2 - PIANO_AT + PIANO0) * SR)], .01, .6), lift)
 toy = filt(score_all[int((PULSE0 + 8) * SR):int((PULSE0 + 11.2) * SR)], 'high', 700)   # the score's toy piano...
-put(music, EYES, fade(stereo(varispeed(toy, .95, .86)), .02, .5), 2)                      # ...detuned, as its eyes open
-put(music, EYES, fade(stereo(drone(4.2)), .1, .3), -14)
+put(music, EYES, fade(stereo(varispeed(toy, .95, .86)), .02, .5), 7)                      # ...detuned, as its eyes open
+put(music, EYES, fade(stereo(drone(4.2)), .1, .3), -10)
 put(music, STARVE - HIT0, fade(score_all[:int((HIT0 + 2.2) * SR)], .25, .8))             # the title's hit, again
 put(music, END_TITLE, fade(stereo(drone(4.2)), .2, 1.2), -12)
 
@@ -116,8 +119,8 @@ put(fx, CRACK, W('sfx_smash'), -8)                                              
 for k in range(9): put(fx, MONT0 + k * .333, stereo(glitch(.08)), -18 if k % 2 else -14)   # the montage's cuts
 put(fx, IT, boom(), -7); put(fx, IT, W('sfx_stinger'), -6)                          # IT in every shard
 put(fx, HORNS, W('sfx_stinger'), -5); put(fx, HORNS, boom(), -9)                    # the horns on Sam's shadow
-put(fx, PRY, boom(), -6); put(fx, PRY, stereo(whoosh(.6, 150, 1500)), -8); put(fx, PRY + .05, W('sfx_smash'), -14)    # his fist opens
-put(fx, SCREAM, W('sfx_scream'), -5)                                                # it screams and shrinks
+put(fx, PRY, boom(), -8); put(fx, PRY, stereo(whoosh(.6, 150, 1500)), -9); put(fx, PRY + .05, W('sfx_smash'), -15)    # his fist opens
+put(fx, SCREAM, W('sfx_scream'), -8)                                                # it screams and shrinks
 put(fx, AJAR, stereo(creak()), -14)                                                 # Sam opens the door a crack
 put(fx, 61.15, stereo(click(.02, 2200)), -14)                                       # his reply to Mom, sent
 put(fx, TURN, boom(), -7)                                                           # DAY 1: the turn

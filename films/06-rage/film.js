@@ -1,6 +1,24 @@
 'use strict';
+// FILM 06: RAGE | It Holds His Fists (1:56). The house style of LUST (films/03-lust), as its own film (reference/film.md,
+// "Every film is its own film"): ONE NIGHT, not nights. One evening in real time on the oven's amber clock (7:02 to 9:17
+// PM) in the family kitchen and hallway, ember orange, redder and darker with every snap. He is in charge of his little
+// brother SAM while Mom works a night shift. Every time he loses it, the thing that holds his fists GROWS: his shadow on
+// the kitchen wall steps off it a head taller (the pot), its horns reach the ceiling (the shout), it is bent double under
+// it (the fist through the wall), its head goes up through the hallway ceiling (one blow on the wall beside Sam's door).
+// The evening flashes past in the cracked hall mirror; in every shard it is IT, its claw lowering in step with his fist:
+// "YOU NEVER LOST CONTROL." "YOU HANDED IT TO ME." Sam's small shadow grows two tiny horns: "LOOK. HE'S LEARNING." He pries
+// its claws off his fist and kneels at Sam's door with his palms open; it shrinks back into his shadow; Sam opens the
+// door. DAY 1: the boxing anthem: a boxing gym (rope, push-ups, a pull-up he can't finish), DAY 4 the bridge at sunrise,
+// DAY 9 squats, curls, clean pull-ups, the breath with open hands; it is smaller every day. DAY 12 at dinner the juice
+// spills again, it leaps from under the table and attacks: "Go on. Teach him." He breathes, his fist opens. Weeks later
+// Sam copies his breath; in the gym's doorway it is knee-high: "LOSE IT ONCE. THAT'S ALL I NEED." "EVERY TIME YOU DON'T…
+// IT STARVES." Story and critique: STORY.md. Music: music.json, mix.py.
+//
+// Sections: A the palette, poses and the LED clocks; B the sets (kitchen, hallway, Sam's room); C the clocks and the
+// kitchen shot; D close-ups, the hallway, Sam's room, the cracked mirror, the phone; E the comeback (gym, bridge, fridge)
+// and the code thumbnail; then the cut.
+
 // ===== RAGE, part A: the palette, his poses and Sam's, the shadow, the LED clocks =====
-// (film.js is built from parts/*.js by parts/build.sh; edit the parts)
 
 let GT = 0;                                   // the film time of the frame being drawn
 { const base = renderFilm; renderFilm = t => { GT = t; return base(t); }; }   // eslint-disable-line no-global-assign
@@ -154,6 +172,7 @@ function segTime(txt, cx, cy, h, col, a, glowA = 1) {
   ctx.restore();
   return total;
 }
+
 // ===== RAGE, part B: the sets. The kitchen (the main set), the hallway, Sam's room =====
 // Filled and lit like the engine's bedroom (SKILL.md rule 15): mid-tone ember walls under a lamp, solid furniture with
 // lit edges, a cool window; his dark figure and the devil always stand against something lighter.
@@ -499,6 +518,7 @@ function samRoomSet(t, q) {
   ctx.fillStyle = rgba([60, 60, 80]); ctx.fillRect(nx - 14, ny - 6, 28, 8);
   additive(() => { glow(SPR.star, nx, ny - 26, 380, .7); glow(SPR.star, nx, ny - 26, 70, .9); });
 }
+
 // ===== RAGE, part C: the film's own shots =====
 
 // ---------- the clocks: the oven's amber LED (the night), the boxing gym's red timer (the mornings) ----------
@@ -612,6 +632,7 @@ function shockRing(t, t0, head) {
     ctx.beginPath(); ctx.arc(x + 40, y + 12, r * .6 + dd * 900, -.9, .9); ctx.stroke();
   }
 }
+
 // ===== RAGE, part D: close-ups (his fist, Sam's face, its face), the hallway, Sam's room, the cracked mirror =====
 
 // ---------- new looks and expressions ----------
@@ -1137,6 +1158,7 @@ chatScreen = function (f, L, c) {                // eslint-disable-line no-globa
 };
 const STATUS = [[0, '7:03'], [18.1, '7:49'], [26.3, '8:32'], [61.0, '9:41'], [TURN, '8:15']];
 const statusAt = t => { let s = STATUS[0][1]; for (const q of STATUS) if (t >= q[0]) s = q[1]; return s; };
+
 // ===== RAGE, part E: the comeback. The boxing gym (steel-blue brick, morning light), the bridge at sunrise =====
 
 const GF = 880;                                   // the gym floor
@@ -1375,6 +1397,7 @@ defShot('thumb', (t, p) => {
   big('RAGE', 70, 190, 300, 6);
   big('IT GROWS', 84, 410, 112, 3);
 });
+
 // ===== RAGE, the cut =====
 const COLD = 'EVERY TIME YOU LOSE IT…', COLD2 = '…IT GROWS.';
 const RUN = [72.1, 76.7];
@@ -1527,3 +1550,4 @@ defineFilm({
     [111.3, 'title', { at: 111.5 }]
   ]
 });
+

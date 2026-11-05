@@ -127,7 +127,7 @@ function samTuft(P, col) {                     // Sam: a little tuft of hair on 
 function drawFig(P, ex, rim, rimA, light, o = {}) {
   const f = P.f || 1, fillC = P.kid ? [16, 15, 24] : [8, 7, 9];
   drawPerson(P, fillC, rim, rimA, o.lx ?? -f * .3, o.ly ?? -1, o.back ?? true);
-  if (P.kid) samTuft(P, fillC);
+  if (P.kid) { samTuft(P, fillC); const tp = P.parts.find(([pts, w]) => w > 40 * (P.head[2] / 50) * .8 && pts.length >= 2 && Math.abs(pts[0][1] - pts[pts.length - 1][1]) > 40); if (tp) { const [a0, , a2] = tp[0].length > 2 ? tp[0] : [tp[0][0], null, tp[0][1]]; ctx.fillStyle = 'rgba(255,206,70,.9)'; starPath(lerp(a0[0], a2[0], .7), lerp(a0[1], a2[1], .7), P.head[2] * .26); ctx.fill(); } }
   figFace(P, ex, light, o.la ?? .32, o.lc || [.5, -.3], o.featA ?? .92);
 }
 // his shadow on the wall: the same pose, flat and dark, thrown up and away from the lamp
@@ -311,7 +311,8 @@ function juice(t, x, y, spilled, L) {
   if (spilled) {                               // the puddle runs to his phone and over the edge
     const k = clamp((t - tipT) / .5);
     ctx.fillStyle = rgba([255, 150, 30], .85 * L);
-    ctx.beginPath(); ctx.ellipse(x - 70 * k, y - 1, 110 * k + 10, 5, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(x - 80 * k, y - 2, 150 * k + 12, 8, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = rgba([255, 200, 90], .7 * L); ctx.beginPath(); ctx.ellipse(x - 70 * k, y - 4, 90 * k + 6, 3, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = rgba([255, 150, 30], .85 * L);
     if (k > .6) for (let i = 0; i < 4; i++) { const dx = x - 160 + i * 24, d = ((t - tipT) * 300 + i * 90) % 180; ctx.beginPath(); ctx.arc(dx, y + 16 + d, 4, 0, Math.PI * 2); ctx.fill(); }
   }
 }
@@ -537,8 +538,6 @@ defShot('led', (t, p, L) => {
     ctx.fillStyle = '#2a2f3a'; for (let r = 0; r < 18; r++) for (let c = -1; c < 14; c++) { ctx.fillStyle = (r + c) % 3 ? '#262b35' : '#2c323e'; ctx.fillRect(c * 150 + (r % 2) * 75, r * 64, 144, 58); }
     ctx.fillStyle = '#0b0b0e'; rrect(300, 290, 1320, 500, 30); ctx.fill();
     ctx.strokeStyle = 'rgba(200,210,230,.25)'; ctx.lineWidth = 5; rrect(300, 290, 1320, 500, 30); ctx.stroke();
-    font(34, SANS, '800'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = 'rgba(255,60,50,.8)';
-    ctx.fillText('R O U N D  1', W / 2, 345);
   }
   additive(() => glow(sprOf(col), W / 2, 545, 760, .22));
   const day = typeof p === 'object' && p.day;
@@ -578,10 +577,10 @@ defShot('kitchen', (t, p, L) => {
     ctx.fillRect(cx - 50, 776, 14, FY - 776); ctx.fillRect(cx + 36, 776, 14, FY - 776);
     ctx.fillStyle = 'rgba(255,230,190,.5)'; ctx.fillRect(cx - 60, 760, 120, 3);
   }
-  if (S) { wallShadow(S, lamp[0], .55); drawFig(S, typeof p.samEx === 'function' ? p.samEx(t, L) : EXPR[p.samEx || 'smile'], rim, .5, rim, { lx: (lamp[0] - S.head[0]) / 400 }); }
+  if (S) { wallShadow(S, lamp[0], calm ? .12 : .55); drawFig(S, typeof p.samEx === 'function' ? p.samEx(t, L) : EXPR[p.samEx || 'smile'], rim, .5, rim, { lx: (lamp[0] - S.head[0]) / 400 }); }
   let o = null;
   if (p.dev) { const d = p.dev(t, L); if (M && d.o && d.o.reach && !d.o.targets) d.o.targets = M.hands; o = drawDevilBehind(t, fr, d); }
-  if (M) drawFig(M, p.ex ? EXPR[p.ex] : exprAt(t), rim, .55, rim, { lx: (lamp[0] - M.head[0]) / 400 });
+  if (M) drawFig(M, p.ex ? EXPR[p.ex] : exprAt(t), o ? mix(rim, [255, 236, 210], .35) : rim, o ? .85 : .55, rim, { lx: (lamp[0] - M.head[0]) / 400 });
   if (p.pot) potInHands(t, M, p.pot);
   if (p.bag !== undefined) {                     // his work bag: in his hand, then dropped on the counter
     const k = E.io(inv(p.bag - .3, p.bag, t)), bx = lerp(M.hand[0], 700, k), by = lerp(M.hand[1] + 40, 572, k);
@@ -616,7 +615,7 @@ function potInHands(t, M, how) {
   ctx.restore();
   if (t >= how.at && t < how.at + 1.6) {        // the crash: water and steam burst out of the sink
     const d = t - how.at;
-    additive(() => { for (let i = 0; i < 14; i++) glow(SPR.grey, sinkP[0] + (rnd(i + 800) - .5) * 260 * (d + .2), sinkP[1] - 40 - d * 220 * rnd(i + 801), 70 + 60 * d, .28 * (1 - d / 1.6)); });
+    additive(() => { for (let i = 0; i < 14; i++) glow(SPR.grey, sinkP[0] + (rnd(i + 800) - .5) * 260 * (d + .2), sinkP[1] - 40 - d * 220 * rnd(i + 801), 70 + 60 * d, .16 * (1 - d / 1.6)); });
     ctx.fillStyle = `rgba(200,220,255,${.8 * (1 - d / .6)})`;
     for (let i = 0; i < 18; i++) { const vx = (rnd(i + 810) - .5) * 700, vy = -300 - rnd(i + 811) * 500, dd = Math.min(d, .6); ctx.beginPath(); ctx.arc(sinkP[0] + vx * dd, sinkP[1] - 10 + vy * dd + 1400 * dd * dd, 4 + 3 * rnd(i), 0, 7); ctx.fill(); }
   }
@@ -747,21 +746,23 @@ defShot('samface', (t, p, L) => {
   ctx.fillRect(x - r * .26, yy + r * .6, r * .46, r * .7);
   ctx.beginPath(); ctx.arc(x, yy, r, 0, 7); ctx.fill();
   samTuft({ head: [x, yy, r], f: 1 }, fillC);
+  ctx.fillStyle = 'rgba(255,206,70,.9)'; starPath(x + 30, yy + r * 1.62, 34); ctx.fill();   // the yellow star on his T-shirt
   face(x, yy, r, ex, { turn: .55, light: lk.light, la: lk.la, lc: lk.lc });
-  if (p.crayon !== undefined) {                 // his small hand in front of him, a red crayon in it; it snaps in two
-    const sn = t >= p.crayon, k = E.out(inv(p.crayon, p.crayon + .15, t)), hx = x + 70, hy = yy + r * 1.62 - 24 * k;
-    ctx.save(); ctx.translate(hx, hy); ctx.scale(1.5, 1.5);
-    for (const [sd, dx] of [[-1, -1], [1, 1]]) {
-      ctx.save(); ctx.translate(sn ? dx * 22 * k : 0, sn ? -14 * k : 0); ctx.rotate(sn ? dx * .5 * k : 0);
-      ctx.fillStyle = 'rgb(220,40,36)'; ctx.fillRect(sd < 0 ? -70 : 0, -11, 70, 22);
-      if (sd < 0) { ctx.fillStyle = 'rgb(240,80,70)'; ctx.beginPath(); ctx.moveTo(-70, -11); ctx.lineTo(-92, 0); ctx.lineTo(-70, 11); ctx.fill(); }
+  if (p.crayon !== undefined) {                 // his own two small hands hold a red crayon in front of his chest; it snaps in two
+    const sn = t >= p.crayon, k = E.out(inv(p.crayon, p.crayon + .15, t)), cx = x - 6, cy = yy + r * 1.52;
+    for (const sd of [-1, 1]) {
+      const hx = cx + sd * (70 + 16 * k), hy = cy - 6 * k;
+      ctx.save(); ctx.translate(hx - sd * 46, hy); ctx.rotate(sn ? sd * .35 * k : 0);      // his half of the crayon
+      ctx.fillStyle = 'rgb(222,40,36)'; ctx.fillRect(sd < 0 ? -52 : 0, -13, 52, 26);
+      ctx.fillStyle = 'rgba(255,240,230,.75)'; ctx.fillRect(sd < 0 ? -40 : 12, -13, 26, 26);   // its paper wrapper
+      if (sd < 0) { ctx.fillStyle = 'rgb(240,80,70)'; ctx.beginPath(); ctx.moveTo(-52, -13); ctx.lineTo(-78, 0); ctx.lineTo(-52, 13); ctx.fill(); }
       ctx.restore();
+      ctx.strokeStyle = rgba(lk.rim, .5); ctx.lineWidth = 46; ctx.lineCap = 'round'; line(cx + sd * 130, yy + r * 2.15, hx, hy + 6);   // his forearm, up from his own side
+      ctx.strokeStyle = rgba(fillC); ctx.lineWidth = 38; line(cx + sd * 130, yy + r * 2.15, hx, hy + 6);
+      ctx.fillStyle = rgba(lk.rim, .55); ctx.beginPath(); ctx.arc(hx, hy, 31, 0, 7); ctx.fill();
+      ctx.fillStyle = rgba(fillC); ctx.beginPath(); ctx.arc(hx, hy, 27, 0, 7); ctx.fill();
     }
-    ctx.fillStyle = rgba(lk.rim, .55); ctx.beginPath(); ctx.arc(-6, 6, 44, 0, 7); ctx.fill();
-    ctx.fillStyle = rgba(fillC); ctx.beginPath(); ctx.arc(-6, 6, 39, 0, 7); ctx.fill();
-    ctx.strokeStyle = rgba(fillC); ctx.lineWidth = 50; ctx.lineCap = 'round'; line(-6, 30, 60, 260);
-    if (sn && t < p.crayon + .5) { ctx.fillStyle = `rgba(255,120,90,${1 - (t - p.crayon) / .5})`; for (let i = 0; i < 8; i++) { const a = rnd(i + 990) * 6.28, d = (t - p.crayon) * 300; ctx.fillRect(Math.cos(a) * d, Math.sin(a) * d - 10, 5, 5); } }
-    ctx.restore();
+    if (sn && t < p.crayon + .5) { ctx.fillStyle = `rgba(255,120,90,${1 - (t - p.crayon) / .5})`; for (let i = 0; i < 8; i++) { const a = rnd(i + 990) * 6.28, d = (t - p.crayon) * 300; ctx.fillRect(cx + Math.cos(a) * d, cy + Math.sin(a) * d - 10, 5, 5); } }
   }
   const hk = typeof p.hands === 'function' ? p.hands(t, L) : p.hands || 0;
   if (hk > .01) {                               // his small hands come up in front of his face
@@ -887,7 +888,7 @@ defShot('hall', (t, p, L) => {
   let o = null;
   if (p.dev) { const d = p.dev(t, L); if (M && d.o && d.o.reach && !d.o.targets) d.o.targets = M.hands; o = drawDevilBehind(t, fr, d); }
   if (S) drawFig(S, EXPR[p.samEx || 'smile'], rim, .5, rim);
-  if (M) drawFig(M, p.ex ? EXPR[p.ex] : exprAt(t), rim, .55, rim, { lx: -1, ly: -.6 });
+  if (M) drawFig(M, p.ex ? EXPR[p.ex] : exprAt(t), o ? mix(rim, [255, 236, 210], .35) : rim, o ? .85 : .55, rim, { lx: -1, ly: -.6 });
   if (p.fix && M) heldDoor(t, M, p.fix);
   if (o) devilFront(t, o);
   if (o && p.through) {                            // its head has gone up through the ceiling: broken plaster over its horns
@@ -924,12 +925,16 @@ function heldDoor(t, M, fix) {
 // p: fr, sam(t, L) pose, samEx, man(t, L), manShadow (his long shadow across the floor from the door), dev(t, L),
 // horns [a, b] (horns grow on Sam's shadow), crumble [a, b], doorLight
 const SAM_AT = [1060, FY, 1.05];
-function samShadow(t, P, p, a = .62) {          // Sam's shadow, thrown up the wall by the night-light at his feet
-  const [nx, ny] = ROOM_S.nl, b = poseBox(P, 0), cx = (b[0] + b[2]) / 2, k = 1.6;
-  const tx = cx + 120, ty = b[3] - 20;
+function samShadow(t, P, p, a = .62) {          // Sam's shadow, thrown up the wall by the night-light: his own shape, right behind him
+  const [nx, ny] = ROOM_S.nl, b = poseBox(P, 0), cx = (b[0] + b[2]) / 2, k = 1.35, inBed = !!P.sh && p.bed !== false;
+  const tx = cx + 70, ty = b[3] - 4;
   ctx.save(); ctx.globalAlpha = a; ctx.translate(tx, ty); ctx.scale(k, k * 1.05); ctx.translate(-cx, -b[3]);
   ctx.strokeStyle = ctx.fillStyle = 'rgb(14,14,30)'; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-  for (const [pts, w] of P.parts) limb(pts, w);
+  if (inBed) {                                     // the lump of him under the blanket, and his head
+    const [hx, hy, r] = P.head, top = lerp(hy + r * .1, P.sh[1] + 30, p.lower ? p.lower(t, 0) : 0);
+    ctx.beginPath(); ctx.moveTo(hx - r * 1.5, 706); ctx.quadraticCurveTo(hx - r * 1.45, top - 6, hx - r * .2, top); ctx.quadraticCurveTo(hx + r * 1.4, top - 4, hx + r * 1.6, top + 50); ctx.quadraticCurveTo(hx + r * 2.2, 660, hx + r * 3, 706); ctx.closePath(); ctx.fill();
+    samTuft(P, [14, 14, 30]);
+  } else for (const [pts, w] of P.parts) limb(pts, w);
   ctx.beginPath(); ctx.arc(P.head[0], P.head[1], P.head[2], 0, 7); ctx.fill();
   const hk = p.horns ? E.out(inv(p.horns[0], p.horns[1], t)) * (1 - (p.crumble ? inv(p.crumble[0], p.crumble[1], t) : 0)) : 0;
   const [hx, hy, r] = P.head;
@@ -1354,11 +1359,11 @@ defShot('fridge', (t, p, L) => {
   fill([30, 14, 8]); cam(3.3, 1676, 410);
   kitchenSet(t, { heat: heatAt(t), calm, noHole: true, newOnly: p.tape !== undefined });
   if (p.tape !== undefined) {
-    const k = E.out(inv(p.tape - .55, p.tape, t)), out = E.io(inv(p.tape + .25, p.tape + .7, t)), hx = lerp(1810, 1640, k) + 160 * out, hy = lerp(560, 372, k) + 120 * out;
+    const k = E.out(inv(p.tape - .55, p.tape, t)), out = E.io(inv(p.tape + .25, p.tape + .7, t)), hx = lerp(1840, 1640, k) + 220 * out, hy = lerp(380, 372, k) - 20 * out;
     if (t < p.tape) { ctx.save(); ctx.translate(hx - 30, hy - 30); ctx.rotate(-.2 * (1 - k)); crayonDrawing(0, 0, .95, 1); ctx.restore(); }
     else { ctx.fillStyle = 'rgba(255,255,255,.65)'; for (const [x, y, a] of [[1600, 290, -.5], [1700, 370, -.5]]) { ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.fillRect(-16, -5, 32, 10); ctx.restore(); } }
-    ctx.strokeStyle = 'rgba(255,220,180,.6)'; ctx.lineWidth = 15; ctx.lineCap = 'round'; line(hx + 140, hy + 110, hx, hy);
-    ctx.strokeStyle = '#100f18'; ctx.lineWidth = 11; line(hx + 140, hy + 110, hx, hy);
+    ctx.strokeStyle = 'rgba(255,220,180,.6)'; ctx.lineWidth = 15; ctx.lineCap = 'round'; line(hx + 200, hy - 10, hx, hy);
+    ctx.strokeStyle = '#100f18'; ctx.lineWidth = 11; line(hx + 200, hy - 10, hx, hy);
     ctx.fillStyle = '#100f18'; ctx.beginPath(); ctx.arc(hx, hy, 9, 0, 7); ctx.fill();
   }
 }, () => toScreenBox([3.3, 1676, 410], [1600, 300, 1760, 520]));
@@ -1451,7 +1456,7 @@ defineFilm({
     { id: 'R04', t: 105.6, d: 2.0, text: 'Lose it once. That’s all I need.', real: true }
   ],
   slams: [2.6, 11.8, 20.8, 29.7, 38.9, 49.15, 54.05, 63.4, 90.4, 109.6, 111.5],
-  glitch: [[.85, 1.15, .7], [2.6, 3.1, 1], [13.35, 13.7, .8], [40.9, 41.1, .8], [44.2, 44.55, 1], [49.15, 49.55, .7], [54.05, 54.45, .9], [90.4, 90.7, .8], [93.1, 93.4, .7], [105.4, 105.8, .9]],
+  glitch: [[.86, .93, .25], [2.6, 3.1, 1], [13.35, 13.7, .8], [40.9, 41.1, .8], [44.2, 44.55, 1], [49.15, 49.55, .7], [54.05, 54.45, .9], [90.4, 90.7, .8], [93.1, 93.4, .7], [105.4, 105.8, .9]],
   flash: { led: [255, 214, 170], dface: [255, 60, 60], sting: [255, 60, 60] },
   vignette: [[0, .75], [63.4, .75], [64.1, .5], [85.2, .55], [100.5, .7]],
   heartbeat: [[44.0, 49.0], [52.5, 53.7], [59.5, 61.0]],

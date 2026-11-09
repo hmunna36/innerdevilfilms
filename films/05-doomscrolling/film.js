@@ -370,8 +370,8 @@ defShot('dclock', (t, p, L = 1) => {
     slam(p.date, W / 2, 490, sz, [214, 224, 238], .95, t0, t, 12, '200');
     slam(p.label, W / 2, 490 + sz * .5 + 80, 64, [226, 96, 96], .92, t0 + .12, t, 14, '400');
   } else {
-    ui(); const sz = fitSize(p.date, 200, 880, 8, '200');
-    slam(p.date, OUT.w / 2, 900, sz, [214, 224, 238], .95, t0, t, 8, '200');
+    ui(); const sz = fitSize(p.date, 200, 780, 8, '200');   // inside the Shorts safe area (x 100-980 above y 1000), with a margin
+    slam(p.date, OUT.w / 2, 900, sz, [214, 224, 238], .95, t0, t, 8 * sz / 200, '200');
     slam(p.label, OUT.w / 2, 900 + sz * .5 + 100, 84, [226, 96, 96], .92, t0 + .12, t, 14, '400');
   }
 });
@@ -380,7 +380,7 @@ defShot('sting', (t, p, L) => {
   fill([3, 3, 5]);
   additive(() => glow(SPR.red, W / 2, 540, 800, .4));
   if (!OUT.vertical) { const sz = fitSize(FILM.title, 250, 1760, 30, '800'); slam(FILM.title, W / 2, 540, sz, C.cream, 1, t - L, t, 30, '800', .4); }
-  else { ui(); const sz = fitSize(FILM.title, 250, 900, 16, '800'); slam(FILM.title, OUT.w / 2, 960, sz, C.cream, 1, t - L, t, 16, '800', .4); }
+  else { ui(); const sz = fitSize(FILM.title, 250, 760, 16, '800'); slam(FILM.title, OUT.w / 2, 960, sz, C.cream, 1, t - L, t, 16 * sz / 250, '800', .4); }   // the track shrinks with the size, so the push-in keeps it inside x 100-980
 });
 defShot('title', (t, p) => {
   fill([3, 3, 5]);

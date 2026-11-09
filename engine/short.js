@@ -39,12 +39,13 @@ function endCard(u) {
   additive(() => glow(SPR.red, x, 760, 820, .32 * (.85 + .15 * Math.sin(u * 6))));
   redEyes(x, 600, 30, E.out(inv(.1, .5, u)) * (.85 + .15 * Math.sin(u * 23) * Math.sin(u * 7)));
   ctx.setTransform(push, 0, 0, push, x * (1 - push), 960 * (1 - push));
-  const sz = fitSize(e.title, 230, 740, 40, '800');
+  // every line fits 700 px with its tracking scaled to its size, so with the push-in (to 1.05) it stays in x 115-855
+  const sz = fitSize(e.title, 230, 700, 40, '800'), lsz = fitSize(e.line, 50, 700, 14, '700'), csz = fitSize(e.cta, 52, 700, 5, '800');
   slam(e.title, x, 880, sz, C.cream, 1, 0, u, 40 * sz / 230, '800', .3);
-  slam(e.line, x, 880 + sz * .62 + 34, fitSize(e.line, 50, 740, 14, '700'), [235, 70, 70], .95, .35, u, 14, '700');
+  slam(e.line, x, 880 + sz * .62 + 34, lsz, [235, 70, 70], .95, .35, u, 14 * lsz / 50, '700');
   if (u > .9) {
     const ca = E.out(inv(.9, 1.2, u));
-    spaced(e.cta, x, 1330, fitSize(e.cta, 52, 740, 5, '800'), C.cream, .92 * ca, 5, '800');
+    spaced(e.cta, x, 1330, csz, C.cream, .92 * ca, 5 * csz / 52, '800');
     const b = Math.sin(u * 7) * 12;                       // an arrow down to the Related video link
     ctx.strokeStyle = rgba(C.cream, .85 * ca); ctx.lineWidth = 9; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.beginPath(); ctx.moveTo(x, 1420 + b); ctx.lineTo(x, 1560 + b); ctx.moveTo(x - 46, 1514 + b); ctx.lineTo(x, 1560 + b); ctx.lineTo(x + 46, 1514 + b); ctx.stroke();

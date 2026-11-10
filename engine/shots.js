@@ -205,7 +205,10 @@ defShot('montage', (t, p, L) => {
   font(OUT.vertical ? 60 : 42, SERIF, '400', 'italic'); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.shadowColor = rgba(C.red, .8); ctx.shadowBlur = 16; ctx.fillStyle = rgba([255, 110, 110], .85);
   if (!OUT.vertical) { screen(); ctx.fillText(p.word, 300 + rnd(k + 40) * 1300, 200 + rnd(k + 41) * 640); }
-  else { ui(); ctx.fillText(p.word, 260 + rnd(k + 40) * 470, 470 + rnd(k + 41) * 1050); }
+  else {                             // kept inside the Shorts safe area (x 100-980 above y 1000, 100-870 below), push-in included
+    ui(); const y = 470 + rnd(k + 41) * 1050, hw = ctx.measureText(p.word).width / 2 + 24;
+    ctx.fillText(p.word, clamp(260 + rnd(k + 40) * 470, 100 + hw, Math.max(100 + hw, (y > 1000 ? 870 : 980) - hw)), y);
+  }
   ctx.shadowBlur = 0;
 }, (t, p, L) => {
   const { sub, it } = montageSub(p, L), [name, q] = it;

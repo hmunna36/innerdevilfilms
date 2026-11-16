@@ -1,0 +1,59 @@
+{
+ "model": "music_v2_5",
+ "note": "THE BOTTLE | She Waited Till Dark. SCORE runs 0:00-0:53.4 (Intro to the title at 0:03.6; Deal, the bar, from 0:04.3 to the end of the montage at 0:40.9; then the film is silent until the Reveal's explosion at 0:45.7, which runs to the smash at 0:53.4). RUN is the run through the rain (0:53.4-1:00.5). SAD is the steps and the walk home (1:00.5-1:10.6). RISE is the comeback anthem (1:10.6-1:22.7, back softly at 1:27.7). ENDING is golden hour and the hug (1:29.5 on). The vice's colour: a drunk, detuned bar piano, clinking glass percussion, bowed glass tones.",
+ "score": {
+  "id": "SCORE",
+  "chunks": [
+   {
+    "text": "[Intro]\n{a cold sub-bass drone with a thin ringing bowed-glass tone over it}\n{a reversed riser that slams into one massive deep brass blast on the last beat}",
+    "duration_ms": 4000,
+    "positive_styles": ["dark cinematic horror", "cinematic", "deep brass", "sub bass", "glass harmonica", "extreme", "great production quality"],
+    "negative_styles": ["vocals with words", "lyrics", "singing", "rap", "spoken word", "narration"],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Deal]\n{a slow, swaggering, sinister groove at 100 bpm: a deep distorted sub bass pulse, a heavy half-time kick, percussion made of clinking glasses and bottles}\n{on top a drunk, detuned old bar piano plays a sly, creepy little waltz-like melody that keeps coming back, more out of tune each time}\n{it gets heavier and more threatening every 8 bars: low strings and a dark choir pad join, the drums double up, peaking wildly in the last four seconds}",
+    "duration_ms": 37000,
+    "positive_styles": ["dark cinematic", "horror trap", "detuned honky-tonk piano", "glass percussion", "distorted 808", "sinister", "100 bpm", "intense"],
+    "negative_styles": ["vocals with words", "lyrics", "singing", "rap", "spoken word", "narration", "happy", "upbeat"],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Reveal]\n{it opens at once on a colossal horror explosion: huge deep brass blasts, a wordless dark choir, distorted drums, screeching strings}\n{massive separate hits at 1 second, at 2.8 seconds and at 4.9 seconds, each bigger than the last, maximum terror}\n{then it collapses into a ringing, shivering high string note that fades almost to silence by the end}",
+    "duration_ms": 9000,
+    "positive_styles": ["epic horror", "deep brass", "wordless dark choir", "distorted", "terrifying", "extreme"],
+    "negative_styles": ["vocals with words", "lyrics", "singing", "rap", "spoken word", "narration"],
+    "context_adherence": "high"
+   }
+  ]
+ },
+ "cues": {
+  "RUN": {
+   "ms": 10000,
+   "prompt": "Urgent, desperate cinematic chase music that starts at full speed on the first beat: fast driving string ostinato at 150 BPM, a pounding heartbeat kick, rising brass, a father running through the rain to reach his child, minor key turning hopeful, building non-stop. Instrumental, no vocals."
+  },
+  "SAD": {
+   "ms": 12000,
+   "prompt": "Very quiet, heartbroken solo piano: a few slow, sparse single notes in a minor key at 60 BPM with long silences between them, a soft warm string pad entering halfway, intimate, a father's shame, rain outside. No drums, no vocals."
+  },
+  "RISE": {
+   "ms": 24000,
+   "prompt": "Heroic, emotional comeback training anthem that opens on one huge impact: hard-hitting drums and claps at 128 BPM, a driving bass, soaring strings and bright brass in a major key, a warm piano hook, determined, rising and triumphant, a father earning his daughter's trust back at sunrise. Instrumental, no vocals."
+  },
+  "ENDING": {
+   "ms": 16000,
+   "prompt": "Warm, tender solo piano in a major key at 70 BPM joined by soft swelling strings, gentle, forgiving and full of relief, golden evening light, a child running into her father's arms, rising to one quiet glowing chord. No drums, no vocals."
+  }
+ },
+ "sfx": {
+  "pour": {
+   "sec": 1.6,
+   "text": "whisky poured from a bottle into a small glass, close up, a short glug and splash, quiet bar room"
+  },
+  "knock": {
+   "sec": 1.5,
+   "text": "three small soft knocks of a child's knuckles on thick glass from the inside, muffled, lonely, close up"
+  }
+ },
+ "shared_sfx": ["scream", "shriek", "scare", "stinger", "swell", "smash"]
+}

@@ -97,4 +97,4 @@ function AGE21(t) {
   }
 
 }
-shot('a21', 'a26', 'AGE: 21', (L, u, t) => AGE21(L));
+shot('a21', 'a26', 'AGE: 15', (L, u, t) => AGE21(L));

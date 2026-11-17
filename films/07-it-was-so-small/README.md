@@ -5,9 +5,9 @@
   (a black stage, cream cartoon people, a black devil with a red glowing edge, handwritten words). He approved the
   stills and a 13-second moving test of the first scene, then said yes to the full film. **Not uploaded.**
 - **What it is:** 1:26 in its second cut (the first cut was 1:50.5), 16:9, 1920 x 1080, 30 fps, no narration; the devil's words are red handwriting, the story's
-  voice is white handwriting; a counter top right (AGE: 21 … DAY: 90).
+  voice is white handwriting; a counter top right (AGE: 15 … DAY: 90).
 - **The story** is in `STORY.md`; the cut, shot by shot with the sound wanted, in `CUT.md`.
-  In one line: he feeds something small for seventeen years and it grows a size each time, until it sits in his chair
+  In one line: he takes his first drink at 15 and feeds something small for 23 years and it grows a size each time, until it sits in his chair
   and he is the small one; then he starves it back down to the size it was when they met.
 
 ## Second cut (17 Nov 2026, the same day): 1:26
@@ -16,7 +16,7 @@ The owner watched the 1:50 cut and said: "It should have a very engaging hook an
 day one films and also sound effects like that." What changed (measured against one of that channel's films first: a
 cut about every 1.5 s, sound that never drops out, one to two sound events a second in its first 40 s):
 
-- **A hook** (0-4.2 s, `src/90-hook.js`): "it was just one drink." / hard cut to the giant at the birthday, "17 YEARS
+- **A hook** (0-4.2 s, `src/90-hook.js`): "it was just one drink." / hard cut to the giant at the birthday, "23 YEARS
   LATER" / two eyes in the foam, "it started this small."
 - **The edit** (`src/95-edit.js`): the shots in `src/10..80` are now the source; the edit plays pieces of them 1.2-1.6x
   faster with punch-ins on the key moments and a beat of black between ages: 68 cuts in 86.2 s. Short white captions

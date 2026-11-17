@@ -154,7 +154,7 @@ function AGE21(t) {
   }
 
 }
-shot('a21', 'a26', 'AGE: 21', (L, u, t) => AGE21(L));
+shot('a21', 'a26', 'AGE: 15', (L, u, t) => AGE21(L));
 // ---- 17.9-25.7 AGE 26: his wedding ----
 shot('a26', 'sip26', 'AGE: 26', (L, u, t, c) => {
   const tings = [c('ting1'), c('ting2'), c('ting3')], hit = blinkAt(L, tings, .09), toast = eo(seg(L, c('toUs') - .1, c('toUs') + .45)), laugh = L > c('toUs') + .5;
@@ -754,9 +754,9 @@ shot('hk1', 'hk2', null, (L, u, t, c) => {
 });
 shot('hk2', 'hk3', 'AGE: 38', (L, u, t, c) => {
   HOOK = true; LEAN38(.6 + L * .55, u, t, n => n === 'cantSee' ? .6 : 0); HOOK = false;
-  slam('17 YEARS LATER', 800, 990, 104, L, c('hkLater'), 'say');
+  slam('23 YEARS LATER', 800, 990, 104, L, c('hkLater'), 'say');
 });
-shot('hk3', 'hk4', 'AGE: 21', (L, u, t, c) => {
+shot('hk3', 'hk4', 'AGE: 15', (L, u, t, c) => {
   const gx = 1010, rimY = 650, foam = [[gx - 250, rimY + 6, 44, 0], [gx - 170, rimY - 14, 56, 1.3], [gx - 76, rimY + 2, 50, 2.1], [gx + 20, rimY - 10, 58, .6], [gx + 120, rimY + 6, 48, 2.8], [gx + 210, rimY - 8, 54, 1.9], [gx + 284, rimY + 10, 38, 3.4]], e = c('hkEyes');
   camD(1.25 + .25 * eio(u), gx, rimY - 30, () => { glow([255, 206, 150], gx, 560, 700, .13); macroGlass(t, gx, rimY); foamD(foam, t);
     if (L > e) { const k = eo(seg(L, e, e + .16)); additive(() => glow(D.red, gx, rimY - 16, 130 * k, .85)); for (const sd of [-1, 1]) oval(gx + sd * 26, rimY - 22, 13 * k, 19 * k * (1 - blinkAt(L, [e + .55], .08)), rgba(D.hot)); } });

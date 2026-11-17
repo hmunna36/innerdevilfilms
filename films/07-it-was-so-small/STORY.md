@@ -5,7 +5,7 @@ Structure: THE YEARS (not used by films 03-06). Proposed, not built: it waits fo
 
 ## In one line
 
-A man feeds something small for seventeen years. It grows every time, until it sits in his chair and he is the
+A boy takes his first drink at fifteen and feeds something small for twenty-three years. It grows every time, until it sits in his chair and he is the
 small one. Then he starves it back down to the size it was when they met.
 
 ## The devil (the star)
@@ -30,7 +30,7 @@ blanket, then a yellow dress; hers is the only yellow in the film. Her crayon dr
 | | |
 |---|---|
 | Cold open (typed) | Nobody feeds a monster. / You feed something small. |
-| AGE 21 (kind) | You're funnier with me. |
+| AGE 15 (kind) | You're funnier with me. |
 | AGE 26 (kind) | To us. |
 | AGE 31 (kind) | You earned it. |
 | AGE 34 (kind) | I'll talk. You rest. |
@@ -46,7 +46,7 @@ blanket, then a yellow dress; hers is the only yellow in the film. Her crayon dr
 | Time | Scene | What we see |
 |---|---|---|
 | 0-4 | Cold open | Dark. A cap hisses off, foam rises. The two typed lines. Two tiny lights blink in the foam. |
-| 4-13 | AGE 21, a kitchen party | His first glass. Something climbs out of the foam onto the rim: thumb-sized, shakes itself dry like a puppy, sneezes a spark. He laughs. "You're funnier with me." He lets it lick a drop off his fingertip: its belly flares, it burps a tiny flame, and pops a size bigger. |
+| 4-13 | AGE 15, a party | His first glass. Something climbs out of the foam onto the rim: thumb-sized, shakes itself dry like a puppy, sneezes a spark. He laughs. "You're funnier with me." He lets it lick a drop off his fingertip: its belly flares, it burps a tiny flame, and pops a size bigger. |
 | 13-21 | AGE 26, his wedding | Cat-sized on his shoulder in a tiny bow tie, tapping a glass for the toast. The bride laughs. "To us." It drinks from his glass behind his back. Flare. On the wall behind the couple its shadow is already as tall as he is. |
 | 21-29 | AGE 31, the nursery | Night. He holds newborn Lily in a yellow blanket. It is child-sized, on a stool, looking over his shoulder at the baby, tender. It holds out a flask. "You earned it." He looks at her, then takes it. Its hand on his shoulder is as big as his. |
 | 29-41 | AGE 34 | It is exactly his size, in his shirt and tie, walking in step with him. Its arm round his shoulders at the bar. At dinner it sits between him and his family and answers for him; Lily holds up a drawing and its hand turns his chin back to the glass. "I'll talk. You rest." Flare. His chair creaks under it. |
@@ -66,6 +66,6 @@ blanket, then a yellow dress; hers is the only yellow in the film. Her crayon dr
 
 ## Safety
 
-Drinking is shown as harm, never glamorised; no brands or labels; he is 21 at his first drink; nothing graphic; the
+Drinking is shown as harm, never glamorised; no brands or labels; his first drink is at 15 (the owner, 17 Nov 2026: "most people start first drink at 14, 15 years not 21"), shown as where the harm starts, never as fun to copy; nothing graphic; the
 comeback is real training at waking hours. The owner's rule "only the Shadow Twin" is replaced by the new devil only
 if the owner approves a look.

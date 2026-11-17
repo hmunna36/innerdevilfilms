@@ -48,6 +48,7 @@ shot('sip26', 'wall26', 'AGE: 26', (L, u, t, c) => {
 });
 // wide: its shadow is already as tall as he is
 shot('wall26', 'a31', 'AGE: 26', (L, u, t, c) => {
+  say('it was growing.', 1300, 170, 66, L, c('capGrow'), .6);
   const sk = eio(seg(L, c('shadow26') - .1, c('shadow26') + 1.3)), sway = Math.sin(L * 2.3) * 16;
   camD(push(u, .04), 960, 540, () => {
     stageD(900, {});

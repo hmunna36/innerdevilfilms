@@ -56,6 +56,7 @@ shot('floor', 'sink', 'AGE: 38', (L, u, t, c) => {
   });
 });
 shot('sink', 'day1', 'AGE: 38', (L, u, t, c) => {
+  say('he stopped feeding it.', 560, 170, 66, L, c('capStop'), .7);
   const g0 = c('glug'), g1 = c('glugEnd'), fz = c('flinch'), af = c('afraid'), pour = seg(L, g0, g1), pouring = L > g0 && L < g1, tipK = eo(seg(L, g0 - .35, g0));
   const shr = eo(seg(L, fz, fz + .25)) * .06 + eo(seg(L, fz + .5, fz + .75)) * .05 + eo(seg(L, af - .2, af + .1)) * .05, rec = eo(seg(L, fz, fz + .2)), scared = L >= af - .1;
   const sh = L >= fz ? Math.sin((L - fz) * 44) * 10 * (1 - seg(L, fz, fz + .5)) : 0;

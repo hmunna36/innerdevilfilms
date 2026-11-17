@@ -12,6 +12,7 @@ function nurseryD(t) {
 }
 function stoolD(x, y, rot = 0) { at(x, y, 1, rot, () => { outlined(() => { ctx.beginPath(); ctx.rect(-58, -160, 116, 18); }, rgba(D.wood), 4); for (const sd of [-1, 1]) outlined(() => poly([[sd * 40 - 7, -142], [sd * 40 + 7, -142], [sd * 54 + 7, 0], [sd * 54 - 7, 0]]), rgba(mix(D.wood, D.stage, .3)), 4); }); }
 shot('a31', 'flask', 'AGE: 31', (L, u, t, c) => {
+  say('it never left.', 900, 190, 66, L, c('capNever'), .6);
   camD(push(u), 960, 560, () => {
     stageD(860, { pool: [860, 520, 760, [170, 190, 255], .12] }); nurseryD(t);
     const rock = Math.sin(L * 2.1) * .035;

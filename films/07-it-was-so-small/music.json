@@ -1,6 +1,6 @@
 {
  "model": "music_v2_5",
- "note": "THE BOTTLE | It Was So Small. THEME is one little tune at five ages of the devil: Playful (AGE 21, 0:04.4-0:17.9), Wedding (AGE 26, to 0:25.7), Lullaby (AGE 31, to 0:33.5), Swagger (AGE 34, to 0:44.3), Horror (AGE 38, to the dead cut at 0:52.3). RISE, ENDING and SAD are the previous film's (07-the-bottle) files, copied with their .json so the cache hits: same ms and prompt, nothing is made again. pour is the previous film's too; smash, swell and stinger are the shared ones. New effects: hiss, gulp, cork. Everything else is synthesized in mix.py. LULLABY, HEAVY and DREAD (single prompts, 17 Nov) are the recorded beds of AGE 31, AGE 34 and AGE 38; HORROR is the one-shot blast.",
+ "note": "THE BOTTLE | It Was So Small. THEME is one little tune at five ages of the devil: Playful (AGE 21, 0:04.4-0:17.9), Wedding (AGE 26, to 0:25.7), Lullaby (AGE 31, to 0:33.5), Swagger (AGE 34, to 0:44.3), Horror (AGE 38, to the dead cut at 0:52.3). RISE, ENDING and SAD are the previous film's (07-the-bottle) files, copied with their .json so the cache hits: same ms and prompt, nothing is made again. pour is the previous film's too; smash, swell and stinger are the shared ones. New effects: hiss, gulp, cork. Everything else is synthesized in mix.py. LULLABY, HEAVY and DREAD (single prompts, 17 Nov) are the recorded beds of AGE 31, AGE 34 and AGE 38; HORROR is the one-shot blast. Third pass (the re-cut, 17 Nov): recorded effects whoosh, zoom, marker, bloop, impact, fizz, clink, deflate, steps, growl; knock is film 07-the-bottle's.",
  "score": {
   "id": "THEME",
   "chunks": [
@@ -168,6 +168,50 @@
   "cork": {
    "sec": 1.2,
    "text": "a cork pushed firmly into the neck of a glass bottle: a short squeaky rubbing push, then a soft hollow thunk, close up"
+  },
+  "knock": {
+   "sec": 1.5,
+   "text": "three small soft knocks of a child's knuckles on thick glass from the inside, muffled, lonely, close up"
+  },
+  "whoosh": {
+   "sec": 1.0,
+   "text": "a soft, quick whoosh of air passing, one smooth short swish, a transition sound, no impact"
+  },
+  "zoom": {
+   "sec": 0.8,
+   "text": "a very short, tight, fast snap whoosh, a sharp airy swish ending in a small soft click, a camera snap zoom sound"
+  },
+  "marker": {
+   "sec": 3.0,
+   "text": "a felt marker pen writing quickly on paper, continuous scratchy squeaky scribbling strokes, close up, dry"
+  },
+  "bloop": {
+   "sec": 0.6,
+   "text": "a single cute cartoon pop, one bubbly bright bloop like a bubble popping, short and dry"
+  },
+  "impact": {
+   "sec": 2.5,
+   "text": "a deep cinematic impact, one huge punchy low boom hit with a sharp attack and a short dark tail, a trailer hit"
+  },
+  "fizz": {
+   "sec": 4.0,
+   "text": "close up loud fizzing of beer foam, thousands of tiny carbonated bubbles hissing and crackling steadily in a glass"
+  },
+  "clink": {
+   "sec": 1.2,
+   "text": "two beer glasses clinking together once in a toast, one bright ringing glass clink, close up, dry"
+  },
+  "deflate": {
+   "sec": 1.5,
+   "text": "a balloon deflating fast with a squeaky descending raspberry squeal, comic, short"
+  },
+  "steps": {
+   "sec": 3.0,
+   "text": "fast running footsteps of one person in sneakers on pavement, a steady quick pace, close up, no breathing"
+  },
+  "growl": {
+   "sec": 2.5,
+   "text": "a huge deep aggressive machine roar, a distorted rumbling bass growl like a giant engine and tearing metal, rising fast then cutting off, no voice"
   }
  },
  "shared_sfx": [

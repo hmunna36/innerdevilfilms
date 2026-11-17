@@ -1,0 +1,483 @@
+{
+ "END": 86.183,
+ "cues": {
+  "a21": 4.2,
+  "clink21": 4.93,
+  "laugh21": 5.112,
+  "eyes21": 5.587,
+  "rim": 6.098,
+  "rimEyes": 6.329,
+  "popUp": 6.829,
+  "shake": 7.444,
+  "shakeEnd": 7.982,
+  "sneeze": 8.175,
+  "face21": 8.406,
+  "samLaugh": 8.793,
+  "two21": 9.531,
+  "funnier": 9.915,
+  "drop": 11.628,
+  "lick": 12.553,
+  "flare21": 12.847,
+  "burp21": 13.267,
+  "pop21": 13.477,
+  "small": 13.729,
+  "a26": 14.353,
+  "ting1": 14.809,
+  "ting2": 15.18,
+  "ting3": 15.55,
+  "toUs": 15.781,
+  "sip26": 16.501,
+  "gulp26a": 16.963,
+  "gulp26b": 17.27,
+  "flare26": 17.501,
+  "pop26": 17.886,
+  "wall26": 18.501,
+  "shadow26": 18.787,
+  "a31": 20.335,
+  "flask": 22.069,
+  "earned": 22.453,
+  "take31": 23.769,
+  "drink31": 24.409,
+  "flare31": 24.992,
+  "pop31": 25.325,
+  "a34": 26.362,
+  "bar34": 27.695,
+  "pour34": 27.914,
+  "dinner": 29.593,
+  "drawUp": 29.978,
+  "chin": 30.747,
+  "illTalk": 31.055,
+  "drawDown": 32.005,
+  "swell34": 32.577,
+  "flare34": 32.827,
+  "pop34": 33.243,
+  "creak": 33.577,
+  "a38": 34.53,
+  "claws": 36.03,
+  "pinch": 36.343,
+  "inBottle": 37.202,
+  "cork38": 37.749,
+  "lean38": 38.53,
+  "cantSee": 39.03,
+  "truth": 40.53,
+  "onlyYou": 41.533,
+  "leave": 41.773,
+  "fridge": 43.478,
+  "inside": 45.282,
+  "pound": 46.786,
+  "pound1": 46.953,
+  "pound2": 47.203,
+  "pound3": 47.453,
+  "tip": 47.869,
+  "smash": 48.119,
+  "floor": 48.286,
+  "stand": 49.072,
+  "sink": 49.572,
+  "glug": 49.892,
+  "flinch": 50.452,
+  "glugEnd": 51.092,
+  "afraid": 51.335,
+  "day1": 52.288,
+  "justOne": 53.113,
+  "up1": 54.47,
+  "run": 54.898,
+  "day14": 56.772,
+  "rep1": 57.149,
+  "noFun": 57.456,
+  "rep2": 57.918,
+  "rep3": 58.764,
+  "slide": 58.995,
+  "bump": 59.302,
+  "day40": 59.687,
+  "pull1": 60.187,
+  "pull2": 61.044,
+  "smile40": 61.264,
+  "dropOff": 62.099,
+  "day60": 62.736,
+  "stop60": 63.553,
+  "sip60": 63.814,
+  "tempt": 64.684,
+  "handShot": 65.969,
+  "hand": 66.23,
+  "walkOn": 66.752,
+  "day90": 67.978,
+  "lower": 69.586,
+  "bottleDown": 70.002,
+  "cork90": 70.577,
+  "shelf": 71.086,
+  "setDown": 71.726,
+  "newDraw": 72.334,
+  "samFace": 74.364,
+  "kneel": 75.994,
+  "runIn": 76.244,
+  "hug": 76.994,
+  "night": 79.208,
+  "eyesOpen": 79.9,
+  "fog": 80.516,
+  "drawSmile": 80.983,
+  "tap1": 81.9,
+  "tap2": 82.15,
+  "wait": 82.233,
+  "black": 83.4,
+  "starve": 83.574,
+  "everyDay": 84.357,
+  "title": 84.835,
+  "hk1": 0,
+  "hkLine": 0.05,
+  "hk2": 1.3,
+  "hkLater": 1.42,
+  "hk3": 2.8,
+  "hkSmall": 2.95,
+  "hkEyes": 3,
+  "capGrow": 18.93,
+  "capNever": 20.602,
+  "capTie": 26.562,
+  "capChair": 34.718,
+  "capStop": 49.892,
+  "capChase": 55.032,
+  "capLight": 60.044,
+  "capSmall": 68.201
+ },
+ "cuts": [
+  {
+   "t": 0,
+   "kind": "cut",
+   "shot": "hk1"
+  },
+  {
+   "t": 1.3,
+   "kind": "cut",
+   "shot": "hk2"
+  },
+  {
+   "t": 2.8,
+   "kind": "cut",
+   "shot": "hk3"
+  },
+  {
+   "t": 4.2,
+   "kind": "cut",
+   "shot": "a21"
+  },
+  {
+   "t": 6.098,
+   "kind": "cut",
+   "shot": "a21"
+  },
+  {
+   "t": 8.406,
+   "kind": "cut",
+   "shot": "a21"
+  },
+  {
+   "t": 9.531,
+   "kind": "cut",
+   "shot": "a21"
+  },
+  {
+   "t": 11.628,
+   "kind": "cut",
+   "shot": "a21"
+  },
+  {
+   "t": 14.233,
+   "kind": "black",
+   "shot": null
+  },
+  {
+   "t": 14.353,
+   "kind": "cut",
+   "shot": "a26"
+  },
+  {
+   "t": 14.661,
+   "kind": "punch",
+   "shot": "a26"
+  },
+  {
+   "t": 15.661,
+   "kind": "back",
+   "shot": "a26"
+  },
+  {
+   "t": 16.501,
+   "kind": "cut",
+   "shot": "sip26"
+  },
+  {
+   "t": 18.501,
+   "kind": "cut",
+   "shot": "wall26"
+  },
+  {
+   "t": 20.215,
+   "kind": "black",
+   "shot": null
+  },
+  {
+   "t": 20.335,
+   "kind": "cut",
+   "shot": "a31"
+  },
+  {
+   "t": 22.069,
+   "kind": "cut",
+   "shot": "flask"
+  },
+  {
+   "t": 22.761,
+   "kind": "punch",
+   "shot": "flask"
+  },
+  {
+   "t": 23.569,
+   "kind": "back",
+   "shot": "flask"
+  },
+  {
+   "t": 24.409,
+   "kind": "cut",
+   "shot": "drink31"
+  },
+  {
+   "t": 26.242,
+   "kind": "black",
+   "shot": null
+  },
+  {
+   "t": 26.362,
+   "kind": "cut",
+   "shot": "a34"
+  },
+  {
+   "t": 27.695,
+   "kind": "cut",
+   "shot": "bar34"
+  },
+  {
+   "t": 29.593,
+   "kind": "cut",
+   "shot": "dinner"
+  },
+  {
+   "t": 30.17,
+   "kind": "punch",
+   "shot": "dinner"
+  },
+  {
+   "t": 30.67,
+   "kind": "punch",
+   "shot": "dinner"
+  },
+  {
+   "t": 31.362,
+   "kind": "back",
+   "shot": "dinner"
+  },
+  {
+   "t": 32.577,
+   "kind": "cut",
+   "shot": "swell34"
+  },
+  {
+   "t": 34.41,
+   "kind": "black",
+   "shot": null
+  },
+  {
+   "t": 34.53,
+   "kind": "cut",
+   "shot": "a38"
+  },
+  {
+   "t": 36.03,
+   "kind": "cut",
+   "shot": "claws"
+  },
+  {
+   "t": 38.53,
+   "kind": "punch",
+   "shot": "lean38"
+  },
+  {
+   "t": 38.988,
+   "kind": "back",
+   "shot": "lean38"
+  },
+  {
+   "t": 40.53,
+   "kind": "cut",
+   "shot": "truth"
+  },
+  {
+   "t": 41.453,
+   "kind": "punch",
+   "shot": "truth"
+  },
+  {
+   "t": 42.093,
+   "kind": "back",
+   "shot": "truth"
+  },
+  {
+   "t": 43.478,
+   "kind": "cut",
+   "shot": "fridge"
+  },
+  {
+   "t": 45.282,
+   "kind": "cut",
+   "shot": "inside"
+  },
+  {
+   "t": 46.786,
+   "kind": "cut",
+   "shot": "pound"
+  },
+  {
+   "t": 48.286,
+   "kind": "cut",
+   "shot": "floor"
+  },
+  {
+   "t": 49.572,
+   "kind": "cut",
+   "shot": "sink"
+  },
+  {
+   "t": 50.452,
+   "kind": "punch",
+   "shot": "sink"
+  },
+  {
+   "t": 51.252,
+   "kind": "back",
+   "shot": "sink"
+  },
+  {
+   "t": 52.168,
+   "kind": "black",
+   "shot": null
+  },
+  {
+   "t": 52.288,
+   "kind": "punch",
+   "shot": "day1"
+  },
+  {
+   "t": 52.827,
+   "kind": "back",
+   "shot": "day1"
+  },
+  {
+   "t": 54.898,
+   "kind": "cut",
+   "shot": "run"
+  },
+  {
+   "t": 56.772,
+   "kind": "cut",
+   "shot": "day14"
+  },
+  {
+   "t": 57.695,
+   "kind": "punch",
+   "shot": "day14"
+  },
+  {
+   "t": 58.233,
+   "kind": "back",
+   "shot": "day14"
+  },
+  {
+   "t": 59.687,
+   "kind": "cut",
+   "shot": "day40"
+  },
+  {
+   "t": 61.187,
+   "kind": "punch",
+   "shot": "day40"
+  },
+  {
+   "t": 61.802,
+   "kind": "back",
+   "shot": "day40"
+  },
+  {
+   "t": 62.736,
+   "kind": "cut",
+   "shot": "day60"
+  },
+  {
+   "t": 64.684,
+   "kind": "cut",
+   "shot": "tempt"
+  },
+  {
+   "t": 65.969,
+   "kind": "cut",
+   "shot": "handShot"
+  },
+  {
+   "t": 67.978,
+   "kind": "cut",
+   "shot": "day90"
+  },
+  {
+   "t": 69.586,
+   "kind": "cut",
+   "shot": "lower"
+  },
+  {
+   "t": 71.086,
+   "kind": "cut",
+   "shot": "shelf"
+  },
+  {
+   "t": 72.334,
+   "kind": "cut",
+   "shot": "newDraw"
+  },
+  {
+   "t": 74.364,
+   "kind": "cut",
+   "shot": "samFace"
+  },
+  {
+   "t": 75.994,
+   "kind": "cut",
+   "shot": "kneel"
+  },
+  {
+   "t": 77.244,
+   "kind": "punch",
+   "shot": "kneel"
+  },
+  {
+   "t": 78.077,
+   "kind": "back",
+   "shot": "kneel"
+  },
+  {
+   "t": 79.208,
+   "kind": "cut",
+   "shot": "night"
+  },
+  {
+   "t": 80.9,
+   "kind": "punch",
+   "shot": "night"
+  },
+  {
+   "t": 81.817,
+   "kind": "back",
+   "shot": "night"
+  },
+  {
+   "t": 83.4,
+   "kind": "cut",
+   "shot": "black"
+  }
+ ]
+}

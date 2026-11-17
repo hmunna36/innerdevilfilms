@@ -54,5 +54,5 @@ shot('night', 'black', null, (L, u, t, c) => {
 shot('black', 'END', null, (L, u, t, c) => {
   say('So starve it.', 960, 440, 104, L, c('starve'), .55);
   if (L >= c('everyDay')) hw('Every day.', 960, 580, 104, 'say', L > c('everyDay') + .45 ? { under: true } : { reveal: seg(L, c('everyDay'), c('everyDay') + .45) });
-  if (L >= c('title')) { ctx.save(); ctx.globalAlpha = eo(seg(L, c('title'), c('title') + .5)); hw('THE BOTTLE', 960, 800, 46, 'say', { rot: 0 }); hw('it was so small', 960, 856, 34, 'devil', { rot: 0, weight: 400 }); ctx.restore(); }
+  if (L >= c('title')) over(() => { ctx.save(); ctx.globalAlpha = eo(seg(L, c('title'), c('title') + .5)); _hw('THE BOTTLE', 960, 800, 46, 'say', { rot: 0 }); _hw('it was so small', 960, 856, 34, 'devil', { rot: 0, weight: 400 }); ctx.restore(); });
 });

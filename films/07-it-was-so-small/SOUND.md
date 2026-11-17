@@ -1,83 +1,96 @@
-# THE BOTTLE | It Was So Small: the sound (17 Nov 2026, second pass)
+# THE BOTTLE | It Was So Small: the sound of the re-cut (17 Nov 2026, third pass)
 
-Music and effects only. No narration, no voices, no words. **Nobody has listened to it**: everything below was judged
-from measurements (levels, onsets, keys and tempos, the notes read back out of the mix).
+Music and effects only. No narration, no voices, no words, no laughter. **Nobody has listened to it**: everything
+below was judged from measurements (levels, onsets, keys and tempos, the phone-band silence check).
 
-`mix.py` reads every time from `cues.js`. After a cue moves: `. .claude/skills/idf/bin/env.sh && $PYTHON films/07-it-was-so-small/mix.py`
-(about a minute). It writes `audio/mix.wav` (48 kHz stereo, exactly `END` seconds) and prints the report.
+`mix.py` reads every time from `cues_edit.json` (`END`, `cues`, `cuts`) and nothing else. After a re-cut:
+`node films/07-it-was-so-small/render.mjs cues`, then
+`. .claude/skills/idf/bin/env.sh && $PYTHON films/07-it-was-so-small/mix.py` (about a minute). It writes
+`audio/mix.wav` (48 kHz stereo, exactly `END` seconds) and prints the report: loudness, the ten key hits against
+their cues, sound events per 10 s, the phone-band level of every second, and any stretch a phone would hear as
+silence (the same measure as `wojak-story/scripts/silence-check.py`).
 
-## The idea
+## What plays
 
-The devil's music grows up with it. All of it is recorded now, in one key (G) and one waltz time (a bar every 1.5 s,
-or every 3 s at half speed):
-
-| Age | What plays |
+| Where | Music | 
 |---|---|
-| 21 | THEME: a light waltz. It vamps under the party, rests for one second while the eyes show in the foam, and the tune enters on the glockenspiel as it pops up; the tune's highest note lands on pop21. |
-| 26 | THEME's second pass (a sparkle on top) with a soft string pad on its own chords; one wrong low note (E flat) at `shadow26`: the brass blast's ring, slowed. |
-| 31 | LULLABY: a lone music box, one note a second (G, D, B: the tune's own notes). Its seven notes are re-spaced so the first is on the cut and the seventh on pop31. A low drone creeps in; the brass blast, far off, with the pop. |
-| 34 | HEAVY: the waltz turned sinister, low brass and half-time drums, G minor, THEME's own tempo. The first tune ghosts over it, quietly, on the music box. It breaks off as the hand turns his chin, comes back hushed under "i'll talk. you rest.", and its last chord lands on pop34. |
-| 38 | HEAVY at half speed (the same waltz an octave down) under DREAD's first hit and rumble; 0.4 s of almost nothing as it leans in; then the biggest hit of the film on `cantSee` (the HORROR blast, DREAD's second hit, HEAVY's last chord at half speed); the blast and the brass backwards, swelling; dead cut on `truth`. |
-| Last picture | The first tune's opening two bars on the recorded music box, each note 5 to 30 cents out, running down. |
-| "Every day." | The anthem's own last chord, with a boom under it. |
+| Hook, `hk1` | The cap on the first frame, fizz, a warm tone swelling, a riser into the hit. |
+| Hook, `hk2` | The biggest moment of the first ten seconds: the HORROR brass blast, a boom, the recorded impact, a growl (an engine-and-metal roar, not a voice), a slam on "17 YEARS LATER", the tiny fists on the glass. |
+| Hook, `hk3` | Everything stops dead; a soft fizz, a chime as its eyes open, two curious music-box notes, a three-note run up into the waltz. |
+| AGE 21 (`a21`) | THEME: the waltz kicks in on the cut, the tune at once. It is cut once, in one of its own rests, so that the tune's highest note lands on pop21. Played in a small room so its rests ring. |
+| AGE 26 | THEME's second pass with a soft string pad; cut the same way so a downbeat lands on pop26; the wrong low note (the brass blast's ring slowed to E flat) at `shadow26`. |
+| AGE 31 | LULLABY's seven music-box notes, re-spaced so the first is on the cut and the seventh on pop31, in a room; a drone creeping in; the brass far off with the pop. |
+| AGE 34 | HEAVY (low brass, half-time drums, G minor, the waltz's tempo), the first tune ghosting over it on the music box. It is cut once on its own bar line, under the punch-in nearest to it, so that its last chord lands on pop34; it dips 5 dB for the line. |
+| AGE 38 | HEAVY at half speed under DREAD's first hit; a riser as it leans in; on `cantSee` the loudest moment of the film (the blast, DREAD's second hit, HEAVY's last chord at half speed, the growl, a slam); the blast and the brass backwards, swelling; a cut on `truth`. |
+| `truth` to the sink | A drop of about 10 dB, never silence: a fridge hum, a kitchen clock twice a second, a dripping tap; SAD's two piano notes on the fridge; inside the bottle the clock muffled, the bottle ringing, a heartbeat with a click in it; the thuds, the crack, the smash; the pour. |
+| DAY 1 to DAY 40 | RISE, muffled and climbing, then its impact on `run`; a dead stop at `day60`. |
+| DAY 60 | A drop of about 10 dB: crickets, the bar's music far off (the first waltz; there is no murmur of voices), a heartbeat with a click; ENDING's first chord on `hand`; RISE back softly at `walkOn`, its last hit on `setDown`. |
+| Drawing, hug | ENDING, its strings' swell on `hug`. |
+| Night | The first tune on the recorded music box, a little out of tune, running down; the kitchen clock. |
+| Black | A riser through the black; RISE's own last chord, a boom and a slam on `everyDay`; two music-box notes on the title. |
 
-**The pop** (`pop(size)` in `mix.py`) is one designed sound: a quick upward "bloop" with a snap, and a thump under it.
-The same at `popUp`, `pop21`, `pop26`, `pop31`, `pop34`, each time lower and heavier. `deflate()` plays it backwards
-with a sagging wheeze at `flinch`, `slide`, `dropOff`.
+**Every cut** has a sound: a whoosh on a `cut`, a tighter snap on a `punch` or `back`, a low thud with air on a
+`black`; each one different (length, pitch, direction, side). Their level is set against what is playing in the
+0.4 s either side: about 2.5 dB under it for a cut, 1 dB under for a snap, 2 dB over for a thud. No cut sound on the
+cuts that are themselves a hit or a stop (`hk2`, `truth`, `run`, `day60`) or on the cut that ends a black.
+**Every written line** has the marker: about 0.45 s for a white line, about 0.8 s, slower and doubled, for a red one;
+an impact for the slammed capitals.
+**The pop** (`pop(size)`) is the film's motif: the recorded cartoon pop on top, a made body and thump under it; lower
+and heavier at `popUp`, `pop21`, `pop26`, `pop31`, `pop34`; backwards with the recorded balloon at `flinch`, `slide`,
+`dropOff`.
 
-## The pieces and what was measured in them
+## Recorded and made
 
-| File | What it is | Landmarks |
-|---|---|---|
-| `THEME.mp3` (49.5 s) | Asked for the tune at five ages; **it came out as one light waltz** (G major, 3/4, exactly 120 bpm). AGE 21, AGE 26 and, far off, the bar's music on DAY 60. | Vamp only 0-12 s; rest 11.0-12.0; the tune enters 12.034 s, runs twice (12-24, 24-36); last chord 46.5. Downbeats used: 9.034, 12.034, 21.05, 28.57. |
-| `LULLABY.mp3` (9 s, new) | A lone music box in G major (+3 cents), 60 bpm. **No drone came with it** (the drone is a low tone made in `mix.py`). Its first two notes are clean single tines: `tine()` re-pitches them wherever the first tune is played on the music box. | Notes at 1.052 (G5), 2.054 (D6), 3.054 (D6+G6), 4.052 (B5+G5), 5.056 (G6+B5), 6.052 (G5), 7.052 (G5+G6); silent before 1.0 and after 8.5 s. Notes differ by 16 dB; `mix.py` sets them level. |
-| `HEAVY.mp3` (12 s, new) | Low brass and drums, G minor (0 cents), 3/4 at exactly 120 bpm, starts at once. One chord a bar: Gm D Gm D Gm D, then a last Gm chord. | Downbeats 0.03, 1.53, 3.026, 4.526, 6.03, 7.526; last chord 9.022 s; rings out by 10.5 s. |
-| `DREAD.mp3` (10 s, new) | **Not a continuous bed**: two colossal low hits with a rumble of low drums after each; almost nothing above 300 Hz once a hit has passed; no clear key. Used as the hits at the cut to AGE 38 and under `cantSee`. | Hits at 0.03 and 4.035 s; silent after about 7.5 s. |
-| `HORROR.mp3` (12 s asked) | One colossal brass blast on a low G; only the first 3 s hold sound. Full on `cantSee`, far off under pop31 and pop34, backwards in the build, slowed to E flat as the wedding's wrong note. | Onset 0.026 s, second hit 0.74 s. |
-| `RISE.mp3` (film 07-the-bottle's) | The anthem. Muffled and rising under DAY 1, the impact on `run`, cut dead at `day60`, back softly on the beat nearest `walkOn`, its last hit on `setDown`; that last chord again on `everyDay`. | Impact 0.026 s; a beat every 0.4687 s; last hit 22.054 s; silent by 23.5 s. |
-| `ENDING.mp3` | Warm piano and strings: its first chord at `hand`; then from `newDraw`, its swell on `hug`. | First chord 0.03 s; swell from the note at 6.036 s. |
-| `SAD.mp3` | Two lone piano notes on the fridge drawing. | Notes at 2.056, 6.054, 10.056 s. |
-| `hiss`, `gulp`, `cork` (new effects) | The cap; the gulps at 26 and 31; the cork at 38 and on DAY 90. | hiss 0.068 s (its fizz is almost silent: the foam is made in `mix.py`); gulp 0.448-0.67 s; cork 0.118 s. |
-| `pour`, `smash`, `swell`, `stinger` | The bar pour and the sink; the bottle breaking; the swell into the smash; under the biggest hit. | pour 0.176 s, smash 0.04 s. |
+Recorded (ElevenLabs): all the music; the cap (`hiss`); the pop's top (`bloop`); the marker; glass clinks (the toast,
+the tings, the flask, the bottle set down, under the taps); the balloon (`deflate`); footsteps (`steps`: the two pairs
+of feet, the small feet leaving, the run, the stop, her run, under the bumps); knuckles on glass (`knock`, from film
+07-the-bottle); the `growl`; the `impact` (the weight under hk2, cantSee, the smash and `run`; played 5 to 9 times
+faster it is the hard knock in the slams and the black thuds); `gulp`, `cork`, `pour`, `smash`, `swell`, `stinger`;
+and as layers only, because they came out weak: `fizz` (nearly all above 6 kHz), `zoom` (a 0.15 s swish) and
+`whoosh` (a short low "whup").
 
-## What is still synthesized (numpy, in `mix.py`)
+Made in `mix.py` (numpy): the air of every whoosh and snap and every riser; the pop's body and thump; flares, lick,
+burp, sneeze, the shake; the chimes (its eyes, Lily's smile, his laugh); paper; the cold note; the chair's creak; the
+sad party horn; the chair scrape; the clock, the fridge, the tap; the heartbeat; the crack and the glass settling;
+glugs and drain and the mid layer of every pour; breath, the finger on glass, the tiny stamping; crickets; room tone;
+booms; the string pad (the hook's tone, AGE 26) and the low drones.
 
-- **No synthesized brass, drums, choir or music box are left in the music.** AGE 31, 34 and 38 are recordings only,
-  plus the low drone under the lullaby (a tone, not an instrument).
-- A soft string pad (filtered saws): under the waltz at AGE 26, and as the thin part of the cold open's tone.
-- Low drones (the cold open, AGE 31, the kitchen floor, the shelf at night) and a boom and a kick under the big hits.
-- A small bright chime for its eyes blinking and for Lily's first smile.
-- All the effects: the pops and deflates, flares, lick, burp, sneeze, glass clinks and tings, ticks for every written
-  line, footsteps, paper, the cold note, the chair's creak, the sad party horn, room tone and clock, heartbeat, thuds
-  and crack, glass tinkle, glugs and drain, crickets, the tiny stamping, breath and finger on glass, the taps.
+## What was measured in the pieces
 
-## Loudness (the report of the last run, on the cues of 17 Nov 09:14)
+THEME: G major, 3/4, 120 bpm, a bar every 1.5 s, the tune from 12.034 s, a 0.75 s rest before every second bar.
+LULLABY: G major, notes at 1.052 to 7.052 s, one a second. HEAVY: G minor, 120 bpm, chords Gm D, downbeats
+0.03 + 1.5 k, last chord 9.022 s. DREAD: hits at 0.03 and 4.035 s. HORROR: blast at 0.026 s. RISE: impact 0.026 s,
+beats every 0.4687 s, last hit 22.054 s. ENDING: swell from 6.036 s. SAD: notes at 2.056 and 6.054 s. Effects:
+bloop 0.04 s; steps 0.14 s then every 0.3 s; knock 0.08, 0.56, 0.82, 1.10 s; zoom peak 0.075 s; hiss 0.068 s;
+gulp 0.448 to 0.67 s; cork 0.118 s; pour 0.176 s; smash 0.04 s. (All in the comments at the top of `mix.py`.)
 
-- -18.0 LUFS, loudest 3 s -13.1, loudest 0.4 s -10.5, true peak -2.0 dBTP, 17 % of the energy under 60 Hz.
-- The ten key hits (pop21, pop26, pop31, pop34, cantSee, smash, run, hand, hug, everyDay) each start within 2 ms of
-  their cue in the finished mix (the report's `alignment`; the limit was 40 ms).
-- Sections (dBFS): AGE 21 -23, AGE 26 -20, AGE 31 -25, AGE 34 -21, AGE 38 -17 (the hit on `cantSee` -12, the loudest
-  moment of the film), anthem -17, DAY 90 -17, drawing and hug -22, the shelf at night -29, the last hit -15.
-- The silences are never empty: a room and a clock after `truth`, a muffled clock and a heartbeat in the bottle, glass
-  settling and a ring after the smash, crickets and the far-off waltz at the bar door. On a phone (300 Hz and up) they
-  sit at -39 to -49 dBFS.
-- The script was also run against cues moved by 0.15 to 0.4 s (in memory, `cues.js` untouched): it ran and every hit
-  still landed.
+## The report of the last run (cues_edit.json of 17 Nov 10:09)
+
+- -18.0 LUFS, loudest 3 s -13.9, loudest 0.4 s -10.7, true peak -2.0 dBTP, 16 % of the energy under 60 Hz; 86.183 s.
+- Key hits, ms after their cue: hk2 0, pop21 0, pop26 2, pop31 2, pop34 0, cantSee 2, smash 0, run 0, hug 2,
+  everyDay 0.
+- Sound events placed (effects, merged within 0.1 s) per 10 s: 27, 22, 23, 23, 39, 22, 29, 17, 13 (last 6 s):
+  2.4 a second in the first 40 s, 2.5 a second over the film. Onsets heard in the finished mix: 3.9 a second in the
+  first 40 s, 4.1 over the film.
+- Silence check (`silence-check.py`, phone band 300 Hz to 6 kHz): **no stretch of 1 s or more under -38 dB**. First
+  second -23 dB, second and third -20 and -19 (the hit). Quietest seconds: -33 (the truth), -31 (the bar door),
+  -29 (the black before the last hit). The seconds of the film sit within 8 dB (10th to 90th percentile).
+- The drops, phone band: the truth -31, inside the bottle -28.5, the bar door -29, against -20 to -23 around them.
 
 ## Credits
 
-ElevenLabs balance 56,317 before the film, 54,987 now: **1,330 spent** (first pass 903: THEME, HORROR, three effects;
-second pass 427: LULLABY, HEAVY, DREAD). Asked limit: about 2,000.
+ElevenLabs balance 56,317 before the film, 54,765 now: **1,552 spent** on this film (first pass 903, second 427,
+this pass 222 for ten effects: about 22 each, not the 200 the tool estimates).
 
 ## Not verified, and what to know
 
-- Nobody has listened. Keys and tempos were measured, so the pieces should sit together, but how the joins sound is
-  unknown: the lullaby's re-spaced notes; HEAVY breaking off and coming back; HEAVY at half speed; the music box
-  ghosting the tune over HEAVY (one line in `mix.py`, section 4, removes it).
-- DREAD gave hits, not a sustained brass-and-choir bed, so AGE 38's bed is HEAVY at half speed. There is no choir.
-- From AGE 31 on, the recordings do not play THEME's tune (LULLABY plays its notes G, D, B one a second; HEAVY has its
-  own tune in G minor). The first tune itself returns on the music box over HEAVY and in the last picture.
-- The footsteps at AGE 34 follow the picture's walk (3.5 steps a second, `WALK` in `mix.py`, from `src/40-age34.js`),
-  not the music's beat (2 a second).
-- The red line "one more." is ticked at `pour34 + 0.5` (that is where `src/40-age34.js` writes it; it has no cue).
-- Written lines tick for 1.1 s (red) and 0.9 s (cream), the kit's defaults.
+- Nobody has listened. In particular: how loud the cut sounds feel (they are set by measurement), whether the made
+  whooshes sound like the reference's, the growl, and the joins in the music (THEME cut in its rests, HEAVY cut on a
+  bar line, HEAVY at half speed).
+- The recorded whoosh and zoom came out weak, so the whooshes are mostly made air. A second try at recorded whooshes
+  and a dozen other effects (chair creak, party horn, paper, clock, crickets, glass smash, drain) would cost about
+  300 credits; it was not done.
+- The two pairs of feet at AGE 34 are seven footfalls spread over the shot (`a34` to `bar34`), which is what the
+  picture's walk gives; "one more." is scratched at `pour34 + 0.3`; neither has a cue.
+- Written lines are scratched for the lengths given for this edit (white 0.45 s, red 0.8 s); if the picture writes
+  slower or faster the scratch will end early or late.

@@ -11,11 +11,14 @@ function FILM(t) {
   finish({ bloom: .07, grain: .03, vignette: .5, t });
   const out = seg(t, CUE.END - .6, CUE.END - .05); if (out > 0) rectf(0, 0, W, H, `rgba(0,0,0,${out})`);
 }
+// words are drawn after the picture, on top and never zoomed by a punch-in: hw() queues itself while a shot draws
+let OVER = null, HOOK = false; const _hw = hw; hw = function (...a) { if (OVER) OVER.push(() => _hw(...a)); else _hw(...a); };
+const over = fn => { if (OVER) OVER.push(fn); else fn(); };
 const push = (u, k = .05) => 1 + k * u;
 const say = (text, x, y, size, L, a, d = .9, o = {}) => { if (L >= a) hw(text, x, y, size, 'say', { reveal: seg(L, a, a + d), ...o }); };
 const red = (text, x, y, size, L, a, d = 1.1, o = {}) => { if (L >= a) hw(text, x, y, size, 'devil', { reveal: seg(L, a, a + d), ...o }); };
 // the red capitals: slammed, shaking for a moment
-function slam(text, x, y, size, L, a) { if (L < a) return; const k = seg(L, a, a + .12), sh = (1 - seg(L, a, a + .5)) * 14; ctx.save(); ctx.translate(x + Math.sin(L * 90) * sh, y + Math.cos(L * 70) * sh * .6); ctx.scale(lerp(1.5, 1, eo(k)), lerp(1.5, 1, eo(k))); hw(text, 0, 0, size, 'devil', { rot: -.02, weight: 700 }); ctx.restore(); }
+function slam(text, x, y, size, L, a, kind = 'devil') { if (L < a) return; const k = seg(L, a, a + .12), sh = (1 - seg(L, a, a + .5)) * 14; over(() => { ctx.save(); ctx.translate(x + Math.sin(L * 90) * sh, y + Math.cos(L * 70) * sh * .6); ctx.scale(lerp(1.5, 1, eo(k)), lerp(1.5, 1, eo(k))); _hw(text, 0, 0, size, kind, { rot: -.02, weight: 700 }); ctx.restore(); }); }
 // the fire in its belly when it is fed, and the pop when it grows: flare 0..1..0, pop 0..1 (eased with overshoot)
 const flareK = (L, a, b) => Math.sin(seg(L, a, b) * Math.PI);
 const popRing = (L, a, x, y, r0 = 120, r1 = 620) => { if (L < a || L > a + .6) return; const k = seg(L, a, a + .55); ctx.lineWidth = 14 * (1 - k); ctx.strokeStyle = rgba(D.red, 1 - k); ctx.beginPath(); ctx.arc(x, y, r0 + k * r1, 0, TAU); ctx.stroke(); };

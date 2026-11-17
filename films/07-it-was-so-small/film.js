@@ -12,11 +12,14 @@ function FILM(t) {
   finish({ bloom: .07, grain: .03, vignette: .5, t });
   const out = seg(t, CUE.END - .6, CUE.END - .05); if (out > 0) rectf(0, 0, W, H, `rgba(0,0,0,${out})`);
 }
+// words are drawn after the picture, on top and never zoomed by a punch-in: hw() queues itself while a shot draws
+let OVER = null, HOOK = false; const _hw = hw; hw = function (...a) { if (OVER) OVER.push(() => _hw(...a)); else _hw(...a); };
+const over = fn => { if (OVER) OVER.push(fn); else fn(); };
 const push = (u, k = .05) => 1 + k * u;
 const say = (text, x, y, size, L, a, d = .9, o = {}) => { if (L >= a) hw(text, x, y, size, 'say', { reveal: seg(L, a, a + d), ...o }); };
 const red = (text, x, y, size, L, a, d = 1.1, o = {}) => { if (L >= a) hw(text, x, y, size, 'devil', { reveal: seg(L, a, a + d), ...o }); };
 // the red capitals: slammed, shaking for a moment
-function slam(text, x, y, size, L, a) { if (L < a) return; const k = seg(L, a, a + .12), sh = (1 - seg(L, a, a + .5)) * 14; ctx.save(); ctx.translate(x + Math.sin(L * 90) * sh, y + Math.cos(L * 70) * sh * .6); ctx.scale(lerp(1.5, 1, eo(k)), lerp(1.5, 1, eo(k))); hw(text, 0, 0, size, 'devil', { rot: -.02, weight: 700 }); ctx.restore(); }
+function slam(text, x, y, size, L, a, kind = 'devil') { if (L < a) return; const k = seg(L, a, a + .12), sh = (1 - seg(L, a, a + .5)) * 14; over(() => { ctx.save(); ctx.translate(x + Math.sin(L * 90) * sh, y + Math.cos(L * 70) * sh * .6); ctx.scale(lerp(1.5, 1, eo(k)), lerp(1.5, 1, eo(k))); _hw(text, 0, 0, size, kind, { rot: -.02, weight: 700 }); ctx.restore(); }); }
 // the fire in its belly when it is fed, and the pop when it grows: flare 0..1..0, pop 0..1 (eased with overshoot)
 const flareK = (L, a, b) => Math.sin(seg(L, a, b) * Math.PI);
 const popRing = (L, a, x, y, r0 = 120, r1 = 620) => { if (L < a || L > a + .6) return; const k = seg(L, a, a + .55); ctx.lineWidth = 14 * (1 - k); ctx.strokeStyle = rgba(D.red, 1 - k); ctx.beginPath(); ctx.arc(x, y, r0 + k * r1, 0, TAU); ctx.stroke(); };
@@ -202,6 +205,7 @@ shot('sip26', 'wall26', 'AGE: 26', (L, u, t, c) => {
 });
 // wide: its shadow is already as tall as he is
 shot('wall26', 'a31', 'AGE: 26', (L, u, t, c) => {
+  say('it was growing.', 1300, 170, 66, L, c('capGrow'), .6);
   const sk = eio(seg(L, c('shadow26') - .1, c('shadow26') + 1.3)), sway = Math.sin(L * 2.3) * 16;
   camD(push(u, .04), 960, 540, () => {
     stageD(900, {});
@@ -228,6 +232,7 @@ function nurseryD(t) {
 }
 function stoolD(x, y, rot = 0) { at(x, y, 1, rot, () => { outlined(() => { ctx.beginPath(); ctx.rect(-58, -160, 116, 18); }, rgba(D.wood), 4); for (const sd of [-1, 1]) outlined(() => poly([[sd * 40 - 7, -142], [sd * 40 + 7, -142], [sd * 54 + 7, 0], [sd * 54 - 7, 0]]), rgba(mix(D.wood, D.stage, .3)), 4); }); }
 shot('a31', 'flask', 'AGE: 31', (L, u, t, c) => {
+  say('it never left.', 900, 190, 66, L, c('capNever'), .6);
   camD(push(u), 960, 560, () => {
     stageD(860, { pool: [860, 520, 760, [170, 190, 255], .12] }); nurseryD(t);
     const rock = Math.sin(L * 2.1) * .035;
@@ -273,6 +278,7 @@ shot('drink31', 'a34', 'AGE: 31', (L, u, t, c) => {
 // ---- 33.5-44.3 AGE 34: it is his size, in his tie ----
 const TIE = [86, 120, 138];
 shot('a34', 'bar34', 'AGE: 34', (L, u, t, c) => {
+  say('it wore his tie.', 1200, 300, 66, L, c('capTie'), .6);
   camD(push(u, .04), 960, 560, () => {
     stageD(860, { pool: [900, 520, 760, [255, 216, 170], .13] });
     stroke([[250, 860], [250, 300]], 9, rgba(D.prop)); curve([[250, 300], [258, 236], [340, 226]], 9, rgba(D.prop)); outlined(() => poly([[320, 216], [400, 216], [420, 250], [300, 250]]), rgba(D.prop), 4); cone(360, 250, 50, 330, 610, [255, 222, 166], .17); glow([255, 226, 170], 360, 256, 90, .6);
@@ -358,6 +364,7 @@ function cakeD(cx, ty, t, lean = 0, lit = 1) { outlined(() => { ctx.beginPath();
 const GIANT = { kind: 'devil', x: 1480, y: 1240, h: 1230, stage: 4, noLegs: true, noArms: true, noTail: true, hat: [.86, -1.9, .9, .5] };
 function tinySam(x, y, o) { const f = figure({ kind: 'sam', x, y, h: 165, lw: .02, ...o }); tieD(f, TIE); return f; }
 shot('a38', 'claws', 'AGE: 38', (L, u, t, c) => {
+  say('it took his chair.', 760, 330, 66, L, c('capChair'), .6);
   camD(push(u, .04), 960, 560, () => {
     stageD(900, { pool: [760, 520, 760, [255, 214, 160], .14] }); partyD(t);
     const ty = 770, sway = Math.sin(L * 1.3) * .025;
@@ -392,7 +399,7 @@ shot('claws', 'lean38', 'AGE: 38', (L, u, t, c) => {
       devArm([[1500, 60], [bx + 260, lerp(cyk - 260, 40, up)], [bx + 6, lerp(cyk - 24, 120, up)]], [64, 50, 34], 24); }
   });
 });
-shot('lean38', 'truth', 'AGE: 38', (L, u, t, c) => {
+const LEAN38 = (L, u, t, c) => {
   const sl = c('cantSee'), k = eio(seg(L, 0, .75)), shake = L >= sl ? Math.sin((L - sl) * 50) * 16 * (1 - seg(L, sl, sl + .5)) : 0, ty = 770;
   camD(push(u, .06), 900 + shake, 560 + shake * .5, () => {
     stageD(900, { pool: [760, 520, 760, [255, 214, 160], .14 * (1 - .5 * k)] }); partyD(t);
@@ -403,9 +410,10 @@ shot('lean38', 'truth', 'AGE: 38', (L, u, t, c) => {
     bottleD(560, ty, 290, { alpha: .2, col: [120, 170, 150], cork: true, inside: () => tinySam(560, ty - 8, { expr: 'horror', look: [-.7, -.2], armL: [518, ty - 126 + (Math.sin(L * 26) > 0 ? -10 : 8)], armR: [602, ty - 126 + (Math.sin(L * 26) < 0 ? -10 : 8)], bendL: .4, bendR: -.4, t }) });
     figure({ kind: 'lily', x: 250 - 14 * k, y: 900, h: 300, expr: 'fear', look: [.9, -.8], turn: .5, tilt: -.1 - .06 * k, lean: -.08 * k, armL: [232, 742], armR: [270, 740], bendL: .5, bendR: -.5, glowOn: [D.red, .35 + .25 * k], glowSide: 1, t });
   });
-  slam('THEY CAN’T SEE ME.', 800, 992, 96, L, sl);
+  if (!HOOK) slam('THEY CAN’T SEE ME.', 800, 992, 96, L, sl);
   popFlash(L, sl, .22);
-});
+};
+shot('lean38', 'truth', 'AGE: 38', LEAN38);
 // the same picture, as his family sees it
 shot('truth', 'fridge', 'AGE: 38', (L, u, t, c) => {
   const lv = c('leave'), go = eio(seg(L, lv, lv + 1.9)), wIn = eo(seg(L, .15, 1.0)), ty = 770;
@@ -495,6 +503,7 @@ shot('floor', 'sink', 'AGE: 38', (L, u, t, c) => {
   });
 });
 shot('sink', 'day1', 'AGE: 38', (L, u, t, c) => {
+  say('he stopped feeding it.', 560, 170, 66, L, c('capStop'), .7);
   const g0 = c('glug'), g1 = c('glugEnd'), fz = c('flinch'), af = c('afraid'), pour = seg(L, g0, g1), pouring = L > g0 && L < g1, tipK = eo(seg(L, g0 - .35, g0));
   const shr = eo(seg(L, fz, fz + .25)) * .06 + eo(seg(L, fz + .5, fz + .75)) * .05 + eo(seg(L, af - .2, af + .1)) * .05, rec = eo(seg(L, fz, fz + .2)), scared = L >= af - .1;
   const sh = L >= fz ? Math.sin((L - fz) * 44) * 10 * (1 - seg(L, fz, fz + .5)) : 0;
@@ -533,6 +542,7 @@ shot('day1', 'run', 'DAY: 1', (L, u, t, c) => {
   clock('6:00 AM'); red('just one. for the shakes.', 760, 300, 72, L, jo, 1.1);
 });
 shot('run', 'day14', 'DAY: 1', (L, u, t, c) => {
+  say('so it chased him.', 1330, 250, 66, L, c('capChase'), .6);
   camD(push(u, .03), 960, 560, () => {
     stageD(900, {}); ctx.fillStyle = lg(0, 520, 0, 900, [[0, [255, 170, 120], 0], [1, [255, 170, 120], .3]]); ctx.fillRect(0, 520, W, 380);
     ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, 898); ctx.clip(); disc(1540, 900, 150, rgba([255, 214, 150])); glow([255, 190, 130], 1540, 880, 520, .5); ctx.restore();
@@ -566,6 +576,7 @@ shot('day14', 'day40', 'DAY: 14', (L, u, t, c) => {
   clock('6:30 AM'); red('you’re no fun.', 1330, 330, 72, L, nf, .7);
 });
 shot('day40', 'day60', 'DAY: 40', (L, u, t, c) => {
+  say('lighter every day.', 440, 560, 66, L, c('capLight'), .6);
   const pulls = [c('pull1'), c('pull2'), c('pull2') + 1.15], pk = Math.max(...pulls.map(r => eio(seg(L, r - .45, r)) * (1 - eio(seg(L, r + .12, r + .6))))), dr = c('dropOff'), fell = L >= dr, fall = eo(seg(L, dr, dr + .28)), shr = fell ? eo(seg(L, dr + .28, dr + .55)) : 0, sm = L >= c('smile40');
   camD(push(u, .04), 960, 560, () => {
     const G = 940; stageD(G, { pool: [960, 500, 800, [255, 226, 180], .15] }); glow([255, 220, 150], 300, 160, 300, .5); disc(300, 160, 60, rgba([255, 232, 170]));
@@ -629,6 +640,7 @@ const bigSam = (L, t, o = {}) => figure({ kind: 'sam', x: 1540, y: 2010, h: 1800
 const tinyRage = (x, y, L, t, o = {}) => figure({ kind: 'devil', x, y, h: 300, stage: 0, expr: o.expr || { ...DX.rage, h: .8 }, look: o.look || [.5, -.6], tilt: Math.sin(t * 17) * .08, armL: o.armL || [x - 120, y - 250 + Math.sin(t * 21) * 30], armR: o.armR || [x + 120, y - 250 - Math.sin(t * 21) * 30], bendL: .4, bendR: -.4, tail: [-.46 + .08 * Math.sin(t * 14), -.3], heat: .5, stretch: true, t, ...o.more });
 const BOT = { alpha: .18, col: [120, 170, 150] };
 shot('day90', 'lower', 'DAY: 90', (L, u, t, c) => {
+  say('small again.', 800, 200, 66, L, c('capSmall'), .5);
   const grab = eo(seg(L, 1.3, 1.85));
   camD(push(u, .05), 960, 540, () => {
     stageD(0, { pool: [1000, 480, 900, [255, 222, 176], .16] }); bigSam(L, t, { blinks: [.9] }); counterTopD();
@@ -731,5 +743,74 @@ shot('night', 'black', null, (L, u, t, c) => {
 shot('black', 'END', null, (L, u, t, c) => {
   say('So starve it.', 960, 440, 104, L, c('starve'), .55);
   if (L >= c('everyDay')) hw('Every day.', 960, 580, 104, 'say', L > c('everyDay') + .45 ? { under: true } : { reveal: seg(L, c('everyDay'), c('everyDay') + .45) });
-  if (L >= c('title')) { ctx.save(); ctx.globalAlpha = eo(seg(L, c('title'), c('title') + .5)); hw('THE BOTTLE', 960, 800, 46, 'say', { rot: 0 }); hw('it was so small', 960, 856, 34, 'devil', { rot: 0, weight: 400 }); ctx.restore(); }
+  if (L >= c('title')) over(() => { ctx.save(); ctx.globalAlpha = eo(seg(L, c('title'), c('title') + .5)); _hw('THE BOTTLE', 960, 800, 46, 'say', { rot: 0 }); _hw('it was so small', 960, 856, 34, 'devil', { rot: 0, weight: 400 }); ctx.restore(); });
 });
+// ---- the hook: the lie, the monster it became, the size it started at (source times 200-204.2) ----
+shot('hk1', 'hk2', null, (L, u, t, c) => {
+  const gx = 1010, rimY = 760, foam = [[gx - 250, rimY + 6, 44, 0], [gx - 170, rimY - 14, 56, 1.3], [gx - 76, rimY + 2, 50, 2.1], [gx + 20, rimY - 10, 58, .6], [gx + 120, rimY + 6, 48, 2.8], [gx + 210, rimY - 8, 54, 1.9], [gx + 284, rimY + 10, 38, 3.4]], rise = eo(seg(L, 0, .7));
+  camD(1.1 + .12 * u, gx, rimY - 150, () => { glow([255, 206, 150], gx, 640, 760, .13); ctx.save(); ctx.globalAlpha = .55 + .45 * rise; macroGlass(t, gx, rimY); foamD(foam.map(([x, y, r, ph]) => [x, y + (1 - rise) * (120 + ph * 30), r * (.5 + .5 * rise), ph]), t * 2); ctx.restore();
+    for (let i = 0; i < 16; i++) { const k = (L * (1 + rnd(i)) + rnd(i * 3)) % 1; disc(gx - 270 + rnd(i * 7) * 540, rimY + 380 - k * 360, 3 + rnd(i * 2) * 4, rgba(D.white, .6 * (1 - k))); } });
+  say('it was just one drink.', 960, 250, 104, L, c('hkLine'), .5);
+});
+shot('hk2', 'hk3', 'AGE: 38', (L, u, t, c) => {
+  HOOK = true; LEAN38(.6 + L * .55, u, t, n => n === 'cantSee' ? .6 : 0); HOOK = false;
+  slam('17 YEARS LATER', 800, 990, 104, L, c('hkLater'), 'say');
+});
+shot('hk3', 'hk4', 'AGE: 21', (L, u, t, c) => {
+  const gx = 1010, rimY = 650, foam = [[gx - 250, rimY + 6, 44, 0], [gx - 170, rimY - 14, 56, 1.3], [gx - 76, rimY + 2, 50, 2.1], [gx + 20, rimY - 10, 58, .6], [gx + 120, rimY + 6, 48, 2.8], [gx + 210, rimY - 8, 54, 1.9], [gx + 284, rimY + 10, 38, 3.4]], e = c('hkEyes');
+  camD(1.25 + .25 * eio(u), gx, rimY - 30, () => { glow([255, 206, 150], gx, 560, 700, .13); macroGlass(t, gx, rimY); foamD(foam, t);
+    if (L > e) { const k = eo(seg(L, e, e + .16)); additive(() => glow(D.red, gx, rimY - 16, 130 * k, .85)); for (const sd of [-1, 1]) oval(gx + sd * 26, rimY - 22, 13 * k, 19 * k * (1 - blinkAt(L, [e + .55], .08)), rgba(D.hot)); } });
+  say('it started this small.', 960, 230, 92, L, c('hkSmall'), .5);
+});
+// ---- THE EDIT (second cut, 17 Nov 2026: a hook first, a cut about every 1.4 s) ----
+// The shots above are the source, timed by cues.js. The edit plays pieces of them: cut(shot, { a, b: the piece in the
+// shot's own seconds, sp: speed, cam: [zoom, x, y] a punch-in on a point of the frame }). blink() is a beat of black.
+const EDIT = []; let _et = 0;
+function cut(src, o = {}) { const s = SHOTS.find(x => x.name === src); if (!s) throw new Error('no shot ' + src); const a = o.a ?? 0, b = o.b ?? (s.b - s.a), sp = o.sp ?? 1, d = (b - a) / sp; EDIT.push({ s, a, b, sp, cam: o.cam, t0: _et, t1: _et + d }); _et += d; }
+function blink(d = .12) { EDIT.push({ black: true, t0: _et, t1: _et + d }); _et += d; }
+cut('hk1'); cut('hk2'); cut('hk3');
+cut('a21', { a: 0, b: 2.6, sp: 1.37 }); cut('a21', { a: 2.6, b: 5.6, sp: 1.3 }); cut('a21', { a: 5.6, b: 7.4, sp: 1.6 }); cut('a21', { a: 7.4, b: 10.4, sp: 1.43 }); cut('a21', { a: 10.4, b: 13.5, sp: 1.19 });
+blink();
+cut('a26', { a: 0, b: .4, sp: 1.3 }); cut('a26', { a: .4, b: 1.75, sp: 1.35, cam: [2.2, 830, 570] }); cut('a26', { a: 1.75, sp: 1.25 });
+cut('sip26', { sp: 1.3 }); cut('wall26', { sp: 1.4 });
+blink();
+cut('a31', { sp: 1.5 });
+cut('flask', { a: 0, b: .9, sp: 1.3 }); cut('flask', { a: .9, b: 1.95, sp: 1.3, cam: [1.4, 640, 790] }); cut('flask', { a: 1.95, sp: 1.25 });
+cut('drink31', { sp: 1.2 });
+blink();
+cut('a34', { sp: 1.5 }); cut('bar34', { sp: 1.37 });
+cut('dinner', { a: 0, b: .75, sp: 1.3 }); cut('dinner', { a: .75, b: 1.4, sp: 1.3, cam: [2.2, 730, 600] }); cut('dinner', { a: 1.4, b: 2.3, sp: 1.3, cam: [2.0, 1290, 560] }); cut('dinner', { a: 2.3, sp: 1.4 });
+cut('swell34', { sp: 1.2 });
+blink();
+cut('a38', { sp: 1.6 }); cut('claws', { sp: 1.28 });
+cut('lean38', { a: 0, b: .55, sp: 1.2, cam: [2.3, 330, 740] }); cut('lean38', { a: .55, sp: 1.2 });
+cut('truth', { a: 0, b: 1.2, sp: 1.3 }); cut('truth', { a: 1.2, b: 2.0, sp: 1.25, cam: [2.2, 1400, 560] }); cut('truth', { a: 2.0, sp: 1.3 });
+cut('fridge', { sp: 1.33 });
+cut('inside', { sp: 1.33 }); cut('pound', { sp: 1.2 }); cut('floor', { sp: 1.4 });
+cut('sink', { a: 0, b: 1.1, sp: 1.25 }); cut('sink', { a: 1.1, b: 2.1, sp: 1.25, cam: [1.55, 1380, 500] }); cut('sink', { a: 2.1, sp: 1.2 });
+blink();
+cut('day1', { a: 0, b: .7, sp: 1.3, cam: [2.2, 700, 760] }); cut('day1', { a: .7, sp: 1.4 });
+cut('run', { sp: 1.5 });
+cut('day14', { a: 0, b: 1.2, sp: 1.3 }); cut('day14', { a: 1.2, b: 1.9, sp: 1.3, cam: [2.2, 860, 760] }); cut('day14', { a: 1.9, sp: 1.3 });
+cut('day40', { a: 0, b: 2.1, sp: 1.4 }); cut('day40', { a: 2.1, b: 2.9, sp: 1.3, cam: [2.4, 1470, 650] }); cut('day40', { a: 2.9, sp: 1.35 });
+cut('day60', { sp: 1.15 }); cut('tempt', { sp: 1.4 }); cut('handShot', { sp: 1.15 });
+cut('day90', { sp: 1.3 }); cut('lower', { sp: 1.2 }); cut('shelf', { sp: 1.25 });
+cut('newDraw', { sp: 1.3 }); cut('samFace', { sp: 1.35 });
+cut('kneel', { a: 0, b: 1.5, sp: 1.2 }); cut('kneel', { a: 1.5, b: 2.5, sp: 1.2, cam: [1.9, 1030, 660] }); cut('kneel', { a: 2.5, sp: 1.15 });
+cut('night', { a: 0, b: 2.2, sp: 1.3 }); cut('night', { a: 2.2, b: 3.3, sp: 1.2, cam: [1.8, 990, 520] }); cut('night', { a: 3.3, sp: 1.2 });
+cut('black', { sp: 1.15 });
+const END2 = _et;
+FILM = function (t) {
+  t = clamp(t, 0, END2 - 1e-4); const e = EDIT.find(e => t >= e.t0 && t < e.t1);
+  rectf(0, 0, W, H, rgba(D.stage));
+  if (e && !e.black) { const s = e.s, L = e.a + (t - e.t0) * e.sp; OVER = [];
+    ctx.save(); if (e.cam) { const [z, cx, cy] = e.cam; ctx.translate(W / 2, H / 2); ctx.scale(z, z); ctx.translate(-cx, -cy); }
+    s.fn(L, L / (s.b - s.a), s.a + L, n => CUE[n] - s.a); ctx.restore(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1;
+    const q = OVER; OVER = null; if (s.count) counter(s.count); for (const f of q) f(); }
+  else if (e && e.black) rectf(0, 0, W, H, 'rgb(3,3,4)');
+  finish({ bloom: .07, grain: .03, vignette: .5, t });
+  const out = seg(t, END2 - .5, END2 - .05); if (out > 0) rectf(0, 0, W, H, `rgba(0,0,0,${out})`);
+};
+// the edit's own times for the sound: every cue that is on screen, every cut
+function EDITCUES() { const cues = {}; for (const [n, v] of Object.entries(CUE)) { if (typeof v !== 'number') continue; const e = EDIT.find(e => !e.black && v >= e.s.a + e.a - 1e-6 && v < e.s.a + e.b - 1e-6); if (e) cues[n] = +(e.t0 + (v - e.s.a - e.a) / e.sp).toFixed(3); }
+  return { END: +END2.toFixed(3), cues, cuts: EDIT.map((e, i) => ({ t: +e.t0.toFixed(3), kind: e.black ? 'black' : e.cam ? 'punch' : i && EDIT[i - 1].s === e.s && EDIT[i - 1].cam ? 'back' : 'cut', shot: e.black ? null : e.s.name })) }; }

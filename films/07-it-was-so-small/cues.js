@@ -44,5 +44,8 @@ const CUE = {
 "newDraw": 93.46, "samFace": 96.1, "kneel": 98.3, "runIn": 98.6, "hug": 99.5,
 
 "night": 102.1, "eyesOpen": 103.0, "fog": 103.8, "drawSmile": 104.4, "tap1": 105.5, "tap2": 105.8, "wait": 105.9,
-"black": 107.3, "starve": 107.5, "everyDay": 108.4, "title": 108.95
+"black": 107.3, "starve": 107.5, "everyDay": 108.4, "title": 108.95,
+
+"hk1": 200.0, "hkLine": 200.05, "hk2": 201.3, "hkLater": 201.42, "hk3": 202.8, "hkSmall": 202.95, "hkEyes": 203.0, "hk4": 204.2,
+"capGrow": 23.9, "capNever": 26.1, "capTie": 33.8, "capChair": 44.6, "capStop": 64.5, "capChase": 71.1, "capLight": 78.0, "capSmall": 88.3
 };

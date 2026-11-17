@@ -13,6 +13,7 @@ function cakeD(cx, ty, t, lean = 0, lit = 1) { outlined(() => { ctx.beginPath();
 const GIANT = { kind: 'devil', x: 1480, y: 1240, h: 1230, stage: 4, noLegs: true, noArms: true, noTail: true, hat: [.86, -1.9, .9, .5] };
 function tinySam(x, y, o) { const f = figure({ kind: 'sam', x, y, h: 165, lw: .02, ...o }); tieD(f, TIE); return f; }
 shot('a38', 'claws', 'AGE: 38', (L, u, t, c) => {
+  say('it took his chair.', 760, 330, 66, L, c('capChair'), .6);
   camD(push(u, .04), 960, 560, () => {
     stageD(900, { pool: [760, 520, 760, [255, 214, 160], .14] }); partyD(t);
     const ty = 770, sway = Math.sin(L * 1.3) * .025;
@@ -47,7 +48,7 @@ shot('claws', 'lean38', 'AGE: 38', (L, u, t, c) => {
       devArm([[1500, 60], [bx + 260, lerp(cyk - 260, 40, up)], [bx + 6, lerp(cyk - 24, 120, up)]], [64, 50, 34], 24); }
   });
 });
-shot('lean38', 'truth', 'AGE: 38', (L, u, t, c) => {
+const LEAN38 = (L, u, t, c) => {
   const sl = c('cantSee'), k = eio(seg(L, 0, .75)), shake = L >= sl ? Math.sin((L - sl) * 50) * 16 * (1 - seg(L, sl, sl + .5)) : 0, ty = 770;
   camD(push(u, .06), 900 + shake, 560 + shake * .5, () => {
     stageD(900, { pool: [760, 520, 760, [255, 214, 160], .14 * (1 - .5 * k)] }); partyD(t);
@@ -58,9 +59,10 @@ shot('lean38', 'truth', 'AGE: 38', (L, u, t, c) => {
     bottleD(560, ty, 290, { alpha: .2, col: [120, 170, 150], cork: true, inside: () => tinySam(560, ty - 8, { expr: 'horror', look: [-.7, -.2], armL: [518, ty - 126 + (Math.sin(L * 26) > 0 ? -10 : 8)], armR: [602, ty - 126 + (Math.sin(L * 26) < 0 ? -10 : 8)], bendL: .4, bendR: -.4, t }) });
     figure({ kind: 'lily', x: 250 - 14 * k, y: 900, h: 300, expr: 'fear', look: [.9, -.8], turn: .5, tilt: -.1 - .06 * k, lean: -.08 * k, armL: [232, 742], armR: [270, 740], bendL: .5, bendR: -.5, glowOn: [D.red, .35 + .25 * k], glowSide: 1, t });
   });
-  slam('THEY CAN’T SEE ME.', 800, 992, 96, L, sl);
+  if (!HOOK) slam('THEY CAN’T SEE ME.', 800, 992, 96, L, sl);
   popFlash(L, sl, .22);
-});
+};
+shot('lean38', 'truth', 'AGE: 38', LEAN38);
 // the same picture, as his family sees it
 shot('truth', 'fridge', 'AGE: 38', (L, u, t, c) => {
   const lv = c('leave'), go = eio(seg(L, lv, lv + 1.9)), wIn = eo(seg(L, .15, 1.0)), ty = 770;

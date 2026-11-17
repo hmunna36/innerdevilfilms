@@ -21,6 +21,7 @@ shot('day1', 'run', 'DAY: 1', (L, u, t, c) => {
   clock('6:00 AM'); red('just one. for the shakes.', 760, 300, 72, L, jo, 1.1);
 });
 shot('run', 'day14', 'DAY: 1', (L, u, t, c) => {
+  say('so it chased him.', 1330, 250, 66, L, c('capChase'), .6);
   camD(push(u, .03), 960, 560, () => {
     stageD(900, {}); ctx.fillStyle = lg(0, 520, 0, 900, [[0, [255, 170, 120], 0], [1, [255, 170, 120], .3]]); ctx.fillRect(0, 520, W, 380);
     ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, 898); ctx.clip(); disc(1540, 900, 150, rgba([255, 214, 150])); glow([255, 190, 130], 1540, 880, 520, .5); ctx.restore();
@@ -54,6 +55,7 @@ shot('day14', 'day40', 'DAY: 14', (L, u, t, c) => {
   clock('6:30 AM'); red('you’re no fun.', 1330, 330, 72, L, nf, .7);
 });
 shot('day40', 'day60', 'DAY: 40', (L, u, t, c) => {
+  say('lighter every day.', 440, 560, 66, L, c('capLight'), .6);
   const pulls = [c('pull1'), c('pull2'), c('pull2') + 1.15], pk = Math.max(...pulls.map(r => eio(seg(L, r - .45, r)) * (1 - eio(seg(L, r + .12, r + .6))))), dr = c('dropOff'), fell = L >= dr, fall = eo(seg(L, dr, dr + .28)), shr = fell ? eo(seg(L, dr + .28, dr + .55)) : 0, sm = L >= c('smile40');
   camD(push(u, .04), 960, 560, () => {
     const G = 940; stageD(G, { pool: [960, 500, 800, [255, 226, 180], .15] }); glow([255, 220, 150], 300, 160, 300, .5); disc(300, 160, 60, rgba([255, 232, 170]));
@@ -117,6 +119,7 @@ const bigSam = (L, t, o = {}) => figure({ kind: 'sam', x: 1540, y: 2010, h: 1800
 const tinyRage = (x, y, L, t, o = {}) => figure({ kind: 'devil', x, y, h: 300, stage: 0, expr: o.expr || { ...DX.rage, h: .8 }, look: o.look || [.5, -.6], tilt: Math.sin(t * 17) * .08, armL: o.armL || [x - 120, y - 250 + Math.sin(t * 21) * 30], armR: o.armR || [x + 120, y - 250 - Math.sin(t * 21) * 30], bendL: .4, bendR: -.4, tail: [-.46 + .08 * Math.sin(t * 14), -.3], heat: .5, stretch: true, t, ...o.more });
 const BOT = { alpha: .18, col: [120, 170, 150] };
 shot('day90', 'lower', 'DAY: 90', (L, u, t, c) => {
+  say('small again.', 800, 200, 66, L, c('capSmall'), .5);
   const grab = eo(seg(L, 1.3, 1.85));
   camD(push(u, .05), 960, 540, () => {
     stageD(0, { pool: [1000, 480, 900, [255, 222, 176], .16] }); bigSam(L, t, { blinks: [.9] }); counterTopD();

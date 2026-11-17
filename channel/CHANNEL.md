@@ -36,3 +36,11 @@ Subscribe. It's already watching.
 
 ## Before 27 Oct 2026
 The channel was Inner Devil Films, built around Devil Mode (when the Angel's kind motivation fails, the Devil makes him act). Its Remotion logo and banner are in `anim/src/Brand.tsx` and in this folder's git history.
+
+## 17 Nov 2026: the new look
+
+The owner made the look of film 07 (THE BOTTLE | It Was So Small) the rule for every film and Short. The profile
+picture was changed in Studio the same day to the new devil's face (`logo.png`; drawn with `stage/rig.js`, source
+`brand/2026-11-17/logo_film.js`). A banner in the new look is drafted (`brand/2026-11-17/banner_draft.png`) but NOT
+published: `banner.png` is still the live one, with the old devil, until the owner says so.
+

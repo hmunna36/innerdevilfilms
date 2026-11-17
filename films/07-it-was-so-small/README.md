@@ -3,7 +3,17 @@
 - **Status:** built on the Mac on 17 Nov 2026 after the owner rejected the second version ("redesign the characters
   completely and make a fantastic storyline, the devil should be really good") and pointed at the look he wants
   (a black stage, cream cartoon people, a black devil with a red glowing edge, handwritten words). He approved the
-  stills and a 13-second moving test of the first scene, then said yes to the full film. **Not uploaded.**
+  stills and a 13-second moving test of the first scene, then said yes to the full film.
+- **Uploaded 17 Nov 2026** (the owner: "Yes. Upload and every video/short should follow this direction and character
+  design. Create a thumbnail from ChatGPT and upload. Change the DP too if needed"): https://youtu.be/ivH0FQPHEVo,
+  public 17 Nov 2026 21:00 IST (a one-off slot the same evening, not the Sunday slot: the channel's Shorts move to
+  this look only once this film is public). `publish.json`; processing succeeded.
+- **Thumbnail** (`thumb.jpg`, drawn by ChatGPT from `thumb/ref_*.jpg`, the original is `thumb/gpt_a.png`; first try
+  accepted): the bottle huge in the middle with him trapped inside, palms on the glass; the giant devil behind it
+  with both claws round the bottle; THE BOTTLE huge on the left, IT WAS SO SMALL small under it; black and red with
+  pale teal glass.
+- **Channel picture** changed the same day to this film's devil (`channel/logo.png`, drawn with the rig:
+  `channel/brand/2026-11-17/logo_film.js`); the banner still shows the old devil.
 - **What it is:** 1:26 in its second cut (the first cut was 1:50.5), 16:9, 1920 x 1080, 30 fps, no narration; the devil's words are red handwriting, the story's
   voice is white handwriting; a counter top right (AGE: 15 … DAY: 90).
 - **The story** is in `STORY.md`; the cut, shot by shot with the sound wanted, in `CUT.md`.
@@ -26,7 +36,13 @@ cut about every 1.5 s, sound that never drops out, one to two sound events a sec
   of 1 s under -38 dB in the phone band (`silence-check.py` from the wojak-story repo). Whooshes are mostly synthesized:
   a second batch of recorded effects (about 300 credits) was not bought.
 
-## How it is built (not the channel engine)
+## How it is built (the stage)
+
+Since 17 Nov 2026 the reusable parts live in `stage/` (the channel's shared engine for this look: `lib.js`, `rig.js`,
+`kit.js`, `page.html`, `render.mjs`, `build.sh`, `make.sh`, the bundled handwriting); this folder keeps the film's own
+`cues.js`, scenes, `src/00-props.js`, the cut list `src/95-edit.js`, the sound, and thin wrapper scripts so the commands
+below still work. The delivered film was rendered in Chalkboard SE (`--font=mac` reproduces it); new renders use the
+bundled font. The text below describes the folder as it was when the film was made.
 
 Plain canvas 2D, every frame a pure function of the time. `page.html` loads `lib.js` (drawing helpers), `rig.js`
 (the look: the stage, the faces, one `figure()` for Sam, Lily, the wife and the devil at five sizes, props),
@@ -47,5 +63,4 @@ Plain canvas 2D, every frame a pure function of the time. `page.html` loads `lib
 
 - Nobody has listened to the sound; the levels are judged from numbers.
 - The picture was checked on contact sheets (about one frame in fifteen), not by watching it play.
-- No vertical (Shorts) framing, no thumbnail, no `publish.json`, no upload.
-- The channel skill (`/idf`) and its cloud routines still make films in the old look.
+- In Studio, by hand: the end screen and the pinned comment (the owner's).

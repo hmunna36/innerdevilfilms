@@ -12,6 +12,10 @@ echo "== render test (a still of LUST's devil at 0:50, through the engine)"
 T="$(mktemp -d)"; s=$(date +%s)
 if node "$IDF_ENGINE/render.mjs" stills film films/03-lust --at 50 --out "$T" >"$T/log" 2>&1 && ls "$T"/*.jpg >/dev/null 2>&1; then echo "  ok ($(( $(date +%s) - s )) s)"
 else echo "  FAILED:"; tail -12 "$T/log" | sed 's/^/    /'; rc=1; fi
+echo "== stage test (a still of THE BOTTLE through the stage: the look every new film and Short is made in)"
+s=$(date +%s)
+if "$REPO/stage/build.sh" "$REPO/films/07-it-was-so-small" >"$T/log2" 2>&1 && node "$REPO/stage/render.mjs" "$REPO/films/07-it-was-so-small" still 2.2 preflight >>"$T/log2" 2>&1; then echo "  ok ($(( $(date +%s) - s )) s; the bundled handwriting loaded)"
+else echo "  FAILED:"; tail -12 "$T/log2" | sed 's/^/    /'; rc=1; fi
 rm -rf "$T"
 echo "== keys (set or not; never printed)"
 need="YT_CLIENT_ID YT_CLIENT_SECRET IDF_YT_REFRESH_TOKEN"

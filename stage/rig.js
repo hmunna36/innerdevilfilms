@@ -1,5 +1,6 @@
 'use strict';
-// LOOK D: the genre look the owner pointed at (17 Nov 2026): a near-black stage, one pool of light, a thin floor line,
+// THE CAST AND THE LOOK (locked 17 Nov 2026: the owner approved it and said every film and Short follows it; never
+// redraw the people or the devil, only pose them). LOOK D: the genre look the owner pointed at (17 Nov 2026): a near-black stage, one pool of light, a thin floor line,
 // simple cream people drawn like marker cartoons, a black devil with a red glowing edge, handwritten words.
 // Our own construction and faces: a round head on a bean body, four soft tubes; no hands, feet, hair or clothes.
 // The devil is the same construction in black ("it is him"), with horns, a tail and a face made of fire.
@@ -8,7 +9,9 @@ const D = {
   yellow: [255, 206, 44], red: [255, 56, 40], ember: [255, 130, 50], hot: [255, 214, 130], ink: [12, 9, 11],
   white: [244, 240, 230], prop: [86, 92, 110], propL: [130, 138, 160], wood: [104, 78, 62], amber: [240, 160, 50]
 };
-const FONT = '"Chalkboard SE", "Marker Felt", "Comic Sans MS", sans-serif';
+// The handwriting: the bundled open font (stage/fonts, loaded by page.html as "IDF Hand"), the same on every machine.
+// page.html?font=mac sets STAGE_FONT to the Mac's Chalkboard SE, which film 07 was delivered in (17 Nov 2026).
+const FONT = (typeof STAGE_FONT === 'string' && STAGE_FONT) || '"IDF Hand", "Chalkboard SE", "Comic Sans MS", sans-serif';
 const boil = (t, seed = 0) => Math.floor((t || 0) * 8) * 7.13 + seed;                // the line "boils" 8 times a second
 const jit = (pts, amp, s) => pts.map((p, i) => [p[0] + noise1(i * 1.71 + s, 3) * amp, p[1] + noise1(i * 2.37 + s, 8) * amp]);
 // handwritten words. kind: 'say' (white, the story's voice), 'devil' (red), 'count' (top right)

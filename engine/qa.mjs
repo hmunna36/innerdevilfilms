@@ -2,7 +2,7 @@
 // The mechanical checks on a finished MP4 (the eye checks are in reference/qa.md):
 //   node engine/qa.mjs <video.mp4> [--sheet out.png] [--every 1]
 // streams (H.264 yuv420p 30 fps, AAC 48 kHz stereo), the size (1920x1080 film, 1080x1920 Short), the length (film
-// 1:30-2:30, Short 25-40 s), the delivered loudness (film -18 LUFS, Short -16, each +-1; true peak at most -1 dBTP;
+// 1:15-2:30 since the look of film 07, Short 25-40 s), the delivered loudness (film -18 LUFS, Short -16, each +-1; true peak at most -1 dBTP;
 // the owner, 31 Oct 2026: the first films at -14 were "very loud"), every black stretch
 // over .25 s (each must be a planned one), and a contact sheet of one frame a second. Exit 1 if a check fails.
 import fs from 'node:fs';
@@ -31,7 +31,7 @@ const check = (ok, what) => checks.push([ok, what]);
 check(v && v.codec_name === 'h264' && v.pix_fmt === 'yuv420p' && v.r_frame_rate === '30/1', `video: ${v ? `${v.codec_name} ${v.pix_fmt} ${v.r_frame_rate} fps` : 'none'}`);
 check(v && (short ? v.width === 1080 && v.height === 1920 : v.width === 1920 && v.height === 1080), `size: ${v ? `${v.width}x${v.height}` : '?'} (${short ? 'Short' : 'film'})`);
 check(a && a.codec_name === 'aac' && +a.sample_rate === 48000 && a.channels === 2, `audio: ${a ? `${a.codec_name} ${a.sample_rate} Hz, ${a.channels} ch` : 'NONE'}`);
-check(short ? dur >= 25 && dur <= 40 : dur >= 90 && dur <= 150, `length: ${dur.toFixed(2)} s (${short ? 'Short 25-40 s' : 'film 1:30-2:30'})`);
+check(short ? dur >= 25 && dur <= 40 : dur >= 75 && dur <= 150, `length: ${dur.toFixed(2)} s (${short ? 'Short 25-40 s' : 'film 1:15-2:30'})`);
 // loudness as delivered (loudnorm's measurement of the AAC track; it is in every ffmpeg build)
 const ln = spawnSync(FF, ['-nostats', '-hide_banner', '-i', mp4, '-vn', '-af', 'loudnorm=print_format=json', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
 const lj = JSON.parse(ln.slice(ln.lastIndexOf('{'), ln.lastIndexOf('}') + 1) || '{}'), I = +lj.input_i, TP = +lj.input_tp, T = short ? -16 : -18;

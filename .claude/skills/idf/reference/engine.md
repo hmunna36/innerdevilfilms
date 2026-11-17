@@ -1,133 +1,126 @@
-# The engine (`engine/`): how a film and a Short are built
+# The stage (`stage/`): how a film and a Short are built
 
-Every film is code-drawn on one canvas, and every frame is a pure function of time t, so frames render in any order.
-The engine is LUST's own code made reusable (27 Oct 2026); LUST on the engine matches the uploaded film frame for frame.
-Read `films/03-lust/film.js` before writing a film: it is the model, and most of a new film is the same table with new
-data.
+Since 17 Nov 2026 every film and Short is made on the stage: the code of THE BOTTLE | It Was So Small
+(`films/07-it-was-so-small`) made shared. Every frame is a pure function of time (no `Math.random`, no `Date`), so
+frames render in any order. Read film 07 before writing a line: `STORY.md`, `cues.js`, `src/10-open-21.js` (one scene),
+`src/90-hook.js`, `src/95-edit.js`, `mix.py`, `SOUND.md`. Most of a new film is the same shapes with a new story.
+
+**`engine/` is the OLD look** (LUST, films 04-06, their Shorts): the Shadow Twin, the bedroom, the phone. Nothing new is
+built on it. Two things in it are still used: `engine/audio/` (`mixlib.py`: loading, loudness, the master; `music.mjs`:
+ElevenLabs) and `engine/qa.mjs` (the mechanical checks on an MP4), plus `engine/node_modules` (playwright-core).
 
 ## Files
 
 | File | What |
 |---|---|
-| `engine/core.js` | the canvas, the 16:9 / 9:16 formats, maths (`clamp lerp inv win keys E rnd mix rgba`), camera (`cam screen ui px`), push-ins, shake, flash, glitch, vignette, text (`slam spaced typeLine typeBlock wrapText fitSize`), the devil's words, `defineFilm`, `defShot`, `renderFilm` |
-| `engine/cast.js` | the man (`drawPerson`, poses `poseSit poseStand poseWalk poseLie posePushup posePullup poseSquat poseCurl`, `rep`), his face (`face`, `EXPR`, `exprAt`, `faceShot`, `LOOKS`), the devil, the Shadow Twin (`drawDevil devilEyes devilGrin devilArms devilSmoke tether redEyes devilHead devilMouth devilBox`, `SPOTS`, `placeDevil`, `devilO`, `DEVIL_FACE_ZOOM`) |
-| `engine/sets.js` | `fill`, the bedroom (`drawRoom drawWindow`, `BED`, `SIT`, `FILM.roomProps`), `shards`, the dawn road (`roadWorld hills embers`), the gym (`gymBg plate`), `toScreenBox unionBox` |
-| `engine/phone.js` | `phoneFrame`, banners (`notif notifDrop`, kinds `mom call mail msg vice bank warn`), `callScreen chatScreen homeScreen`, icons drawn as shapes (`icon`, `textHeart`), pieces for a vice screen (`mosaic badge18 statusClock progressBar feed`) |
-| `engine/shots.js` | the shot library (below) |
-| `engine/short.js` | the Short runtime: `defineShort`, the vertical framing per segment, the end card, the sound plan |
-| `engine/player.html` + `player.js` | open `engine/player.html?film=films/03-lust` (or `?short=shorts/15-lust-hook`) in a browser to play and scrub (space, arrows, `#t=12.5`) |
-| `engine/render.mjs` | `film` / `short` (MP4 with several browsers at once), `stills`, `sheet` (contact sheets, `--safe` for Shorts), `info` |
-| `engine/qa.mjs` | the mechanical checks on an MP4 and its contact sheet |
-| `engine/audio/` | `music.mjs` (ElevenLabs), `mixlib.py` (DSP, loudness, limiter), `short_mix.py`, `sfx/` (shared hits made for LUST: scream, shriek, smash, scare, stinger, swell) |
-| `engine/fonts/` | Inter and Gelasio (SIL OFL): the same on the Mac and in the cloud. Never name a system font |
+| `stage/lib.js` | the canvas (1920 x 1080, `W`, `H`), maths (`clamp lerp inv smooth rnd noise1 mix rgba`), paint (`rectf disc oval poly stroke blob curve taper`), `ik`, `inside`, `blurred`, `additive`, `alpha`, `at`, `glow`, `cone`, `bokeh`, `finish` (bloom, vignette, grain) |
+| `stage/rig.js` | **THE LOOK AND THE CAST, LOCKED.** Colours `D`, the handwriting `hw` and `counter`, the stage `stageD(floorY, { pool })`, faces `FX` / `faceD` (people) and `DX` / `faceDevil`, **`figure(o)`** (everyone), `devArm`, props `outlined glassD bottleD lampD`, motion `eo eio eback seg camD lightsD blinkAt devEx samEx foamD macroGlass` |
+| `stage/kit.js` | `shot()` (a source shot), **the edit** `cut()` / `blink()` / `FILM(t)` / `EDITCUES()`, words `say red slam over`, effects `flareK popRing popFlash burp sparks`, small props `tieD bowD hatD tableD chairD flaskD shadowFig` |
+| `stage/vertical.js` | Shorts: `piece gap cap endCard`, the 9:16 window, the words laid out in the safe area, `SHORTCUES()` |
+| `stage/page.html` | loads a film (and a Short) by `?film=…&short=…`; `DRAW(t)`, `SHEET(times, cols, tw)` |
+| `stage/render.mjs` | `still`, `sheet` (`--safe` for Shorts), `frames`, `cues`, `info` (its header has the arguments) |
+| `stage/build.sh`, `stage/make.sh` | `film.js` from a film's `src/`; every frame and the MP4 |
+| `stage/sheet.py` | a contact sheet from rendered frames (after a full render) |
+| `stage/fonts/` | the bundled handwriting, Balsamiq Sans (SIL OFL) as "IDF Hand": the same letters on the Mac and in the cloud. Never name a system font. (`--font=mac` is only for re-rendering film 07 as delivered, in the Mac's Chalkboard SE.) |
+| `stage/audio/sound.py` | the sound kit: buses, the synthesized effects, `cut_sounds()`, `captions()`, `finish()` and its report |
+| `stage/audio/short_mix.py` | a Short's sound from its own `cues_edit.json` and the film's mix |
+| `$K/bin/stage.sh` | `build`, `render`, `make`, `mix` with the toolchain found (`bin/env.sh`) |
 
-## Two spaces
+## The cast (never redraw it)
 
-- **The screen**, 1920 x 1080 (`W`, `H`): every picture is drawn here. `cam(z, cx, cy)` puts world point (cx, cy) at
-  the screen's centre, zoomed z; `screen()` draws in screen pixels. Both include the shot's slow push-in and the shake.
-- **The output**: 1920 x 1080 for a film (the screen as it is), 1080 x 1920 for a Short, where a 9:16 window of the
-  screen is shown (`VP`). Text that must sit in the right place in both (titles, clocks, the devil's words) is drawn
-  through `ui()` and laid out per format (`if (!OUT.vertical) … else …`, see the text shots in `shots.js`).
-- Shadows (`shadowBlur`) are in output pixels: multiply world-space blurs by `VP.k`.
+`figure({ kind, x, y, h, … })`: (x, y) are the feet, h the height. `kind: 'sam'` (a grown-up), `'lily'` (a child: bigger
+head, a yellow bow), `'devil'`. Useful options: `expr` (a name from `FX` / `DX`, or `samEx(name, t, blinkTimes)` /
+`devEx(…)` so it blinks), `look: [x, y]`, `turn`, `tilt`, `lean`, `armL` / `armR: [x, y]` (where the arm's end goes),
+`bendL` / `bendR`, `stretch`, `stride`, `lift`, `sit` (± knees forward), `flat`, `kneel`, `drop`, `bun`, `lash`, `col`,
+`dim` (a far figure), `glowOn`, `noFace noArms noLegs`, `t` (always pass it: the line boils 8 times a second).
+The devil adds `stage` 0 (thumb-sized) to 4 (giant), `heat`, `tail: [dx, dy]`, `hat`, `noBelly`, `noTail`.
+It returns `{ head, hr, shL, shR, hip, hipY, shY, sx, bw, h, armEndL, armEndR, belly }` for hanging props on it
+(`tieD(f)`, a glass at `f.armEndR`).
 
-## A film: `films/NN-slug/film.js`
+- People differ by ONE small thing (a tie, a bow tie, a bun, lashes, a hat, a colour `col`), never by a new body.
+- People faces: calm, smile, laugh, tired, tempted, horror, fear, sad, resolve, strain. Devil faces: sweet, happy,
+  charm, sly, plead, rage, grin, sulk. A film may add a face as an object with the same fields; it may not change these.
+- The devil's size tells the story. Its manner goes with its size (THE BOTTLE: a puppy at 0, charming at 1-2, his equal
+  at 3, a giant that commands at 4; sulking and begging on the way back down).
+- A place is the black stage plus a floor line, one pool of light and three to six flat props drawn with `outlined()`
+  in muted colours (`D.prop`, `D.wood`): a table, a crib, a lamp-post, a bar shelf. One accent colour per film that
+  means something (THE BOTTLE: yellow is Lily's). Draw a film's own props in its `src/00-props.js`.
 
-```js
-defineFilm({
-  title: 'GAMBLING', subtitle: 'THE HOUSE ALWAYS WINS', dur: 110,
-  app: { name: 'Lucky7', label: '7', icon: '7', color: [20, 150, 70] },   // the vice's app: its banner, home-screen icon, delete dialog
-  viceScreen: (x, y, w, h, s, t, a, dy) => { … },   // what his phone shows (dy: how far a banner pushed it down)
-  handScreen: t => { … },                            // the tiny phone in his hand in the room (draw in -13..13 x -23..21)
-  roomProps: (a, col) => { … },                      // optional: what this film adds to his room (filled and lit, like the room)
-  phases: [{ name, a, b }],                          // the player's chapter buttons
-  words: [{ id, t, d, text, real, show }],           // the devil's lines (below)
-  slams: [3.4, …],  glitch: [[a, b, strength]],  flash: { clock: [255, 255, 255], devilface: [255, 60, 60], sting: [255, 60, 60] },
-  vignette: [[t, darkness]],  heartbeat: [[a, b]],
-  expr: [[t, 'glazed'], [16.4, 'tired'], …],         // his face, beat by beat
-  shots: [[0, 'cold', {…}], [2, 'room', {…}], …]     // the cut
-});
-```
+## A film: `films/NN-slug/`
 
-- **Words.** No narration ever. `words` are the devil's lines on screen: kind ones (whispers, pink italic, typed on)
-  until the reveal, then `real: true` (red glitching capitals, slammed). `t` start, `d` how long; a line starting with
-  `(` is a sound note and is not shown; `show: false` for a line another shot writes (the cold line, the montage word).
-  At most about 8 words a line; one line at a time; held at least 1.6 s (the reader needs it).
-- **Expressions** (`EXPR`): glazed, tired, empty, ashamed, shock, resolve, strain, focus, calm, smile, sleep, fear, rage,
-  hungry. Add a new one to `EXPR` in the film if needed (same fields).
-- **Looks** for face close-ups (`LOOKS`): night, grey, red, sun, shower, lamp, dawn, gym. Add one in the film the same
-  way (`LOOKS.casino = {…}`).
-- **Spots** where the devil stands in the bedroom (`SPOTS`): window, foot, beside, behind, chase. `placeDevil([x, y,
-  scale])` for any other place: its feet stand at y - 200·scale, its head is at `devilHead()`, its mouth at
-  `devilMouth()` (aim what it eats there). In the bedroom (`drawRoom` that frame) the engine stages it: over the bed's
-  width the bed hides its legs; with its feet above the floor line it is outside, seen only through the window.
-  `o.stride` (radians) makes it run (the `run` shot does); `o.targets` moves its hands; `o.reach` puts them on him (in
-  front of him from 0.45). It is his size in the head: close-ups frame it `DEVIL_FACE_ZOOM` times closer than a wide.
-- **Light** (SKILL.md rule 15): sets are filled and lit like `drawRoom` (mid-tone walls, a lit window or lamp, solid
-  furniture with lit edges); `drawPerson` gives him a glowing rim and puts his light on the wall behind him.
-- A new shot: `defShot('name', (t, p, L) => { fill(…); cam(…); … }, (t, p, L, len) => [x0, y0, x1, y1])`. The second
-  function is its subject in screen pixels (what a Short frames); leave it out for a text-only shot.
+    cues.js            const CUE = { … }   ONE table of times (seconds) for the picture and, through the edit, the sound
+    src/00-props.js    this film's own props
+    src/10-….js …      the scenes: shot('startCue', 'endCue', 'AGE: 15', (L, u, t, c) => { … })
+    src/90-hook.js     the hook's three shots (their cues sit after the story's, e.g. from 200)
+    src/95-edit.js     THE EDIT: cut(…), blink() lines only
+    film.js            BUILT by stage/build.sh from src/ (commit it; never edit it)
+    cues_edit.json     BUILT by `render.mjs cues`: END, every cue and every cut in the edit's time (commit it)
+    music.json, mix.py, audio/music/*.mp3, audio/sfx/*.mp3      the sound (reference/film.md)
+    STORY.md, SOUND.md, README.md, publish.json, thumb.jpg
 
-## The shot library (`shots.js`)
+**A source shot** draws one continuous piece of action: `L` seconds into it, `u` 0..1, `t` source time, `c('cue')` that
+cue's time inside the shot. Start with `stageD(floorY, { pool: [x, y, r, colour, strength] })`, draw props, then the
+figures, then words: `say(text, x, y, size, L, c('cue'), writeSeconds)` (white), `red(…)` (the devil), `slam(text, x,
+y, size, L, c('cue'))` (red slammed capitals). Words queue themselves and are drawn after the picture, so a punch-in
+never zooms them. Wrap a moving camera in `camD(zoom, cx, cy, () => { … })`. Every action gets a cue in `cues.js`
+(a clink, a blink, a pop): the sound is placed on those names.
 
-| Shot | p | What it shows |
-|---|---|---|
-| `cold` | `{ lines: [[text, from, to]…], out: [a, b] }` | the cold opening line, typed on (film time) |
-| `clock` | `'11:48 PM'` | the time, thin and cold, a screen's glow below |
-| `card` | `'WEEKS LATER'` | a typed card |
-| `sting` | - | the title for a split second |
-| `black` | - | black |
-| `end` | `{ line, typeAt, slam, slamAt }` | the cold line comes back with its answer |
-| `title` | `{ at }` | the title and subtitle |
-| `room` | `{ spot, o(t), creep, hunch, lit, flicker, fr, throwAt, shardsAt }` | his room at night, him on the bed with the phone, the devil where `spot` says; `o(t)` returns `{ a, eyes, grin, reach, lean, scream }` |
-| `face` | `'night'` or `{ look, expr }` | his face, close |
-| `devilface` | `{ spot, o(t), twitch, scare }` | its face, close |
-| `phone` | `{ screen: 'vice' / 'call' / 'chat' / 'home', notif, swipe, dying, call, chat, del, focus }` | his phone: the vice, a call `{ name, initial, from }`, a chat `{ name, items: [{ at, text, me, y, until, fade, col }] }`, the home screen (`del`: he deletes the app); `notif [t0, kind, title, text]` slides in and pushes the screen down, `swipe` sends it away |
-| `reflection` | `{ appear, z }` | the black glass: his face, and it behind him |
-| `montage` | `{ step, word, seq: [[shot, p]…] }` | cuts every `step` s through phone banners, faces, clocks, its face |
-| `shower` | `{ eyes: [a, b] }` | cold water, its eyes in the steam |
-| `run` | `{ fr, run: [a, b] }` | running into the dawn; it chases and falls behind |
-| `pushups` | `{ fr }` | push-ups on the bedroom floor at dawn |
-| `gym` | `{ move: 'pullup' / 'squat' / 'curl', fr }` | the gym |
-| `sleep` | `{ eyes: [a, b] }` | asleep, no phone; its eyes in the window |
-| `mirror` | `{ eyes: [a, b] }` | weeks later, the mirror; its eyes in the doorway |
+**The edit** (`src/95-edit.js`) is what ships. `cut('shotName', { a, b, sp, cam: [zoom, x, y] })` plays seconds a..b of
+a source shot at speed `sp` (1.2-1.6 is normal: the scenes are acted a little slow and cut fast), with an optional
+punch-in on a point of the frame; `blink()` is a 0.12 s beat of black between chapters. The house pattern for a scene:
+wide, a punch-in on the face or the action for under a second, back out. THE BOTTLE: 68 cuts in 86 s.
 
-## A Short: `shorts/NN-slug/short.js`
+    stage/build.sh films/NN-slug                                   # after every edit of src/
+    node stage/render.mjs films/NN-slug sheet 0 30 40 a --cols=8 --tw=420     # LOOK at every scene and every cut
+    node stage/render.mjs films/NN-slug still 12.4
+    node stage/render.mjs films/NN-slug cues                       # writes cues_edit.json for the sound
+    $PYTHON films/NN-slug/mix.py                                   # the sound; read its report
+    stage/make.sh films/NN-slug                                    # every frame, then filmNN.mp4 (about 5 min on the Mac)
+    node engine/qa.mjs films/NN-slug/filmNN.mp4
 
-```js
-defineShort({
-  film: 'films/03-lust',
-  segments: [{ from: 1.0, to: 2.0 }, { from: 2.0, to: 3.4, vf: [[0, 1.8, 430, 400], [1.4, 2.7, 452, 452]] }, …],
-  end: { dur: 2.8 },                                         // title, line and cta default to the film's
-  audio: { pieces: [{ at: 0, from: 1.0, to: 22.8 }, …], hits: [{ at: 21.8, gain: -10 }] }
-});
-```
+While a film has no edit list yet, `FILM(t)` plays the source shots back to back by `cues.js`, so the scenes can be
+looked at before they are cut.
 
-- Segments are stretches of film time played back to back. Each is framed automatically around its shot's subject (both
-  him and the devil when they fit, else a pan from him to it), with the devil's words above a phone or low in the
-  frame. Override with `vf: [z, cx, cy]` (screen point at the centre; z 1 = the full screen height) or keyframes
-  `[[u, z, cx, cy], …]` (u = seconds into the segment), and `slot: 'top' | 'low' | 'mid'`.
-- `rate: .6` plays a segment slower: a still screen (a chat, a dialog) held long enough to read, its push-in still
-  moving. Give such a Short its own `audio.pieces` (the default plan follows film time).
-- The sound comes from the film's own mix. By default each segment brings its own stretch; better, run the music
-  unbroken under jump cuts (one long piece) and put a boom (`hits`) on each big jump.
-- Every cut of the Short gets a two-frame white flash; the film's own flashes and slams come with the shots.
+## A Short: `shorts/NN-slug/short.js` (the model: `shorts/43-bottle-hook`)
 
-## Sound
+Its first line is `// film: films/NN-slug`. It is its own edit of that film's finished edit, on a 1080 x 1920 canvas:
 
-- A film: `films/NN/music.json` (what ElevenLabs makes; `node engine/audio/music.mjs films/NN --dry-run` first), then
-  `films/NN/mix.py` (copy LUST's: place the score, mute the silences, the anthem from the turn, the hits, `master()`),
-  writing `films/NN/audio/mix.wav`. Decoded WAVs and mixes are git-ignored; the mp3s are committed.
-- A Short: `python engine/audio/short_mix.py shorts/NN-slug` (it builds the film's mix first if needed).
-- Python: the cloud's `$PYTHON` (bin/env.sh); on the Mac `~/.cache/cp/venv/bin/python -I`.
+    t = piece('hk2', 'hk3', { win: [.72, 880, 540], to: [.84, 900, 520], words: false });
+    cap('say', 'this is his drinking problem.', t + .05, 1.4, { write: .4 });
+    piece(['lick', -.15], ['pop21', .7], { win: [.82, 1130, 420], words: false });
+    cap('devil', 'ONE DRINK.', FTS('pop21'), .7, { slam: true, band: 'top' });
+    gap(.1);
+    endCard({ dur: 2.9, title: 'THE BOTTLE', line: 'it was so small', cta: 'watch the full film' });
 
-## Render and check
+- `piece(a, b, o)`: the film's edit from a to b: seconds in the FILM'S EDIT (read them off the film's sheets or its
+  `cues_edit.json`), a cue name, or `[cue, offset]`.
+- `win: [z, cx, cy]` is the tall window: z = 1 shows the stage's full height (and 607 px of its width), z = 2 half of
+  that, z below 1 more width with the black stage above and below (z = .5625 is the whole 16:9 frame); (cx, cy) is the
+  point of the 1920 x 1080 frame that sits in the middle of the tall screen. `to:` moves the window during the piece
+  (default: a slow 4 % push-in). The stage is redrawn through the window, so it stays sharp at any zoom.
+- The film's own words are laid out again for the tall screen: white in the top band (from y 520), red in the low band
+  (ending by y 1610, x 110-860), wrapped and sized to fit; the counter sits top right at y 446. `words: false` hides
+  them for a piece; `band: 'top' | 'low'` moves them; `count: false` hides the counter.
+- `cap(kind, text, at, seconds, { slam, band, size, write })` are the Short's OWN words ('say' white, 'devil' red), in
+  Short time; `FTS('cue')` is the Short time at which that moment of the film plays; `now()` the time so far.
+- `gap(d)` a beat of black; `endCard({ … })` the last picture (the little devil, the title, the line, the arrow down to
+  the Related video link).
 
-```
-node engine/render.mjs sheet short shorts/NN-slug --every 1 --cols 8 --width 240 --safe --out /tmp/sheet.jpg   # look at it
-node engine/render.mjs short shorts/NN-slug                  # -> shorts/NN-slug/shortNN.mp4 (with mix.wav)
-node engine/render.mjs film films/NN-slug                    # -> films/NN-slug/filmNN.mp4 (with audio/mix.wav)
-node engine/qa.mjs shorts/NN-slug/shortNN.mp4                # streams, length, loudness, black stretches, contact sheet
-```
+    node stage/render.mjs shorts/NN-slug sheet 0 28 48 a --cols=12 --tw=280 --safe    # red = covered by the app, green = where words go
+    node stage/render.mjs shorts/NN-slug cues && $PYTHON stage/audio/short_mix.py shorts/NN-slug
+    stage/make.sh shorts/NN-slug && node engine/qa.mjs shorts/NN-slug/shortNN.mp4
 
-Speed: in the cloud about 60 ms a frame (a 31 s Short in a minute, a 1:50 film in about 4 minutes); the Mac is about 10
-times slower. Long renders run in the background with a log (`reference/cloud.md`).
+The film's `film.js` must exist (`stage/build.sh films/NN-slug`; it is committed) and, for the sound, its
+`audio/mix.wav` (git-ignored: `short_mix.py` runs the film's `mix.py` first if it is missing, from the committed mp3s).
+
+## Gotchas
+
+- Canvas does not scale glows with the picture. In a film's own punch-in (`cut(… cam)`) the devil's red edge therefore
+  looks a little thinner; in a Short's window the stage scales them (`vertical.js` patches the context), so do not
+  multiply blurs by hand.
+- `ctx.setTransform(1, 0, 0, 1, 0, 0)` inside a shot means "the whole frame" and works in both formats; never read
+  `ctx.canvas.width` in a scene.
+- Text is always `hw()` / `say` / `red` / `slam` (the bundled font); never `ctx.font` with a system font name.
+- Symbols are drawn as shapes, never emoji.
+- A cue used by `shot()` must exist in `cues.js` when the file loads; a typo throws "no shot …" or draws nothing.
+- JPEG frames are full-range; `make.sh` converts to video range (`yuv420p`), which `qa.mjs` checks.

@@ -9,8 +9,12 @@
   else Chrome for Testing's), saved in
   `~/.cache/idf/chrome-path`. Then `. bin/env.sh` before any manual command: it sets `PYTHON`, `FFMPEG`,
   `PLAYWRIGHT_MODULE`, `IDF_CHROME` and `RENDER_JOBS`.
-- The fonts are bundled (`engine/fonts`, Inter and Gelasio): the Mac and the cloud draw the same letters. Never name a
-  system font, and draw symbols as shapes (`icon()`), never emoji.
+- `preflight.sh` also renders one still of film 07 through the stage (`stage/`, the look every new film and Short is
+  made in): it proves the browser draws it and the bundled handwriting loaded.
+- The fonts are bundled (`stage/fonts`: Balsamiq Sans as "IDF Hand"; `engine/fonts` for the old films): the Mac and the
+  cloud draw the same letters. Never name a system font, and draw symbols as shapes, never emoji.
+- The stage's commands (`reference/engine.md`) read the same environment: `. bin/env.sh` first, or use `bin/stage.sh
+  build|render|make|mix`. `stage/make.sh` uses `RENDER_JOBS` browsers on Linux and 2 on the Mac.
 
 ## Keys (environment variables of the cloud environment; set by the owner, never by you)
 
@@ -30,23 +34,26 @@ films, api.elevenlabs.io (`preflight.sh film` checks it).
 
 - A Bash call ends after 2 minutes by default (10 at most). Renders run in the background with a log:
 
-      nohup sh -c '.claude/skills/idf/bin/render.sh film films/04-gambling > /tmp/render.log 2>&1; echo "EXIT $?" >> /tmp/render.log' >/dev/null 2>&1 &
+      nohup sh -c '.claude/skills/idf/bin/stage.sh make films/08-envy > /tmp/render.log 2>&1; echo "EXIT $?" >> /tmp/render.log' >/dev/null 2>&1 &
 
   then wait inside one call: `until grep -q '^EXIT' /tmp/render.log; do sleep 20; done; tail -3 /tmp/render.log`.
   Keep working while it runs (README, publish.json); never end the turn with a job running.
-- The renderer writes `<name>.rendering.mp4` and renames it when it is done, so a cut-off render leaves no broken file.
-- Speed, measured in the cloud on 27 Oct 2026: a Short (933 frames) in 60 s, 900 frames of a film in 51 s (about 60 ms a
-  frame), so a 1:50 film renders in about 4 minutes; the setup (preflight) takes about 40 s and a fresh clone about 2
-  minutes. The Mac is about 10 times slower (a Short in 5 minutes) and has only 8 GB: never render a whole film there
-  with more than 2 browsers. Sheets and stills take seconds: use them for every look before a full render.
+- `stage/make.sh` renders JPEG frames into `<folder>/out/frames` and then joins them: if it is cut off, run it again
+  (or `stage.sh make <folder> encode` if all the frames are there).
+- Speed. The stage on the Mac (17 Nov 2026, 2 browsers): a 28 s Short (838 frames) in about 1.5 minutes, the 86 s film
+  in about 5. The stage has NOT been timed in the cloud yet (the old engine there drew about 60 ms a frame with 4
+  browsers): note the time in the first report. The setup (preflight) takes about 40 s and a fresh clone about 2
+  minutes. The Mac has only 8 GB: never more than 2 browsers there. Sheets and stills take seconds: use them for every
+  look before a full render.
 
 ## Git
 
 - Commit and push only with `bin/push.sh <msg-file> <paths...>` (to `main`; it falls back to a `claude/` branch if main is
   refused, and the report names it). No tags, no force-push to main, no branch deletions. End messages with
-  `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`.
-- Committed: all source (`film.js`, `short.js`, `music.json`, `mix.py`), the story, the ElevenLabs mp3s (they cost
+  the `Co-Authored-By:` line for the model that did the run.
+- Committed: all source (`cues.js`, `src/`, the built `film.js` and `cues_edit.json`, `short.js`, `music.json`, `mix.py`), the story, the ElevenLabs mp3s (they cost
   credits), the thumbnail, `publish.json`, README, and a SMALL archive copy of each video (`bin/phone-copy.sh`: 720p, about
-  7 MB a film and 6 MB a Short). Not committed (git-ignored, rebuilt from source): full-size renders, decoded WAVs, mixes.
+  7 MB a film and 6 MB a Short). Not committed (git-ignored, rebuilt from source): full-size renders, decoded WAVs, mixes,
+  `out/` (frames, sheets, stills).
 - Push checkpoints during a film (after the story, after the music, after the build, before every full render), so a
   cut-off run can be resumed by the next one.

@@ -96,7 +96,7 @@ edge, and the hook is small and always "IT …".
 
 ## The channel picture and banner
 
-Since 17 Nov 2026 the channel picture is the new devil (`channel/logo.png`, source in `channel/brand/2026-11-17/`; a banner draft in the new look is there too, not published). The picture, name and
+Since 17 Nov 2026 the channel picture is the new devil (`channel/logo.png`, source in `channel/brand/2026-11-17/`; the banner in the new look is live too (`channel/banner.png`, put up with `channel/brand/banner.mjs`)). The picture, name and
 handle can only be changed in Studio (Customisation -> Profile), by the Mac; a routine never changes them.
 
 ## Studio-only work (the API cannot do it; list it in the report)

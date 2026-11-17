@@ -41,6 +41,7 @@ The channel was Inner Devil Films, built around Devil Mode (when the Angel's kin
 
 The owner made the look of film 07 (THE BOTTLE | It Was So Small) the rule for every film and Short. The profile
 picture was changed in Studio the same day to the new devil's face (`logo.png`; drawn with `stage/rig.js`, source
-`brand/2026-11-17/logo_film.js`). A banner in the new look is drafted (`brand/2026-11-17/banner_draft.png`) but NOT
-published: `banner.png` is still the live one, with the old devil, until the owner says so.
+`brand/2026-11-17/logo_film.js`). The banner in the new look went live the same day on the owner's yes ("Yes publish new one"): `banner.png`
+(source `brand/2026-11-17/banner_film.js`), put up with `node channel/brand/banner.mjs <png>`, which changes only the
+banner and sends the description and keywords back as they were.
 

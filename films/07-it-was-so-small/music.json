@@ -1,0 +1,178 @@
+{
+ "model": "music_v2_5",
+ "note": "THE BOTTLE | It Was So Small. THEME is one little tune at five ages of the devil: Playful (AGE 21, 0:04.4-0:17.9), Wedding (AGE 26, to 0:25.7), Lullaby (AGE 31, to 0:33.5), Swagger (AGE 34, to 0:44.3), Horror (AGE 38, to the dead cut at 0:52.3). RISE, ENDING and SAD are the previous film's (07-the-bottle) files, copied with their .json so the cache hits: same ms and prompt, nothing is made again. pour is the previous film's too; smash, swell and stinger are the shared ones. New effects: hiss, gulp, cork. Everything else is synthesized in mix.py. LULLABY, HEAVY and DREAD (single prompts, 17 Nov) are the recorded beds of AGE 31, AGE 34 and AGE 38; HORROR is the one-shot blast.",
+ "score": {
+  "id": "THEME",
+  "chunks": [
+   {
+    "text": "[Playful]\n{a mischievous, charming little waltz in 3/4 at 120 bpm in a minor key: pizzicato strings play a bouncing oom-pah-pah}\n{a celesta and a glockenspiel play one short, catchy, hummable tune that repeats; a cheeky clarinet and a bassoon answer it}\n{light, funny, tiptoeing, like a friendly little imp; no drums, no brass, nothing scary yet}",
+    "duration_ms": 14000,
+    "positive_styles": [
+     "playful orchestral",
+     "mischievous waltz",
+     "pizzicato strings",
+     "celesta",
+     "glockenspiel",
+     "clarinet",
+     "bassoon",
+     "whimsical",
+     "120 bpm",
+     "great production quality"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration",
+     "horror",
+     "heavy drums"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Wedding]\n{the same tune as a warm, elegant wedding waltz: lush legato strings, a harp and a soft horn, glowing and romantic}\n{in the last two seconds one wrong, low, sour note from a contrabassoon and a low piano string sneaks in under it}",
+    "duration_ms": 8000,
+    "positive_styles": [
+     "romantic orchestral waltz",
+     "lush strings",
+     "harp",
+     "warm",
+     "elegant",
+     "one sour low note at the end"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration",
+     "drums"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Lullaby]\n{the same tune, slow and tender, played alone on a small music box, a lullaby in a nursery at night}\n{a low, uneasy bowed double-bass drone creeps in under it and slowly grows; one soft low brass note at the very end}",
+    "duration_ms": 8000,
+    "positive_styles": [
+     "music box lullaby",
+     "solo music box",
+     "slow",
+     "tender",
+     "uneasy low drone",
+     "dark undertone"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration",
+     "drums"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Swagger]\n{the same tune turned heavy and swaggering at half speed: low trombones and a tuba play it over a slow half-time kick and snare}\n{sinister and confident, a deep gritty bass under it, low strings joining; it grows bigger and more threatening to the end}",
+    "duration_ms": 11000,
+    "positive_styles": [
+     "dark cinematic",
+     "low brass",
+     "trombones and tuba",
+     "slow half-time drums",
+     "swaggering",
+     "sinister",
+     "heavy"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration",
+     "happy",
+     "upbeat"
+    ],
+    "context_adherence": "high"
+   },
+   {
+    "text": "[Horror]\n{the same tune as full horror, very slow: massive deep brass blasts, a wordless dark choir, pounding giant drums, screeching strings}\n{one colossal hit at 6 seconds, the biggest of all; then it keeps building, louder and louder, and stops dead on the last beat}",
+    "duration_ms": 8500,
+    "positive_styles": [
+     "epic horror",
+     "deep brass",
+     "wordless dark choir",
+     "giant drums",
+     "terrifying",
+     "extreme"
+    ],
+    "negative_styles": [
+     "vocals with words",
+     "lyrics",
+     "singing",
+     "rap",
+     "spoken word",
+     "narration"
+    ],
+    "context_adherence": "high"
+   }
+  ]
+ },
+ "cues": {
+  "LULLABY": {
+   "ms": 9000,
+   "prompt": "A slow, tender music-box lullaby in G major, a gentle waltz in 3/4 at 60 BPM, played alone on a small wind-up music box from the very first second: a simple, hummable nursery tune. After three seconds a low, uneasy bowed double-bass drone on G creeps in under it and slowly grows darker to the end. A nursery at night, sweet but unsettling. No drums, no vocals."
+  },
+  "HEAVY": {
+   "ms": 12000,
+   "prompt": "A sinister, swaggering dark waltz in G minor, 3/4 at 120 BPM with slow half-time drums, starting at full strength on the first beat with no intro and no fade-in: low trombones and a tuba play a simple, heavy, strutting tune over a deep kick and a fat snare, low strings underneath, confident and menacing, getting heavier and bigger every bar to the end. Dark cinematic. Instrumental, no vocals."
+  },
+  "DREAD": {
+   "ms": 10000,
+   "prompt": "Full cinematic horror in G minor that starts at full weight on the first beat with no intro and no fade-in: massive low brass playing a slow, crushing waltz in 3/4 at 60 BPM, a dark wordless choir, huge slow drum hits on every bar, screeching high strings, relentless, building louder and louder to the very end without stopping. Terrifying and enormous. Instrumental, no vocals."
+  },
+  "HORROR": {
+   "ms": 12000,
+   "prompt": "Terrifying cinematic horror music in G minor that opens on one colossal impact at full volume: massive deep brass blasts on a low G, a dark wordless choir pad, pounding giant drums and screeching high strings, very slow and huge at 60 BPM, a second, even bigger impact at 6 seconds, then a rising, accelerating build to a wall of sound that stops dead. Instrumental, no vocals."
+  },
+  "SAD": {
+   "ms": 12000,
+   "prompt": "Very quiet, heartbroken solo piano: a few slow, sparse single notes in a minor key at 60 BPM with long silences between them, a soft warm string pad entering halfway, intimate, a father's shame, rain outside. No drums, no vocals."
+  },
+  "RISE": {
+   "ms": 24000,
+   "prompt": "Heroic, emotional comeback training anthem that opens on one huge impact: hard-hitting drums and claps at 128 BPM, a driving bass, soaring strings and bright brass in a major key, a warm piano hook, determined, rising and triumphant, a father earning his daughter's trust back at sunrise. Instrumental, no vocals."
+  },
+  "ENDING": {
+   "ms": 16000,
+   "prompt": "Warm, tender solo piano in a major key at 70 BPM joined by soft swelling strings, gentle, forgiving and full of relief, golden evening light, a child running into her father's arms, rising to one quiet glowing chord. No drums, no vocals."
+  }
+ },
+ "sfx": {
+  "pour": {
+   "sec": 1.6,
+   "text": "whisky poured from a bottle into a small glass, close up, a short glug and splash, quiet bar room"
+  },
+  "hiss": {
+   "sec": 3.0,
+   "text": "a metal cap popped off a cold glass bottle with one short sharp hiss of gas, then soft fizzing foam and tiny bubbles, close up, quiet room"
+  },
+  "gulp": {
+   "sec": 1.0,
+   "text": "one big comic cartoon gulp, a single wet swallowing sound, close up, dry, no speech"
+  },
+  "cork": {
+   "sec": 1.2,
+   "text": "a cork pushed firmly into the neck of a glass bottle: a short squeaky rubbing push, then a soft hollow thunk, close up"
+  }
+ },
+ "shared_sfx": [
+  "smash",
+  "swell",
+  "stinger"
+ ]
+}

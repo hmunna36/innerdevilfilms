@@ -1,0 +1,124 @@
+{
+ "id": "THEME",
+ "hash": "d1cbb963ec",
+ "model": "music_v2_5",
+ "song_id": "4tucY67Mk1eCII94G3pU",
+ "chunks": [
+  {
+   "text": "[Playful]\n{a mischievous, charming little waltz in 3/4 at 120 bpm in a minor key: pizzicato strings play a bouncing oom-pah-pah}\n{a celesta and a glockenspiel play one short, catchy, hummable tune that repeats; a cheeky clarinet and a bassoon answer it}\n{light, funny, tiptoeing, like a friendly little imp; no drums, no brass, nothing scary yet}",
+   "duration_ms": 14000,
+   "positive_styles": [
+    "playful orchestral",
+    "mischievous waltz",
+    "pizzicato strings",
+    "celesta",
+    "glockenspiel",
+    "clarinet",
+    "bassoon",
+    "whimsical",
+    "120 bpm",
+    "great production quality"
+   ],
+   "negative_styles": [
+    "vocals with words",
+    "lyrics",
+    "singing",
+    "rap",
+    "spoken word",
+    "narration",
+    "horror",
+    "heavy drums"
+   ],
+   "context_adherence": "high"
+  },
+  {
+   "text": "[Wedding]\n{the same tune as a warm, elegant wedding waltz: lush legato strings, a harp and a soft horn, glowing and romantic}\n{in the last two seconds one wrong, low, sour note from a contrabassoon and a low piano string sneaks in under it}",
+   "duration_ms": 8000,
+   "positive_styles": [
+    "romantic orchestral waltz",
+    "lush strings",
+    "harp",
+    "warm",
+    "elegant",
+    "one sour low note at the end"
+   ],
+   "negative_styles": [
+    "vocals with words",
+    "lyrics",
+    "singing",
+    "rap",
+    "spoken word",
+    "narration",
+    "drums"
+   ],
+   "context_adherence": "high"
+  },
+  {
+   "text": "[Lullaby]\n{the same tune, slow and tender, played alone on a small music box, a lullaby in a nursery at night}\n{a low, uneasy bowed double-bass drone creeps in under it and slowly grows; one soft low brass note at the very end}",
+   "duration_ms": 8000,
+   "positive_styles": [
+    "music box lullaby",
+    "solo music box",
+    "slow",
+    "tender",
+    "uneasy low drone",
+    "dark undertone"
+   ],
+   "negative_styles": [
+    "vocals with words",
+    "lyrics",
+    "singing",
+    "rap",
+    "spoken word",
+    "narration",
+    "drums"
+   ],
+   "context_adherence": "high"
+  },
+  {
+   "text": "[Swagger]\n{the same tune turned heavy and swaggering at half speed: low trombones and a tuba play it over a slow half-time kick and snare}\n{sinister and confident, a deep gritty bass under it, low strings joining; it grows bigger and more threatening to the end}",
+   "duration_ms": 11000,
+   "positive_styles": [
+    "dark cinematic",
+    "low brass",
+    "trombones and tuba",
+    "slow half-time drums",
+    "swaggering",
+    "sinister",
+    "heavy"
+   ],
+   "negative_styles": [
+    "vocals with words",
+    "lyrics",
+    "singing",
+    "rap",
+    "spoken word",
+    "narration",
+    "happy",
+    "upbeat"
+   ],
+   "context_adherence": "high"
+  },
+  {
+   "text": "[Horror]\n{the same tune as full horror, very slow: massive deep brass blasts, a wordless dark choir, pounding giant drums, screeching strings}\n{one colossal hit at 6 seconds, the biggest of all; then it keeps building, louder and louder, and stops dead on the last beat}",
+   "duration_ms": 8500,
+   "positive_styles": [
+    "epic horror",
+    "deep brass",
+    "wordless dark choir",
+    "giant drums",
+    "terrifying",
+    "extreme"
+   ],
+   "negative_styles": [
+    "vocals with words",
+    "lyrics",
+    "singing",
+    "rap",
+    "spoken word",
+    "narration"
+   ],
+   "context_adherence": "high"
+  }
+ ]
+}

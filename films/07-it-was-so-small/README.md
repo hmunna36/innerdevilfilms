@@ -1,0 +1,35 @@
+# Film 07 (third version): THE BOTTLE | It Was So Small
+
+- **Status:** built on the Mac on 17 Nov 2026 after the owner rejected the second version ("redesign the characters
+  completely and make a fantastic storyline, the devil should be really good") and pointed at the look he wants
+  (a black stage, cream cartoon people, a black devil with a red glowing edge, handwritten words). He approved the
+  stills and a 13-second moving test of the first scene, then said yes to the full film. **Not uploaded.**
+- **What it is:** 1:50.5, 16:9, 1920 x 1080, 30 fps, no narration; the devil's words are red handwriting, the story's
+  voice is white handwriting; a counter top right (AGE: 21 … DAY: 90).
+- **The story** is in `STORY.md`; the cut, shot by shot with the sound wanted, in `CUT.md`.
+  In one line: he feeds something small for seventeen years and it grows a size each time, until it sits in his chair
+  and he is the small one; then he starves it back down to the size it was when they met.
+
+## How it is built (not the channel engine)
+
+Plain canvas 2D, every frame a pure function of the time. `page.html` loads `lib.js` (drawing helpers), `rig.js`
+(the look: the stage, the faces, one `figure()` for Sam, Lily, the wife and the devil at five sizes, props),
+`cues.js` (ONE table of times for the picture and the sound) and `film.js`.
+
+- `src/`: the film in parts; `./build.sh` joins them into `film.js` (edit the parts, never `film.js`).
+  `00-kit.js` the cut (`shot(startCue, endCue, counter, draw)`), words, the grow/shrink effects, small props;
+  `10-open-21.js` the cold open and AGE 21 (the approved moving test, unchanged); `20-wedding.js` AGE 26;
+  `30-nursery.js` AGE 31; `40-age34.js` the walk, the bar, the dinner; `50-birthday.js` AGE 38 and the same picture
+  without the devil, the fridge; `60-turn.js` inside the bottle, the smash, the sink; `70-starve.js` DAY 1 to DAY 90;
+  `80-end.js` the new drawing, the hug, the last picture, the closing words.
+- `node render.mjs sheet <a> <b> [n] [name]` a contact sheet; `still <t>`; `frames <a> <b>` (into `out/frames`).
+- `./make.sh` renders every frame (two browsers), then joins picture and `audio/mix.wav` into `film07.mp4`.
+- Sound: `music.json` (ElevenLabs, via `engine/audio/music.mjs`), `mix.py` (reads `cues.js`), notes in `SOUND.md`.
+- The handwriting is Chalkboard SE, a font that comes with macOS: a cloud render needs a bundled handwriting font.
+
+## Not done, not verified
+
+- Nobody has listened to the sound; the levels are judged from numbers.
+- The picture was checked on contact sheets (about one frame in fifteen), not by watching it play.
+- No vertical (Shorts) framing, no thumbnail, no `publish.json`, no upload.
+- The channel skill (`/idf`) and its cloud routines still make films in the old look.

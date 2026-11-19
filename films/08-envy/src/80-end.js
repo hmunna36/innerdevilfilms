@@ -14,8 +14,8 @@ shot('last', 'title', 'PAGES: 300', (L, u, t, c) => {
         if (L > tp && L < tp + .3) { const k = seg(L, tp, tp + .3); ctx.lineWidth = 5 * (1 - k); ctx.strokeStyle = rgba(GREEN_L, 1 - k); ctx.beginPath(); ctx.arc(wx, wy, 20 + k * 90, 0, TAU); ctx.stroke(); }
         deskPage(1000); } });
   });
-  red('they’re still ahead.', 520, 260, 62, L, ah, .9);
-  say('good for them.', 1560, 470, 78, L, gd, .6);
+  if (L < sm) red('they’re still ahead.', 420, 170, 64, L, ah, .9);
+  say('good for them.', 1540, 1000, 80, L, gd, .6);
 });
 shot('title', 'END', null, (L, u, t, c) => {
   const ti = c('titleIn'), k = eo(seg(L, ti, ti + .5));

@@ -15,11 +15,11 @@ shot('hk1', 'hk2', null, (L, u, t, c) => {
 shot('hk2', 'hk3', null, (L, u, t, c) => {
   camD(lerp(1.0, 1.08, eio(u)), 960, 540, () => {
     stageD(0, { pool: [960, 1000, 900, GREEN, .3] });
-    const d = figure({ kind: 'devil', x: 520, y: 2000, h: 1900, stage: 3, noLegs: true, noArms: true, noTail: true, expr: devEx('grin', L, [1.0]), look: [.8, .4], tilt: .14, lean: .1, heat: 1.1, t }); devCap(d, 1);
-    const f = figure({ kind: 'sam', x: 1180, y: 2140, h: 1900, noLegs: true, noArms: true, expr: { ...FX.tempted, lid: .35, bags: true }, look: [-.3, .7], tilt: -.04, glowOn: [GREEN, .6], glowSide: 0, t });
+    const d = figure({ kind: 'devil', x: 560, y: 2260, h: 1900, stage: 3, noLegs: true, noArms: true, noTail: true, expr: devEx('grin', L, [1.0]), look: [.8, .4], tilt: .14, lean: .1, heat: 1.1, t }); devCap(d, 1);
+    const f = figure({ kind: 'sam', x: 1220, y: 2380, h: 1900, noLegs: true, noArms: true, expr: { ...FX.tempted, lid: .35, bags: true }, look: [-.3, .7], tilt: -.04, glowOn: [GREEN, .6], glowSide: 0, t });
     additive(() => glow(GREEN, 1180, 1100, 700, .35));
   });
-  say('why not me?', 960, 170, 96, L, c('hkWhy'), .5);
+  say('why not me?', 470, 930, 96, L, c('hkWhy'), .5);
 });
 // 3. the devil turns to the camera and holds its window out to us
 shot('hk3', 'hk4', null, (L, u, t, c) => {
@@ -30,5 +30,5 @@ shot('hk3', 'hk4', null, (L, u, t, c) => {
     devCap(d, 1); medalD(d.sx, d.shY + d.h * .2, d.h * .05, [d.sx, d.shY + d.h * .04]);
     windowD(960, lerp(1060, 870, out), lerp(280, 540, out), lerp(210, 405, out), 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L + 2, t), { glow: 1.4 });
   });
-  red('look.', 1560, 300, 130, L, c('hkLook'), .3);
+  red('look.', 1660, 520, 130, L, c('hkLook'), .3);
 });

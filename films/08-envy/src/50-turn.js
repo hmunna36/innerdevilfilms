@@ -19,13 +19,14 @@ shot('worst', 'cover', null, (L, u, t, c) => {
   SPLIT(side => { if (side < 0) { rightDesk(t, L, { rub: true }); return; }
     stageD(900, { pool: [480, 420, 700, GREEN, .22] }); litterD();
     wallWin(L + 20, t);
+    const H0 = { x: 520, y: 880 - 470 + 94 }, d = devBehind(t, { x: 330, y: 940, h: 640, expr: L < am ? devEx('grin', L, [1.0]) : { ...DX.grin, h: .8 }, look: [.7, .3], lean: .1, tilt: .1, cap: true, medal: true, heat: 1.2,
+      armR: [lerp(420, H0.x + 70, grab), lerp(600, H0.y + 10, grab)], armL: [lerp(240, H0.x - 80, grab), lerp(640, H0.y + 20, grab)], bendR: -.5, bendL: .4 });
     const f = figure({ kind: 'sam', x: 520, y: 880, h: 470, noLegs: true, expr: L < am + .3 ? 'tempted' : { ...FX.sad, lid: .25, bags: true }, look: [-.4, -.95], tilt: -.12 * grab, headDy: -.05, glowOn: [GREEN, .5], glowSide: -1, armL: [440, 680], armR: [600, 684], t });
-    const d = devBehind(t, { x: 230, y: 940, h: 640, expr: L < am ? devEx('grin', L, [1.0]) : { ...DX.grin, h: .8 }, look: [.7, .3], lean: .2, tilt: .1, cap: true, medal: true, heat: 1.2,
-      armR: [lerp(420, f.head[0] - f.hr * .9, grab), lerp(600, f.head[1] + f.hr * .1, grab)], armL: [lerp(200, f.head[0] + f.hr * .2, grab), lerp(640, f.head[1] + f.hr * .55, grab)], bendR: -.2, bendL: .6 });
+    if (grab > .5) for (const sd of [-1, 1]) { const cx = f.head[0] + sd * f.hr * .98, cy = f.head[1] + f.hr * .15; devArm([[cx + sd * 30, cy - 20], [cx + sd * 6, cy + 4], [cx - sd * 14, cy + 22]], [30, 26, 20], 16); }
     deskD(80, 880, DESK_Y);
   }, { lineX: lerp(960, 1500, slide), focus: 'L', dim: .55 });
   counterL('PAGES: 0'); counterR('PAGES: 300');
-  slam('LOOK. ISN’T HE AMAZING?', 760, 985, 82, L, am);
+  slam('LOOK. ISN’T HE AMAZING?', 760, 1030, 78, L, am);
 });
 // close on what the window shows: the young man everyone loves holds up a printed comic; the cover is his monster
 shot('cover', 'wide', null, (L, u, t, c) => {
@@ -50,10 +51,11 @@ shot('wrench', 'eyes', null, (L, u, t, c) => {
     ctx.save(); ctx.translate(shake, 0); (() => {
       stageD(900, { pool: [480, 420, 700, GREEN, .2] }); litterD();
       wallWin(L + 24, t, { sway: Math.sin(L * 9) * .03 * free * (1 - seg(L, sl, sl + 1.5)) });
-      const hx = 520 + jerk * 40, f = figure({ kind: 'sam', x: hx + fall * 60, y: 880 + fall * 260, h: 470, noLegs: true, expr: L < sl ? { ...FX.strain, sweat: false } : L < th ? 'fear' : { ...FX.horror }, look: L < sl ? [jerk, -.5] : [.3, -.3], tilt: jerk * .25 + fall * .5, lean: fall * .5, glowOn: [GREEN, .45], glowSide: -1,
-        armL: L < sl ? [hx - 110, 480] : [hx - 160, 560 + fall * 160], armR: L < sl ? [hx + 100, 470] : [hx + 180, 500 + fall * 180], stretch: true, t });
-      const d = devBehind(t, { x: 230, y: 940, h: 640, expr: L < sl ? { ...DX.rage, m: 'grin' } : devEx('rage', L, []), look: [.8, .3], lean: .2 - .1 * free, tilt: .1, cap: true, medal: true, heat: 1.4,
-        armR: [lerp(f.head[0] - f.hr * .9, 360, free), lerp(f.head[1] + f.hr * .1, 300, free)], armL: [lerp(f.head[0] + f.hr * .2, 520, free), lerp(f.head[1] + f.hr * .55, 380, free)], bendR: -.2, bendL: .6 });
+      const hx = 520 + jerk * 40, bx = hx + fall * 60, by = 880 + fall * 260;
+      const d = devBehind(t, { x: 330, y: 940, h: 640, expr: L < sl ? { ...DX.rage, m: 'grin' } : devEx('rage', L, []), look: [.8, .3], lean: .2 - .1 * free, tilt: .1, cap: true, medal: true, heat: 1.4,
+        armR: [lerp(hx + 70, 420, free), lerp(514, 300, free)], armL: [lerp(hx - 80, 260, free), lerp(524, 360, free)], bendR: -.5, bendL: .4 });
+      const f = figure({ kind: 'sam', x: bx, y: by, h: 470, noLegs: true, expr: L < sl ? { ...FX.resolve, lid: .15 } : L < th ? 'fear' : { ...FX.horror }, look: L < sl ? [jerk, -.5] : [.3, -.3], tilt: jerk * .25 + fall * .5, lean: fall * .5, glowOn: [GREEN, .45], glowSide: -1,
+        armL: L < sl ? [bx - 120, by - 400] : [bx - 130, by - 230], armR: L < sl ? [bx + 110, by - 410] : [bx + 140, by - 250], t });
       // the chair tipping back
       if (L > fb - .2) { const k = fall; at(hx + 150, 900, 1, k * .9, () => chairD(0, 0, 260, -1)); }
       deskD(80, 880, DESK_Y);
@@ -70,8 +72,8 @@ shot('eyes', 'hand', null, (L, u, t, c) => {
     wallWin(L + 28, t);
     devBehind(t, { x: 230, y: 940, h: 640, expr: devEx('sly', L, [1.4]), look: [.9, .5], lean: .1, cap: true, medal: true, heat: .9, armL: [180, 660], armR: [330, 640] });
     deskD(80, 880, DESK_Y);
-    at(640, 900, 1, .9, () => chairD(0, 0, 260, -1));
-    const f = figure({ kind: 'sam', x: 760, y: 905, h: 430, sit: 1, flat: true, expr: turn < .5 ? { ...FX.fear, small: false } : L > me ? { ...FX.sad, lid: .05, bi: -.25 } : 'fear', look: [lerp(-.6, .95, turn), lerp(-.5, -.25, turn)], turn: lerp(-.2, .4, turn), tilt: .05, armL: [700, 900], armR: [860, 900], t });
+    at(420, 900, 1, 1.3, () => chairD(0, 0, 240, -1));
+    const f = figure({ kind: 'sam', x: 770, y: 905, h: 440, kneel: 1, expr: turn < .5 ? { ...FX.fear, small: false } : L > me ? { ...FX.sad, lid: .05, bi: -.25 } : 'fear', look: [lerp(-.6, .95, turn), lerp(-.5, -.25, turn)], turn: lerp(-.2, .4, turn), tilt: .05, armL: [700, 880], armR: [850, 880], t });
   }, { lineX: lerp(1500, 960, back), focus: L > me ? null : 'L', dim: .45 });
   counterL('PAGES: 0'); counterR('PAGES: 300');
   say('it never showed the 300 pages.', 960, 1000, 66, L, c('never'), .8);
@@ -102,8 +104,8 @@ shot('slam', 'page1', null, (L, u, t, c) => {
         armL: L > sh ? [120, 300] : [180, 660], armR: L > sh ? [380, 280] : [330, 640] });
       if (L >= mf) { const mx = lerp(d.sx + 6, 300, fall), my = lerp(d.shY + d.h * .2, 895, fall * fall); medalD(mx, my, d.h * .05, [mx, my - d.h * .1]); if (L > mc) for (let i = 0; i < 3; i++) stroke([[300 + (i - 1) * 30, 870], [300 + (i - 1) * 50, 840]], 4, rgba(GOLD, 1 - seg(L, mc, mc + .3))); }
       // his arms bring the window down
-      const f = figure({ kind: 'sam', x: lerp(760, 560, rise), y: lerp(905, 880, rise), h: 430 * lerp(1, 1.09, rise), sit: rise < .5 ? 1 : 0, flat: rise < .5, noLegs: rise > .5, expr: L < sd ? { ...FX.strain, sweat: false } : 'resolve', look: [-.3, -.5], tilt: -.05,
-        armL: L < sd + .1 ? [lerp(500, 440, fold), lerp(300, 640, fold)] : [440, 670], armR: L < sd + .1 ? [lerp(620, 600, fold), lerp(290, 640, fold)] : [600, 670], stretch: true, t });
+      const f = figure({ kind: 'sam', x: lerp(770, 560, rise), y: lerp(905, 880, rise), h: lerp(440, 470, rise), kneel: rise < .5 ? 1 : 0, noLegs: rise > .5, expr: L < sd ? { ...FX.resolve, lid: .1, bi: .3 } : 'resolve', look: [-.3, -.5], tilt: -.05,
+        armL: L < sd + .1 ? [lerp(330, 380, fold), lerp(260, 640, fold)] : [440, 670], armR: L < sd + .1 ? [lerp(790, 740, fold), lerp(250, 640, fold)] : [600, 670], stretch: true, t });
       earPencil(f, 1);
       deskD(80, 880, DESK_Y);
       if (dead) { windowDown(480, .25); for (let i = 0; i < 10; i++) { const k = seg(L, sd, sd + .5), a = rnd(i * 3.3) * Math.PI; disc(480 + Math.cos(a) * (200 + k * 300), DESK_Y - Math.sin(a) * (20 + k * 120), 6 * (1 - k), rgba(GREEN_L, 1 - k)); } }

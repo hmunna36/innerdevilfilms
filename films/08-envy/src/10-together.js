@@ -14,7 +14,7 @@ function monsterD(x, y, s, o = {}) { at(x, y, s, o.rot || 0, () => { blob([[-.5,
   for (const sd of [-1, 1]) disc(sd * .16, -.08, .07, rgba(PAPER)); curve([[-.2, .16], [0, .26], [.2, .16]], .05, rgba(PAPER)); }); }
 shot('floor', 'night', null, (L, u, t, c) => {
   const lk = c('look'), lg_ = c('laugh'), fv = c('five'), up = eo(seg(L, fv - .35, fv)), hit = blinkAt(L, [fv], .1), draw = seg(L, c('drawM'), lk - .1);
-  say('they drew everything together.', 960, 230, 66, L, c('capTogether'), .7);
+  say('they drew everything together.', 960, 120, 66, L, c('capTogether'), .7);
   camD(push(u, .05), 960, 600, () => {
     stageD(860, { pool: [960, 560, 760, LAMP, .2] });
     comicD(960, 850, 420, draw);

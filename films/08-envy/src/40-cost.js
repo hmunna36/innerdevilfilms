@@ -6,16 +6,18 @@ function doorHalf(t, k, L) { stageD(860, { pool: [M(420), 640, 520, GREEN, .05] 
   const cx = lerp(150, 560, eo(k)); at(M(cx), 846, 1, SIDE * -.04 * (1 - k), () => { ctx.save(); ctx.scale(1, .32); inviteD(0, 0, 300, 0, false); ctx.restore(); }); }
 shot('card', 'showR', null, (L, u, t, c) => {
   const ci = c('cardIn'), part2 = L >= ci + .75, k = seg(L, ci - .1, ci + .5);
-  if (!part2) { SPLIT(side => zoomAt(1.2, M(480), 640, () => doorHalf(t, k, L))); counterL('PAGES: 0'); counterR('PAGES: 120'); return; }
+  if (!part2) { rectf(0, 0, W, H, rgba([26, 20, 18])); for (let i = 0; i < 7; i++) stroke([[0, 120 + i * 150], [W, 120 + i * 150 + 6]], 4, rgba([40, 30, 26]));
+    rectf(0, 0, W, 70, rgba([10, 8, 8])); additive(() => glow(LAMP, 960, 70, 700, .35)); rectf(0, 66, W, 6, rgba([255, 214, 160], .5));
+    const cy = lerp(-120, 520, eo(k)); at(960 + Math.sin(k * 3) * 20 * (1 - k), cy, 1, .06 * (1 - k) - .04, () => inviteD(0, 0, 760, 0, true)); return; }
   const P = L - (ci + .75), gR = c('grinR') - ci - .75, rR = c('runR') - ci - .75, dR = c('devRead') - ci - .75, run = eio(seg(P, rR, rR + .9));
   SPLIT(side => { const left = side > 0;
     if (left) deskHalf(t, { lamp: 0, pinned: 0, green: true, glowK: .7, pencil: false,
         boy: { expr: P < .4 ? 'calm' : samEx('sad', P, [1.4]), look: [.2, .6], armL: [430, 600], armR: [530, 600], glowOn: [GREEN, .3], glowSide: -1 },
         before: f => { const d = devBehind(t, { x: lerp(260, 330, eo(seg(P, dR - .4, dR))), y: 900, h: 600, expr: P > dR ? devEx('charm', P, [dR + .9]) : devEx('sly', P, []), look: [.8, .8], lean: .25, tilt: .15, cap: true, medal: true, armL: [200, 640], armR: [380, 560] }); },
-        after: f => { inviteD(480, 590, 170, -.06); windowDown(M(250), .7); } });
+        after: f => { inviteD(480, 650, 220, -.06); windowDown(M(250), .7); } });
     else deskHalf(t, { lamp: 1, pinned: 12, q: .8, letter: true, pile: 120,
         boy: (() => { const bx = lerp(480, 120, run), up = eo(seg(P, rR - .1, rR + .3)), sw = Math.sin(P * 16) * 60 * (run > 0 && run < 1 ? 1 : 0); return { x: bx, y: lerp(880, 800, up), expr: P > gR ? 'laugh' : 'smile', look: P > gR ? [-.5, -.2] : [.1, .7], armL: P < rR ? [430, 600] : [bx - 60 + sw, 640], armR: P < rR ? [530, 600] : [bx + 60 - sw, 640], tilt: P > gR ? Math.sin(P * 12) * .05 : 0, lean: -.15 * run }; })(),
-        after: f => { if (P < rR) inviteD(480, 590, 170, .06); else if (P < rR + .9) inviteD(f.armEndL[0], f.armEndL[1] - 30, 120, .3); windowDown(M(250), .7); } }); }, { focus: P > rR - .2 ? 'R' : null, dim: .4 });
+        after: f => { if (P < rR) inviteD(480, 650, 220, .06); else if (P < rR + .9) inviteD(f.armEndL[0], f.armEndL[1] - 30, 140, .3); windowDown(M(250), .7); } }); }, { focus: P > rR - .2 ? 'R' : null, dim: .4 });
   counterL('PAGES: 0'); counterR('PAGES: 120');
 });
 // the gallery and its little crowd (full frame); n people, Max in it at mx
@@ -24,7 +26,7 @@ function showD(t, L, o) { stageD(900, { pool: [o.mx ?? 1100, 520, 820, [255, 230
 shot('showR', 'showL', null, (L, u, t, c) => {
   const ch = c('cheer'), hg = c('hugR'), hug = eio(seg(L, hg - .2, hg + .3));
   SPLIT(side => { if (side > 0) { deskHalf(t, { lamp: 0, pinned: 0, green: true, glowK: .6, pencil: false, boy: { expr: 'sad', look: [.2, .7], armL: [430, 600], armR: [530, 600], glowOn: [GREEN, .26], glowSide: -1 },
-      before: f => devBehind(t, { x: 300, y: 900, h: 600, expr: devEx('charm', L, []), look: [.8, .6], lean: .2, tilt: .1, cap: true, medal: true, armL: [200, 640], armR: [380, 600] }), after: f => inviteD(480, 590, 170, -.06) }); return; }
+      before: f => devBehind(t, { x: 300, y: 900, h: 600, expr: devEx('charm', L, []), look: [.8, .6], lean: .2, tilt: .1, cap: true, medal: true, armL: [200, 640], armR: [380, 600] }), after: f => inviteD(480, 650, 220, -.06) }); return; }
     // the right half: the gallery, Max, the right boy at the front
     stageD(900, { pool: [M(480), 520, 560, [255, 230, 190], .22] }); galleryD(M(820), M(140), t, { n: 3, y: 260, s: 140 });
     for (let i = 0; i < 3; i++) fig({ kind: 'sam', x: 120 + i * 110, y: 900, h: 320, expr: 'laugh', look: [.4, -.2], dim: .5, seed: 50 + i, t });

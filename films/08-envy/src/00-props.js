@@ -49,8 +49,10 @@ function ballD(x, y, r, rot = 0) { at(x, y, r, rot, () => { outlined(() => blobP
 function bookD(x, y, s, o = {}) { const tear = o.tear || 0, op = o.open ?? 0;
   for (const sd of tear > 0 ? [-1, 1] : [0]) at(x + sd * tear * s * .4, y + Math.abs(sd) * tear * s * .05, s, sd * tear * .5, () => {
     ctx.save(); if (sd) { ctx.beginPath(); ctx.rect(sd < 0 ? -1 : 0, -2, 1, 4); ctx.clip(); }
-    outlined(() => { ctx.beginPath(); ctx.rect(-.5, -.7, 1, .7); }, rgba(o.col || [120, 70, 60]), .02);
-    rectf(-.46, -.66, .92, .1, rgba(PAPER, .5)); if (o.label) { stroke([[-.25, -.38], [.25, -.38]], .03, rgba(PAPER, .7)); stroke([[-.18, -.28], [.18, -.28]], .03, rgba(PAPER, .5)); }
+    outlined(() => { ctx.beginPath(); ctx.rect(-.5, -.7, 1, .7); }, rgba(PAPER), .02);                      // the pages, seen from the edge
+    for (let i = 1; i < 6; i++) stroke([[-.48, -.7 + i * .11], [.48, -.7 + i * .11]], .008, rgba([150, 146, 140]));
+    outlined(() => { ctx.beginPath(); ctx.rect(-.5, -.7, 1, .16); }, rgba(o.col || [120, 70, 60]), .02);        // the cover on top
+    if (o.label) monsterD(0, -.4, .22);
     ctx.restore(); });
   if (op > 0) at(x, y, s, 0, () => { outlined(() => { ctx.beginPath(); ctx.rect(-1 * op, -.7, 2 * op, .7); }, rgba(PAPER), .015); stroke([[0, -.7], [0, 0]], .02, rgba(D.line, .4)); }); }
 // a waste bin (x, y its bottom middle, s its height)

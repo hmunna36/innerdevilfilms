@@ -21,7 +21,7 @@ shot('page1', 'page40', null, (L, u, t, c) => {
       after: f => { if (L > w3 - .25 && L < dn + .1) windowD(345, lerp(600, 500, open) + down * 170, 150 * (1 - down * .2), 112 * (1 - down * .95), 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t)); else if (L >= dn + .1) windowDown(330, .7); } });
   }, { focus: 'L', dim: .5 });
   counterL('PAGES: 1'); counterR('PAGES: 300');
-  say('one page a day.', 480, 990, 66, L, c('onePage'), .6);
+  if (L < c('win3')) say('one page a day.', 480, 990, 66, L, c('onePage'), .6);
   red('they’re years ahead.', 480, 880, 64, L, c('years'), .9);
 });
 // PAGE 40, the slip: the window jumps back to a poster, its arms go round him, his counter sticks at 40
@@ -31,7 +31,7 @@ shot('page40', 'board40', null, (L, u, t, c) => {
   function open40(L) { return eio(seg(L, ol - .6, ol)) * (1 - jump); }
   SPLIT(side => { if (side < 0) { rightDesk(t, L, { noPencil: true, hold: true, look: [.8, .4], expr: L > jp ? { ...FX.sad, lid: .1 } : { ...FX.calm, lid: .15 } }); return; }
     leftAgain(t, L, { n: 6, lamp: lerp(1, .35, jump), drawing: L < lk - .3, look: L > lk - .3 ? [-.8, -.2] : [.1, .9], expr: L < lk ? undefined : stuck ? { ...FX.tempted, lid: .5, bags: true } : 'tempted', green: L > ol ? .3 + .2 * jump : 0,
-      dev: f => devBehind(t, { x: lerp(780, 680, arms), y: 920, h: 600, expr: L < jp ? devEx('sweet', L, [ol + 1.2]) : devEx('grin', L, [ar + 1.0]), look: [-.8, .3], lean: -.12 - .15 * arms, tilt: -.08 * arms, cap: true, capBrim: -1,
+      dev: f => devBehind(t, { x: lerp(800, 740, arms), y: 920, h: 600, expr: L < jp ? devEx('sweet', L, [ol + 1.2]) : devEx('grin', L, [ar + 1.0]), look: [-.8, .3], lean: -.06 - .06 * arms, tilt: -.06 * arms, cap: true, capBrim: -1,
         armL: arms > 0 ? [lerp(640, f.shL[0] - 10, arms), lerp(560, f.shL[1] + 40, arms)] : [lerp(640, 330, open40(L)), lerp(560, 480, open40(L))], armR: arms > 0 ? [lerp(860, f.shR[0] + 10, arms), lerp(650, f.shY + 60, arms)] : [860, 650], heat: .8 + .6 * jump }),
       after: f => { windowD(wx, wy, ww, wh, 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t), { glow: 1 + jump }); if (L > jp && L < jp + .4) { const k = seg(L, jp, jp + .4); ctx.lineWidth = 8 * (1 - k); ctx.strokeStyle = rgba(GREEN_L, 1 - k); ctx.beginPath(); ctx.roundRect(wx - ww / 2 - k * 60, wy - wh / 2 - k * 50, ww + k * 120, wh + k * 100, 20); ctx.stroke(); } } });
   }, { focus: 'L', dim: .5 });
@@ -53,14 +53,15 @@ shot('down40', 'door', null, (L, u, t, c) => {
   SPLIT(side => { if (side < 0) { rightDesk(t, L, { noPencil: true, hold: true, look: [.8, .4], expr: L > d3 ? { ...FX.smile } : { ...FX.calm, lid: .15 } }); return; }
     leftAgain(t, L, { n: 6, lamp: lerp(.35, 1, off), drawing: L > d3 + .4, look: L < d3 - .3 ? [-.7, -.2] : [.1, .9], expr: L < d3 ? { ...FX.resolve, lid: .1 } : { ...FX.resolve, lid: .25 }, green: .4 * (1 - off),
       armL: L > d3 - .5 && L < d3 + .4 ? [lerp(430, 300, eio(seg(L, d3 - .5, d3 - .25))), lerp(676, 470 + 200 * down, eio(seg(L, d3 - .5, d3 - .25)))] : undefined,
-      dev: f => devBehind(t, { x: lerp(680, 800, off), y: 920, h: 600, expr: L < d3 ? devEx('grin', L, []) : { ...DX.sulk }, look: [-.8, .3], lean: -.27 + .2 * off, cap: true, capBrim: -1,
+      dev: f => devBehind(t, { x: lerp(740, 800, off), y: 920, h: 600, expr: L < d3 ? devEx('grin', L, []) : { ...DX.sulk }, look: [-.8, .3], lean: -.12 + .06 * off, cap: true, capBrim: -1,
         armL: [lerp(f.shL[0] - 10, 660, off), lerp(f.shL[1] + 40, 640, off)], armR: [lerp(f.shR[0] + 10, 880, off), lerp(f.shY + 60, 650, off)], heat: .8 }),
       after: f => { if (L < d3) windowD(220, 480 + down * 200, 330, 248 * (1 - down * .95), 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L + 5, t), { glow: 2 - down }); else windowDown(230, .6); } });
   }, { focus: 'L', dim: .5 });
   counterL(L >= c('count41') ? 'PAGES: 41' : 'PAGES: 40'); counterR('PAGES: 300');
 });
 // PAGE 120: Max's front door. He holds out a comic of the two of them; Max reads it, laughs, hugs him; the cap falls off the devil
-shot('door', 'stitch', 'PAGES: 120', (L, u, t, c) => {
+shot('door', 'stitch', null, (L, u, t, c) => {
+  counterL('PAGES: 120');
   const kn = c('knock'), op = c('open'), ho = c('hold'), rd = c('read'), la = c('laughM'), hg = c('hug2'), cf = c('capFall');
   const open = eio(seg(L, op, op + .5)), hold = eio(seg(L, ho - .3, ho + .2)), hug = eio(seg(L, hg - .3, hg + .2)), capK = seg(L, cf, cf + .6);
   camD(push(u, .05), 1000, 560, () => {
@@ -74,7 +75,7 @@ shot('door', 'stitch', 'PAGES: 120', (L, u, t, c) => {
     earPencil(th, 1);
     // the comic he drew of the two of them: in his hand, then in Max's
     const cx = L < rd ? lerp(920, 1090, hold) : lerp(1120, 1100, hug), cy = L < rd ? lerp(720, 640, hold) : lerp(640, 760, hug);
-    if (hug < .9) at(cx, cy, 1, 0, () => { if (L > rd) ctx.scale(-1, 1); comicD(0, 0, 200, 1, 0); });
+    if (hug < .9) comicD(cx, cy, 200, 1, 0);
     // the devil on the step, sulking; the cap falls off it
     const dv = figure({ kind: 'devil', x: 470, y: 900, h: 560, stage: 3, expr: L < hg ? devEx('sulk', L, [1.2]) : { ...DX.plead, m: 'pout' }, look: [.9, -.2], tilt: -.08, lean: -.06, armL: [430, 700], armR: [520, 700], tail: [-.34, .05], heat: .5, t });
     if (L < cf) devCap(dv, 1); else { const k = capK; capAt(lerp(dv.head[0], 330, k), lerp(dv.head[1] - dv.hr * .82, 880, k * k), dv.hr * 1.02, k * 2.4, CAP, 1); }

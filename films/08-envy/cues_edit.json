@@ -1,0 +1,539 @@
+{
+ "END": 87.281,
+ "cues": {
+  "floor": 4.119,
+  "drawM": 4.426,
+  "capTogether": 4.503,
+  "drawT": 4.965,
+  "look": 6.042,
+  "laugh": 6.279,
+  "five": 6.879,
+  "night": 7.479,
+  "count30": 7.632,
+  "glowOn": 8.171,
+  "winIn": 8.636,
+  "winTurn": 9.436,
+  "hearts": 9.676,
+  "devLean": 10.463,
+  "amazing": 10.925,
+  "smileGone": 12.175,
+  "crumple": 12.758,
+  "eyeWin": 12.912,
+  "eyePage": 13.373,
+  "crush": 13.918,
+  "toss": 14.478,
+  "catch": 14.709,
+  "munch": 14.94,
+  "gulp": 15.401,
+  "count29": 15.478,
+  "grow1": 15.715,
+  "reach1": 16.275,
+  "cap1": 16.651,
+  "capOn": 17.096,
+  "split": 17.54,
+  "prop": 17.826,
+  "dark": 18.254,
+  "tear": 18.883,
+  "tearEnd": 19.583,
+  "slide": 19.783,
+  "slideEnd": 20.383,
+  "lean": 20.956,
+  "grinL": 21.228,
+  "down": 21.774,
+  "clack": 22.001,
+  "medal": 22.865,
+  "win2": 23.032,
+  "fourteen": 23.448,
+  "rip": 25.506,
+  "munch2": 25.967,
+  "pluck": 27.598,
+  "crunch": 27.918,
+  "medalTake": 29.312,
+  "medalOn": 29.62,
+  "lampOff": 31.158,
+  "count0": 31.235,
+  "work": 24.198,
+  "rub": 24.89,
+  "draw2": 26.429,
+  "pin": 26.967,
+  "glance": 28.697,
+  "back": 30.158,
+  "count120": 30.312,
+  "card": 31.85,
+  "cardIn": 32.1,
+  "grinR": 32.765,
+  "stare": 32.765,
+  "runR": 33.245,
+  "devRead": 33.565,
+  "showR": 34.652,
+  "cheer": 34.882,
+  "hugR": 35.421,
+  "showL": 36.344,
+  "see": 36.959,
+  "wave": 37.344,
+  "friends": 37.998,
+  "turnAway": 39.152,
+  "out": 39.536,
+  "fall": 40.257,
+  "worst": 41.649,
+  "claws": 42.111,
+  "winWall": 42.418,
+  "amazing2": 43.111,
+  "cover": 44.726,
+  "coverIn": 44.976,
+  "wide": 46.393,
+  "eyesWide": 46.666,
+  "wrench": 47.756,
+  "pull1": 48.006,
+  "pull2": 48.423,
+  "slip": 48.84,
+  "fallBack": 49.256,
+  "thud": 49.506,
+  "eyes": 50.256,
+  "turnHead": 50.506,
+  "lookUp": 51.006,
+  "meet": 51.19,
+  "never": 51.69,
+  "hand": 53.855,
+  "reach": 54.086,
+  "give": 55.028,
+  "take": 55.361,
+  "slam": 56.111,
+  "rise": 56.361,
+  "slamDown": 56.861,
+  "shriek": 57.025,
+  "medalFall": 57.345,
+  "medalClink": 57.705,
+  "lineBack": 57.985,
+  "page1": 58.185,
+  "onePage": 58.339,
+  "count1": 58.492,
+  "win3": 59.339,
+  "years": 59.646,
+  "down2": 60.723,
+  "page40": 61.492,
+  "count40": 61.569,
+  "oneLook": 61.877,
+  "looks": 62.646,
+  "jump": 62.98,
+  "arms": 63.313,
+  "stuck": 64.313,
+  "board40": 65.467,
+  "boardSee": 65.717,
+  "down40": 67.134,
+  "down3": 67.518,
+  "count41": 67.98,
+  "door": 68.672,
+  "count120b": 68.749,
+  "knock": 68.903,
+  "open": 69.21,
+  "hold": 69.595,
+  "read": 70.057,
+  "laughM": 70.749,
+  "hug2": 71.403,
+  "capFall": 71.986,
+  "stitch": 73.807,
+  "count300": 74.037,
+  "countDone": 75.191,
+  "sew": 75.345,
+  "sewEnd": 77.084,
+  "one": 77.258,
+  "last": 77.954,
+  "stamp": 78.37,
+  "ahead": 78.87,
+  "smile": 80.226,
+  "good": 80.681,
+  "tap": 82.136,
+  "dark2": 82.499,
+  "title": 84.281,
+  "titleIn": 84.581,
+  "hk1": 0,
+  "hkSame": 0.017,
+  "hk2": 1.391,
+  "hkWhy": 1.482,
+  "hk3": 2.755,
+  "hkLook": 3.073
+ },
+ "cuts": [
+  {
+   "t": 0,
+   "kind": "cut",
+   "shot": "hk1"
+  },
+  {
+   "t": 1.391,
+   "kind": "cut",
+   "shot": "hk2"
+  },
+  {
+   "t": 2.755,
+   "kind": "cut",
+   "shot": "hk3"
+  },
+  {
+   "t": 4.119,
+   "kind": "cut",
+   "shot": "floor"
+  },
+  {
+   "t": 5.272,
+   "kind": "punch",
+   "shot": "floor"
+  },
+  {
+   "t": 6.119,
+   "kind": "back",
+   "shot": "floor"
+  },
+  {
+   "t": 7.479,
+   "kind": "cut",
+   "shot": "night"
+  },
+  {
+   "t": 8.556,
+   "kind": "cut",
+   "shot": "night"
+  },
+  {
+   "t": 9.356,
+   "kind": "punch",
+   "shot": "night"
+  },
+  {
+   "t": 10.156,
+   "kind": "back",
+   "shot": "night"
+  },
+  {
+   "t": 10.925,
+   "kind": "cut",
+   "shot": "night"
+  },
+  {
+   "t": 11.925,
+   "kind": "punch",
+   "shot": "night"
+  },
+  {
+   "t": 12.758,
+   "kind": "cut",
+   "shot": "crumple"
+  },
+  {
+   "t": 13.758,
+   "kind": "punch",
+   "shot": "crumple"
+  },
+  {
+   "t": 14.478,
+   "kind": "back",
+   "shot": "crumple"
+  },
+  {
+   "t": 15.555,
+   "kind": "cut",
+   "shot": "crumple"
+  },
+  {
+   "t": 16.355,
+   "kind": "punch",
+   "shot": "crumple"
+  },
+  {
+   "t": 17.54,
+   "kind": "cut",
+   "shot": "split"
+  },
+  {
+   "t": 18.683,
+   "kind": "cut",
+   "shot": "split"
+  },
+  {
+   "t": 19.683,
+   "kind": "cut",
+   "shot": "split"
+  },
+  {
+   "t": 20.683,
+   "kind": "punch",
+   "shot": "split"
+  },
+  {
+   "t": 21.592,
+   "kind": "punch",
+   "shot": "split"
+  },
+  {
+   "t": 22.865,
+   "kind": "cut",
+   "shot": "medal"
+  },
+  {
+   "t": 24.198,
+   "kind": "cut",
+   "shot": "work"
+  },
+  {
+   "t": 25.121,
+   "kind": "cut",
+   "shot": "medal"
+  },
+  {
+   "t": 26.198,
+   "kind": "cut",
+   "shot": "work"
+  },
+  {
+   "t": 27.198,
+   "kind": "punch",
+   "shot": "medal"
+  },
+  {
+   "t": 28.158,
+   "kind": "cut",
+   "shot": "work"
+  },
+  {
+   "t": 29.004,
+   "kind": "cut",
+   "shot": "medal"
+  },
+  {
+   "t": 29.927,
+   "kind": "cut",
+   "shot": "work"
+  },
+  {
+   "t": 31.004,
+   "kind": "cut",
+   "shot": "medal"
+  },
+  {
+   "t": 31.85,
+   "kind": "cut",
+   "shot": "card"
+  },
+  {
+   "t": 32.725,
+   "kind": "cut",
+   "shot": "card"
+  },
+  {
+   "t": 33.805,
+   "kind": "cut",
+   "shot": "card"
+  },
+  {
+   "t": 34.652,
+   "kind": "cut",
+   "shot": "showR"
+  },
+  {
+   "t": 36.344,
+   "kind": "cut",
+   "shot": "showL"
+  },
+  {
+   "t": 37.421,
+   "kind": "punch",
+   "shot": "showL"
+  },
+  {
+   "t": 37.921,
+   "kind": "back",
+   "shot": "showL"
+  },
+  {
+   "t": 39.152,
+   "kind": "cut",
+   "shot": "showL"
+  },
+  {
+   "t": 40.075,
+   "kind": "punch",
+   "shot": "showL"
+  },
+  {
+   "t": 41.529,
+   "kind": "black",
+   "shot": null
+  },
+  {
+   "t": 41.649,
+   "kind": "cut",
+   "shot": "worst"
+  },
+  {
+   "t": 43.034,
+   "kind": "cut",
+   "shot": "worst"
+  },
+  {
+   "t": 44.726,
+   "kind": "cut",
+   "shot": "cover"
+  },
+  {
+   "t": 46.393,
+   "kind": "cut",
+   "shot": "wide"
+  },
+  {
+   "t": 47.756,
+   "kind": "cut",
+   "shot": "wrench"
+  },
+  {
+   "t": 48.923,
+   "kind": "cut",
+   "shot": "wrench"
+  },
+  {
+   "t": 50.256,
+   "kind": "cut",
+   "shot": "eyes"
+  },
+  {
+   "t": 51.09,
+   "kind": "cut",
+   "shot": "eyes"
+  },
+  {
+   "t": 52.29,
+   "kind": "cut",
+   "shot": "eyes"
+  },
+  {
+   "t": 53.855,
+   "kind": "cut",
+   "shot": "hand"
+  },
+  {
+   "t": 54.778,
+   "kind": "cut",
+   "shot": "hand"
+  },
+  {
+   "t": 56.111,
+   "kind": "cut",
+   "shot": "slam"
+  },
+  {
+   "t": 56.945,
+   "kind": "cut",
+   "shot": "slam"
+  },
+  {
+   "t": 58.065,
+   "kind": "black",
+   "shot": null
+  },
+  {
+   "t": 58.185,
+   "kind": "cut",
+   "shot": "page1"
+  },
+  {
+   "t": 59.339,
+   "kind": "punch",
+   "shot": "page1"
+  },
+  {
+   "t": 60.416,
+   "kind": "back",
+   "shot": "page1"
+  },
+  {
+   "t": 61.492,
+   "kind": "cut",
+   "shot": "page40"
+  },
+  {
+   "t": 62.646,
+   "kind": "cut",
+   "shot": "page40"
+  },
+  {
+   "t": 63.563,
+   "kind": "punch",
+   "shot": "page40"
+  },
+  {
+   "t": 64.313,
+   "kind": "back",
+   "shot": "page40"
+  },
+  {
+   "t": 65.467,
+   "kind": "cut",
+   "shot": "board40"
+  },
+  {
+   "t": 67.134,
+   "kind": "cut",
+   "shot": "down40"
+  },
+  {
+   "t": 68.672,
+   "kind": "cut",
+   "shot": "door"
+  },
+  {
+   "t": 69.903,
+   "kind": "punch",
+   "shot": "door"
+  },
+  {
+   "t": 70.903,
+   "kind": "back",
+   "shot": "door"
+  },
+  {
+   "t": 71.819,
+   "kind": "punch",
+   "shot": "door"
+  },
+  {
+   "t": 72.653,
+   "kind": "back",
+   "shot": "door"
+  },
+  {
+   "t": 73.807,
+   "kind": "cut",
+   "shot": "stitch"
+  },
+  {
+   "t": 75.345,
+   "kind": "cut",
+   "shot": "stitch"
+  },
+  {
+   "t": 77.954,
+   "kind": "cut",
+   "shot": "last"
+  },
+  {
+   "t": 79.954,
+   "kind": "punch",
+   "shot": "last"
+  },
+  {
+   "t": 81.045,
+   "kind": "back",
+   "shot": "last"
+  },
+  {
+   "t": 82.681,
+   "kind": "cut",
+   "shot": "last"
+  },
+  {
+   "t": 84.281,
+   "kind": "cut",
+   "shot": "title"
+  }
+ ]
+}

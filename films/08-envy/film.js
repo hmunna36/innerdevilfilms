@@ -131,6 +131,8 @@ function SPLIT(half, o = {}) { const tear = o.tear ?? 1, g = (o.gap ?? 12) * (1 
   ctx.restore();
   if (tear > 0 && tear < 1) additive(() => glow([255, 240, 220], ln, ty, 80, .7));
 }
+// zoom about a point without moving it (inside a half of the split, camD would re-centre the half on the screen)
+function zoomAt(z, x, y, fn) { ctx.save(); ctx.translate(x, y); ctx.scale(z, z); ctx.translate(-x, -y); fn(); ctx.restore(); }
 // the counters of the split: one at the top of each half (the pages he has drawn)
 const counterL = (text, size = 46) => hw(text, 90, 40 + size * .95, size, 'say', { align: 'left', rot: 0 });
 const counterR = (text, size = 46) => hw(text, W - 90, 40 + size * .95, size, 'say', { align: 'right', rot: 0 });
@@ -228,8 +230,8 @@ const SHOW = {
     heartsD(x0 + w * .5, y0 + h * .7, w * .8, L, 12, Math.max(6, w * .035)); },
   // his own best day: a young man holding up a printed comic with HIS monster on the cover (the pencil behind his ear)
   him: (x0, y0, w, h, L, t, o = {}) => { winStage(x0, y0, w, h); for (let i = 0; i < 7; i++) { if (i === 3) continue; figure({ kind: 'sam', x: x0 + w * (.06 + i * .148), y: y0 + h * 1.06, h: h * .5, expr: 'laugh', look: [(3 - i) * .3, -.3], dim: .4, t, seed: i + 30, lw: .02 }); }
-    const f = winPerson(t, x0 + w * .5, y0 + h * 1.0, h * .66, { expr: 'laugh', armL: [x0 + w * .4, y0 + h * .2], armR: [x0 + w * .6, y0 + h * .2], pencil: 1, seed: 2 });
-    bookCover(x0 + w * .5, y0 + h * .23, h * .26); heartsD(x0 + w * .5, y0 + h * .75, w * .9, L, 16, Math.max(7, w * .03)); }
+    const f = winPerson(t, x0 + w * .5, y0 + h * 1.04, h * .7, { expr: 'laugh', armL: [x0 + w * .44, y0 + h * .66], armR: [x0 + w * .56, y0 + h * .66], pencil: 1, seed: 2 });
+    bookCover(x0 + w * .5, y0 + h * .68, h * .27); heartsD(x0 + w * .5, y0 + h * .75, w * .9, L, 16, Math.max(7, w * .03)); }
 };
 // a printed comic book seen from the front: its cover is his monster (x, y the middle, s its height)
 function bookCover(x, y, s, o = {}) { outlined(() => { ctx.beginPath(); ctx.rect(x - s * .38, y - s * .5, s * .76, s); }, rgba([230, 200, 60]), Math.max(2, s * .02));
@@ -241,37 +243,37 @@ function devBehind(t, o) { const d = fig({ kind: 'devil', x: o.x, y: o.y ?? 940,
 shot('night', 'crumple', 'PAGES: 30', (L, u, t, c) => {
   const gl = c('glowOn'), wi = c('winIn'), wt = c('winTurn'), dl = c('devLean'), sg = c('smileGone');
   const inK = eo(seg(L, wi, wi + .6)), flip = eio(seg(L, wt - .2, wt + .25)), lean = eio(seg(L, dl, dl + .7)), glowK = seg(L, gl, gl + .6);
-  camD(push(u, .06) * 1.1, 900, 540, () => {
+  camD(push(u, .06) * 1.1, 760, 520, () => {
     deskHalf(t, { X: 960, green: false, lamp: 1, pinned: 3, q: .5, glowK,
       boy: { expr: L < sg ? (L > wt + .3 ? samEx('smile', L, [wt + 1.1]) : samEx('calm', L, [1.0, 2.6])) : { ...FX.sad, lid: .15 }, look: L < gl ? [0, .9] : [-.8, -.05], turn: L > gl ? -.2 : 0, armL: L < gl ? [900, 676] : undefined, armR: L < gl ? [1010, 680] : undefined,
         glowOn: glowK > 0 ? [GREEN, .32 * glowK] : [LAMP, .18], glowSide: -1 },
       back: () => { comicD(1130, 260, 210, 1, .05); disc(1130, 160, 6, rgba([220, 60, 50])); },
       before: f => { if (L < gl) { pencilD(1000, 668, 64, -.5); }
-        if (lean > 0) devBehind(t, { x: lerp(420, 680, lean), y: 960, h: 560, expr: L > c('amazing') ? devEx('sweet', L, [c('amazing') + 1.2]) : devEx('happy', L, []), look: [.9, .4], lean: lerp(.0, .25, lean), tilt: .12 * lean,
-            armR: [690, 470], armL: [600, 520], heat: .9 }); },
+        if (lean > 0) devBehind(t, { x: lerp(480, 650, lean), y: 960, h: 560, expr: L > c('amazing') ? devEx('sweet', L, [c('amazing') + 1.2]) : devEx('happy', L, []), look: [.9, .4], lean: lerp(.0, .2, lean), tilt: .12 * lean,
+            armL: [480, 470], armR: [760, 600], heat: .9 }); },
       after: f => {
-        const wx = lerp(-120, 700, inK), wy = lerp(520, 430, inK);
+        const wx = lerp(-160, 380, inK), wy = lerp(520, 440, inK);
         if (L > wi - .1) { if (lean <= 0) devArm([[-60, 560], [wx - 240, wy + 90], [wx - 60, wy + 60]], [44, 38, 30], 26);
           at(wx, wy, 1, 0, () => { ctx.scale(lerp(-1, 1, flip) || .001, 1); windowD(0, 0, 240, 180, 1, flip > .5 ? (x0, y0, w, h) => SHOW.max(x0, y0, w, h, L - wt, t) : null, { back: flip < .5 }); }); }
-        if (L > gl && L < wi + .3) { const k = seg(L, gl, wi) * (1 - seg(L, wi, wi + .3)); glow(GREEN, 140, 470, 200, .5 * k); }
+        if (L > gl && L < wi + .3) { const k = seg(L, gl, wi) * (1 - seg(L, wi, wi + .3)); glow(GREEN, 200, 470, 220, .5 * k); }
       } });
   });
-  red('look. isn’t he amazing?', 470, 210, 74, L, c('amazing'), 1.0);
+  red('look. isn’t he amazing?', 760, 1000, 76, L, c('amazing'), 1.0);
 });
 shot('crumple', 'split', 'PAGES: 30', (L, u, t, c) => {
   const ew = c('eyeWin'), ep = c('eyePage'), cr = c('crush'), to = c('toss'), ca = c('catch'), mu = c('munch'), gu = c('gulp'), gr = c('grow1'), rc = c('reach1'), cp = c('cap1'), co = c('capOn');
   const take = eio(seg(L, ep + .2, cr)), crushK = eo(seg(L, cr, cr + .45)), toss = seg(L, to, ca), grow = eback(seg(L, gr, gr + .45)), reach = eio(seg(L, rc, cp)), pull = eio(seg(L, cp, co)), put = eio(seg(L, co - .1, co + .25));
-  const W0 = 240, H0 = 180, ww = lerp(W0, 360, grow), wh = lerp(H0, 270, grow), wx = 700 - (ww - W0) * .4, wy = 430 - (wh - H0) * .3;
+  const W0 = 240, H0 = 180, ww = lerp(W0, 360, grow), wh = lerp(H0, 270, grow), wx = 380 - (ww - W0) * .45, wy = 440 - (wh - H0) * .25;
   const counted = L >= c('count29');
   over(() => counter(counted ? 'PAGES: 29' : 'PAGES: 30'));
-  camD(push(u, .05) * 1.1, 900, 540, () => {
+  camD(push(u, .05) * 1.1, 760, 520, () => {
     deskHalf(t, { X: 960, lamp: .8, pinned: 3, q: .5, glowK: 1 + grow * .3,
       boy: { expr: L < ep ? { ...FX.sad, lid: .1 } : L < cr ? 'tempted' : L < to + .3 ? { ...FX.strain, sweat: false } : 'sad', look: L < ep ? [-.8, -.05] : L < cr ? [.6, -.6] : L < to ? [0, .4] : [-.8, .0], turn: L < ep ? -.2 : L < cr ? .2 : -.1,
         armR: L > ep + .1 && L < to + .2 ? [lerp(1060, 1000, crushK), lerp(lerp(500, 300, take), 600, crushK)] : undefined, armL: L > cr && L < to + .2 ? [lerp(900, 950, crushK), 600 - 40 * crushK] : undefined,
         glowOn: [GREEN, .32 + .12 * grow], glowSide: -1 },
       back: () => { if (L < ep + .2) { comicD(1130, 260, 210, 1, .05); disc(1130, 160, 6, rgba([220, 60, 50])); } else if (L < cr) comicD(lerp(1130, 1060, take), lerp(260, 300, take), 210 * (1 - take * .2), 1, .05 + take * .3); },
-      before: f => { D_ = devBehind(t, { x: 680, y: 960, h: 560, expr: L < ca ? devEx('happy', L, []) : L < gu + .2 ? { ...DX.happy, m: 'open', h: .5 } : L < rc ? devEx('sweet', L, []) : devEx('charm', L, [co + .6]), look: L < to ? [.9, .3] : L < gu ? [.9, .2] : [.4, -.2], lean: .3, tilt: .12,
-          armR: L > to - .1 && L < gu + .1 ? [lerp(700, 640, toss), lerp(520, 300, toss)] : L > rc - .1 && L < co + .3 ? [lerp(lerp(690, wx, reach), 640, pull), lerp(lerp(470, wy, reach), 330, pull)] : [690, wy + 20], armL: [600, 520], heat: .9 + (L > mu && L < gr ? 1.2 : 0), cap: L >= co }); },
+      before: f => { D_ = devBehind(t, { x: 650, y: 960, h: 560, expr: L < ca ? devEx('happy', L, []) : L < gu + .2 ? { ...DX.happy, m: 'open', h: .5 } : L < rc ? devEx('sweet', L, []) : devEx('charm', L, [co + .6]), look: L < to ? [.9, .3] : L < gu ? [.9, .2] : L < co ? [-.7, -.1] : [.6, .1], lean: .2, tilt: .1,
+          armR: L > to - .1 && L < gu + .1 ? [lerp(780, 720, toss), lerp(560, 400, toss)] : [760, 600], armL: L > rc - .1 && L < co + .3 ? [lerp(lerp(480, wx + 40, reach), 600, pull), lerp(lerp(470, wy, reach), 330, pull)] : [wx + ww * .4, wy + 20], heat: .9 + (L > mu && L < gr ? 1.2 : 0), cap: L >= co }); },
       after: f => { const d = D_;
         // the ball of paper: crushed in his hands, tossed, caught, eaten
         if (L > cr && L < to) ballD(lerp(1000, 975, crushK), 590, lerp(60, 34, crushK), crushK * 2);
@@ -325,7 +327,7 @@ function round2L(L, t, c, o = {}) {
       windowD(wx, wy, ww, wh, 1, (x0, y0, w, h) => SHOW.medal(x0, y0, w, h, L, t), { glow: 1.2 });
       if (L > w2 - .3 && L < w2 + .2) { const k = seg(L, w2 - .3, w2 + .2); ctx.lineWidth = 8 * (1 - k); ctx.strokeStyle = rgba(GREEN_L, 1 - k); ctx.beginPath(); ctx.roundRect(wx - ww / 2 - k * 60, wy - wh / 2 - k * 50, ww + k * 120, wh + k * 100, 20); ctx.stroke(); }
       // the sketchbook: lifted, torn in two, eaten
-      if (up > 0 && L < m2 + .2) { const bx = 480, by = lerp(DESK_Y, 600, up); bookD(bx, by, 150, { tear: rip, col: BOOK, label: 1 }); }
+      if (up > 0 && L < m2 + .2) { const bx = 480, by = lerp(DESK_Y, 662, up); bookD(bx, by, 150, { tear: rip, col: BOOK, label: 1 }); }
       else if (L < rp - 1) bookD(480, DESK_Y, 150, { col: BOOK, label: 1 });
       if (L >= m2 + .2 && L < m2 + .9) { const k = seg(L, m2 + .2, m2 + .9); for (let i = 0; i < 8; i++) { const a = rnd(i * 3.1) * TAU; disc(D_.head[0] + Math.cos(a) * (60 + k * 90), D_.head[1] + D_.hr * .4 + Math.sin(a) * (40 + k * 50), 8 * (1 - k), rgba(PAPER, 1 - k)); } }
       // the pencil plucked from behind his ear and crunched
@@ -350,10 +352,368 @@ function round2R(L, t, c, o = {}) {
 }
 shot('medal', 'work', null, (L, u, t, c) => { const Dw = CUE.card - CUE.work;
   SPLIT(side => side > 0 ? round2L(L, t, c) : round2R(L * Dw / (CUE.work - CUE.medal), t, n => CUE[n] - CUE.work), { focus: 'L', dim: .55 });
-  counterL(L >= c('count0') ? 'PAGES: 0' : L >= c('rip') ? 'PAGES: 1' : 'PAGES: 29'); counterR('PAGES: ' + Math.round(lerp(29, 80, u)));
+  counterL(L >= c('rip') ? 'PAGES: 0' : 'PAGES: 29'); counterR('PAGES: ' + Math.round(lerp(29, 80, u)));
   red('and he’s only fourteen.', 470, 960, 70, L, c('fourteen'), 1.0);
 });
 shot('work', 'card', null, (L, u, t, c) => { const Dm = CUE.work - CUE.medal;
   SPLIT(side => side > 0 ? round2L(L * Dm / (CUE.card - CUE.work), t, n => CUE[n] - CUE.medal) : round2R(L, t, c), { focus: 'R', dim: .55 });
-  counterL(u * Dm > CUE.lampOff - CUE.medal ? 'PAGES: 0' : 'PAGES: 29'); counterR('PAGES: ' + Math.round(lerp(80, 120, eo(u))));
+  counterL(L * Dm / (CUE.card - CUE.work) >= CUE.rip - CUE.medal ? 'PAGES: 0' : 'PAGES: 29'); counterR('PAGES: ' + Math.round(lerp(80, 120, eo(u))));
 });
+// ---- 36.5-49 THE COST: Max's card under the door; Max's first show: the right one cheers, the left one walks out ----
+// a door at the outer side of a half (left-half coordinates: x0..x1 the door, the floor at y), the card sliding in under it
+function doorHalf(t, k, L) { stageD(860, { pool: [M(420), 640, 520, GREEN, .05] });
+  const x0 = 60, x1 = 330; outlined(() => { ctx.beginPath(); ctx.rect(Math.min(M(x0), M(x1)), 160, Math.abs(M(x1) - M(x0)), 690); }, rgba([96, 70, 58]), 5); rectf(Math.min(M(x0), M(x1)), 850, Math.abs(M(x1) - M(x0)), 10, rgba([255, 214, 160], .35));
+  disc(M(x1 - 40), 520, 12, rgba(GOLD)); additive(() => glow(LAMP, M(195), 856, 160, .3));
+  const cx = lerp(150, 560, eo(k)); at(M(cx), 846, 1, SIDE * -.04 * (1 - k), () => { ctx.save(); ctx.scale(1, .32); inviteD(0, 0, 300, 0, false); ctx.restore(); }); }
+shot('card', 'showR', null, (L, u, t, c) => {
+  const ci = c('cardIn'), part2 = L >= ci + .75, k = seg(L, ci - .1, ci + .5);
+  if (!part2) { SPLIT(side => zoomAt(1.2, M(480), 640, () => doorHalf(t, k, L))); counterL('PAGES: 0'); counterR('PAGES: 120'); return; }
+  const P = L - (ci + .75), gR = c('grinR') - ci - .75, rR = c('runR') - ci - .75, dR = c('devRead') - ci - .75, run = eio(seg(P, rR, rR + .9));
+  SPLIT(side => { const left = side > 0;
+    if (left) deskHalf(t, { lamp: 0, pinned: 0, green: true, glowK: .7, pencil: false,
+        boy: { expr: P < .4 ? 'calm' : samEx('sad', P, [1.4]), look: [.2, .6], armL: [430, 600], armR: [530, 600], glowOn: [GREEN, .3], glowSide: -1 },
+        before: f => { const d = devBehind(t, { x: lerp(260, 330, eo(seg(P, dR - .4, dR))), y: 900, h: 600, expr: P > dR ? devEx('charm', P, [dR + .9]) : devEx('sly', P, []), look: [.8, .8], lean: .25, tilt: .15, cap: true, medal: true, armL: [200, 640], armR: [380, 560] }); },
+        after: f => { inviteD(480, 590, 170, -.06); windowDown(M(250), .7); } });
+    else deskHalf(t, { lamp: 1, pinned: 12, q: .8, letter: true, pile: 120,
+        boy: (() => { const bx = lerp(480, 120, run), up = eo(seg(P, rR - .1, rR + .3)), sw = Math.sin(P * 16) * 60 * (run > 0 && run < 1 ? 1 : 0); return { x: bx, y: lerp(880, 800, up), expr: P > gR ? 'laugh' : 'smile', look: P > gR ? [-.5, -.2] : [.1, .7], armL: P < rR ? [430, 600] : [bx - 60 + sw, 640], armR: P < rR ? [530, 600] : [bx + 60 - sw, 640], tilt: P > gR ? Math.sin(P * 12) * .05 : 0, lean: -.15 * run }; })(),
+        after: f => { if (P < rR) inviteD(480, 590, 170, .06); else if (P < rR + .9) inviteD(f.armEndL[0], f.armEndL[1] - 30, 120, .3); windowDown(M(250), .7); } }); }, { focus: P > rR - .2 ? 'R' : null, dim: .4 });
+  counterL('PAGES: 0'); counterR('PAGES: 120');
+});
+// the gallery and its little crowd (full frame); n people, Max in it at mx
+function showD(t, L, o) { stageD(900, { pool: [o.mx ?? 1100, 520, 820, [255, 230, 190], .2] }); galleryD(o.x0 ?? 420, o.x1 ?? 1820, t, { n: o.n ?? 5, y: 290, s: 160 });
+  for (let i = 0; i < (o.crowd ?? 5); i++) { const x = (o.cx0 ?? 700) + i * (o.cdx ?? 230); if (Math.abs(x - (o.mx ?? 1100)) < 120) continue; figure({ kind: 'sam', x, y: 900, h: 360 + rnd(i * 2.3) * 40, expr: rnd(i) > .5 ? 'smile' : 'laugh', look: [((o.mx ?? 1100) - x) / 600, -.2], dim: .45, seed: 40 + i, t, armR: i === 2 && o.clap ? [x + 30, 640 + Math.abs(Math.sin(t * 9)) * 30] : undefined, armL: i === 2 && o.clap ? [x - 30, 640 + Math.abs(Math.sin(t * 9 + 1)) * 30] : undefined }); } }
+shot('showR', 'showL', null, (L, u, t, c) => {
+  const ch = c('cheer'), hg = c('hugR'), hug = eio(seg(L, hg - .2, hg + .3));
+  SPLIT(side => { if (side > 0) { deskHalf(t, { lamp: 0, pinned: 0, green: true, glowK: .6, pencil: false, boy: { expr: 'sad', look: [.2, .7], armL: [430, 600], armR: [530, 600], glowOn: [GREEN, .26], glowSide: -1 },
+      before: f => devBehind(t, { x: 300, y: 900, h: 600, expr: devEx('charm', L, []), look: [.8, .6], lean: .2, tilt: .1, cap: true, medal: true, armL: [200, 640], armR: [380, 600] }), after: f => inviteD(480, 590, 170, -.06) }); return; }
+    // the right half: the gallery, Max, the right boy at the front
+    stageD(900, { pool: [M(480), 520, 560, [255, 230, 190], .22] }); galleryD(M(820), M(140), t, { n: 3, y: 260, s: 140 });
+    for (let i = 0; i < 3; i++) fig({ kind: 'sam', x: 120 + i * 110, y: 900, h: 320, expr: 'laugh', look: [.4, -.2], dim: .5, seed: 50 + i, t });
+    const mx = lerp(620, 540, hug), bx = lerp(330, 430, hug), cheer = L > ch && L < hg - .2;
+    const m = fig({ kind: 'sam', x: mx, y: 900, h: 400, expr: 'laugh', look: [-.6, -.1], armL: hug > .2 ? [bx + 40, 620] : [mx - 60, 650], armR: hug > .2 ? [bx + 10, 640] : undefined, stretch: true, t, seed: 5 }); capOn(m, -SIDE);
+    const b = fig({ kind: 'sam', x: bx, y: 900, h: 400, expr: 'laugh', look: [.7, -.2], armL: cheer ? [bx - 70, 500 - Math.abs(Math.sin(t * 9)) * 40] : hug > .2 ? [bx + 120, 640] : undefined, armR: cheer ? [bx + 60, 480 - Math.abs(Math.sin(t * 9 + 1)) * 40] : hug > .2 ? [bx + 150, 620] : undefined, tilt: cheer ? Math.sin(t * 9) * .05 : 0, stretch: true, t }); earPencil(b, SIDE);
+  }, { focus: 'R', dim: .5 });
+  counterL('PAGES: 0'); counterR('PAGES: 120');
+});
+shot('showL', 'worst', null, (L, u, t, c) => {
+  const se = c('see'), wv = c('wave'), fr = c('friends'), ta = c('turnAway'), ou = c('out'), fa = c('fall');
+  const wave = L > wv && L < fa ? 1 : 0, turn = eio(seg(L, ta, ta + .35)), walk = eio(seg(L, ou, ou + 1.4)), lean = eo(seg(L, fr - .5, fr));
+  camD(push(u, .05), 960, 560, () => {
+    showD(t, L, { mx: 1240, crowd: 6, cx0: 760, cdx: 200, clap: true });
+    // the doorway he leaves by
+    outlined(() => { ctx.beginPath(); ctx.rect(30, 300, 190, 600); }, rgba([24, 22, 26]), 5); additive(() => glow([150, 170, 220], 125, 600, 160, .12));
+    const m = figure({ kind: 'sam', x: 1240, y: 900, h: 420, expr: L < se ? 'laugh' : L < fa ? (wave ? 'laugh' : 'smile') : { ...FX.sad, lid: .1 }, look: L < se ? [.3, -.2] : [-.95, -.05], turn: L > se ? -.25 : 0,
+      armL: wave ? [1150, 470 + Math.sin(t * 14) * 30] : undefined, stretch: true, t, seed: 5 }); capOn(m, -1);
+    const bx = lerp(lerp(400, 400, turn), 120, walk);
+    const d = devBehind(t, { x: lerp(300, 260, walk) + lean * 60, y: 920, h: 600, expr: L > fr - .3 && L < ta ? devEx('sweet', L, []) : L > ta ? devEx('grin', L, []) : devEx('charm', L, [se + .4]), look: [.9, .1], lean: .15 + lean * .2, tilt: .1 + lean * .1,
+      armR: L > fr - .4 && L < ta + .2 ? [lerp(560, 900, lean), lerp(600, 520, lean)] : [460, 640], armL: [200, 660], cap: true, medal: true, heat: .8 });
+    const b = figure({ kind: 'sam', x: bx, y: 900 - Math.abs(Math.sin(walk * 9)) * 8 * (walk > 0 && walk < 1 ? 1 : 0), h: 400, expr: L < se ? { ...FX.sad, lid: .2 } : L < fr ? 'tempted' : L < ta ? { ...FX.sad, lid: .1 } : { ...FX.sad, lid: .4 }, look: L < ta ? [.95, -.05] : [-.9, .2], turn: turn > .5 ? -.4 : .25,
+      stride: walk > 0 && walk < 1 ? Math.sin(walk * 18) * .8 : 0, t });
+  });
+  if (L < ta + .5) red('look at all his new friends.', 960, 1000, 72, L, fr, 1.0);
+});
+// ---- 49-71 THE WORST and THE TURN: the window is the whole wall; his own monster on the prize; the two of him look at each other ----
+// the wall-size window behind his desk (left-half coordinates), what it shows: his own best day. fold 0..1: it falls forward onto the desk
+const WALL = { x: 470, y: 330, w: 840, h: 470 };
+function wallWin(L, t, o = {}) { const fold = o.fold || 0, sway = o.sway || 0;
+  if (fold <= 0) { at(M(WALL.x), WALL.y, 1, sway, () => windowD(0, 0, WALL.w, WALL.h, 1, (x0, y0, w, h) => SHOW.him(x0, y0, w, h, L, t), { glow: 1.6 })); return; }
+  // falling forward: the bottom edge stays on the desk, the top comes down toward us (it gets shorter, then flat)
+  const h = WALL.h * Math.cos(fold * Math.PI / 2) * (1 - fold * .1), bottom = DESK_Y + 10 - (1 - fold) * 140, w = WALL.w * (1 + .12 * fold);
+  if (fold < 1) windowD(M(WALL.x), bottom - Math.max(h, 8) / 2, w, Math.max(h, 8), 1, (x0, y0, ww, hh) => SHOW.him(x0, y0, ww, hh, L, t), { back: fold > .5, glow: 1.6 * (1 - fold) });
+}
+// the torn pages and balls on his floor (left half)
+function litterD(n = 9) { for (let i = 0; i < n; i++) { const x = 60 + rnd(i * 4.3) * 860, y = 905 + rnd(i * 2.1) * 60; if (i % 3) ballD(M(x), y, 18 + rnd(i) * 10, i); else at(M(x), y, 1, (rnd(i * 7) - .5) * 1.4, () => pageD(0, 0, 60, 0, { kind: 'monster', q: .5 })); } }
+// the right one at his desk late at night: 300 pages, rubbing out a page, the leak beside him. o: noPencil, look, expr, hold (his pile in his arms)
+function rightDesk(t, L, o = {}) { const rub = o.rub ? Math.sin(t * 30) * 26 : 0;
+  return deskHalf(t, { lamp: 1, pinned: 12, q: .85, letter: true, pile: o.hold ? 0 : 300, pencil: !o.noPencil,
+    boy: { expr: o.expr || { eh: .9, lid: .38, bi: .08, bo: -.02, m: 'flat' }, look: o.look || [.1, .9], armL: o.hold ? [400, 600] : [430, 676], armR: o.hold ? [560, 600] : [500 + rub, 668], glowOn: [LAMP, .2], glowSide: 1, ...(o.boy || {}) },
+    after: f => { if (o.hold) { const k = pileD(480, 660, 140, 300); } else { deskPage(480); if (!o.noPencil && !o.pencilGone) pencilD(500 + rub, 660, 70, rub ? -2.4 : -.6); } windowDown(M(250), .8 + .2 * Math.sin(t * 2)); } }); }
+shot('worst', 'cover', null, (L, u, t, c) => {
+  const cl = c('claws'), ww = c('winWall'), am = c('amazing2'), slide = eio(seg(L, 0, .8)), grab = eo(seg(L, cl - .3, cl + .2));
+  SPLIT(side => { if (side < 0) { rightDesk(t, L, { rub: true }); return; }
+    stageD(900, { pool: [480, 420, 700, GREEN, .22] }); litterD();
+    wallWin(L + 20, t);
+    const f = figure({ kind: 'sam', x: 520, y: 880, h: 470, noLegs: true, expr: L < am + .3 ? 'tempted' : { ...FX.sad, lid: .25, bags: true }, look: [-.4, -.95], tilt: -.12 * grab, headDy: -.05, glowOn: [GREEN, .5], glowSide: -1, armL: [440, 680], armR: [600, 684], t });
+    const d = devBehind(t, { x: 230, y: 940, h: 640, expr: L < am ? devEx('grin', L, [1.0]) : { ...DX.grin, h: .8 }, look: [.7, .3], lean: .2, tilt: .1, cap: true, medal: true, heat: 1.2,
+      armR: [lerp(420, f.head[0] - f.hr * .9, grab), lerp(600, f.head[1] + f.hr * .1, grab)], armL: [lerp(200, f.head[0] + f.hr * .2, grab), lerp(640, f.head[1] + f.hr * .55, grab)], bendR: -.2, bendL: .6 });
+    deskD(80, 880, DESK_Y);
+  }, { lineX: lerp(960, 1500, slide), focus: 'L', dim: .55 });
+  counterL('PAGES: 0'); counterR('PAGES: 300');
+  slam('LOOK. ISN’T HE AMAZING?', 760, 985, 82, L, am);
+});
+// close on what the window shows: the young man everyone loves holds up a printed comic; the cover is his monster
+shot('cover', 'wide', null, (L, u, t, c) => {
+  const k = eio(seg(L, c('coverIn') - .1, c('coverIn') + 1.1));
+  camD(lerp(1.0, 2.0, k), 960, lerp(540, 640, k), () => { rectf(-400, -400, W + 800, H + 800, rgba(D.stage)); windowD(960, 560, 1700, 950, 1, (x0, y0, w, h) => SHOW.him(x0, y0, w, h, L + 24, t), { glow: 1 }); });
+});
+// close on his face: he sees it is his monster; the claws on his cheeks
+shot('wide', 'wrench', null, (L, u, t, c) => {
+  const ew = c('eyesWide');
+  camD(push(u, .05), 960, 540, () => {
+    stageD(0, { pool: [700, 300, 900, GREEN, .25] });
+    const f = figure({ kind: 'sam', x: 980, y: 2080, h: 1900, noLegs: true, noArms: true, expr: L < ew ? { ...FX.tempted, lid: .3 } : { ...FX.horror, bags: true }, look: [-.6, -.7], tilt: -.08, glowOn: [GREEN, .55], glowSide: -1, t });
+    for (const sd of [-1, 1]) devArm([[sd < 0 ? -100 : 2020, sd < 0 ? 700 : 300], [f.head[0] + sd * f.hr * 1.5, f.head[1] - f.hr * .2], [f.head[0] + sd * f.hr * .92, f.head[1] + f.hr * .3]], [150, 120, 90], 40);
+  });
+});
+// he wrenches free: the claws slip, the window sways, he falls back off his chair
+shot('wrench', 'eyes', null, (L, u, t, c) => {
+  const p1 = c('pull1'), p2 = c('pull2'), sl = c('slip'), fb = c('fallBack'), th = c('thud');
+  const jerk = (L > p1 ? Math.sin((L - p1) * 30) * (1 - seg(L, p1, p1 + .4)) : 0) + (L > p2 ? -Math.sin((L - p2) * 30) * (1 - seg(L, p2, p2 + .4)) : 0), free = eo(seg(L, sl - .1, sl + .3)), fall = eio(seg(L, fb - .15, th));
+  const shake = L > th ? Math.sin((L - th) * 50) * 14 * (1 - seg(L, th, th + .4)) : 0;
+  SPLIT(side => { if (side < 0) { rightDesk(t, L, { rub: true }); return; }
+    ctx.save(); ctx.translate(shake, 0); (() => {
+      stageD(900, { pool: [480, 420, 700, GREEN, .2] }); litterD();
+      wallWin(L + 24, t, { sway: Math.sin(L * 9) * .03 * free * (1 - seg(L, sl, sl + 1.5)) });
+      const hx = 520 + jerk * 40, f = figure({ kind: 'sam', x: hx + fall * 60, y: 880 + fall * 260, h: 470, noLegs: true, expr: L < sl ? { ...FX.strain, sweat: false } : L < th ? 'fear' : { ...FX.horror }, look: L < sl ? [jerk, -.5] : [.3, -.3], tilt: jerk * .25 + fall * .5, lean: fall * .5, glowOn: [GREEN, .45], glowSide: -1,
+        armL: L < sl ? [hx - 110, 480] : [hx - 160, 560 + fall * 160], armR: L < sl ? [hx + 100, 470] : [hx + 180, 500 + fall * 180], stretch: true, t });
+      const d = devBehind(t, { x: 230, y: 940, h: 640, expr: L < sl ? { ...DX.rage, m: 'grin' } : devEx('rage', L, []), look: [.8, .3], lean: .2 - .1 * free, tilt: .1, cap: true, medal: true, heat: 1.4,
+        armR: [lerp(f.head[0] - f.hr * .9, 360, free), lerp(f.head[1] + f.hr * .1, 300, free)], armL: [lerp(f.head[0] + f.hr * .2, 520, free), lerp(f.head[1] + f.hr * .55, 380, free)], bendR: -.2, bendL: .6 });
+      // the chair tipping back
+      if (L > fb - .2) { const k = fall; at(hx + 150, 900, 1, k * .9, () => chairD(0, 0, 260, -1)); }
+      deskD(80, 880, DESK_Y);
+      if (L > th && L < th + .4) { const k = seg(L, th, th + .4); for (let i = 0; i < 7; i++) stroke([[hx + 100 + (i - 3) * 50, 900 - k * 30], [hx + 100 + (i - 3) * 70, 880 - k * 70]], 5, rgba(D.white, 1 - k)); }
+    })(); ctx.restore();
+  }, { lineX: 1500, focus: 'L', dim: .55 });
+  counterL('PAGES: 0'); counterR('PAGES: 300');
+});
+// on the floor he turns his head to the tear, and for the first time the two of him look at each other
+shot('eyes', 'hand', null, (L, u, t, c) => {
+  const th = c('turnHead'), lu = c('lookUp'), me = c('meet'), turn = eio(seg(L, th, th + .45)), up = eio(seg(L, lu, lu + .35)), back = eio(seg(L, me, me + .9));
+  SPLIT(side => { if (side < 0) { rightDesk(t, L, { rub: L < lu, look: up > .5 ? [.85, .55] : [.1, .9], expr: up > .5 ? { ...FX.sad, lid: .05, bags: false } : undefined }); return; }
+    stageD(900, { pool: [480, 420, 700, GREEN, .16] }); litterD(7);
+    wallWin(L + 28, t);
+    devBehind(t, { x: 230, y: 940, h: 640, expr: devEx('sly', L, [1.4]), look: [.9, .5], lean: .1, cap: true, medal: true, heat: .9, armL: [180, 660], armR: [330, 640] });
+    deskD(80, 880, DESK_Y);
+    at(640, 900, 1, .9, () => chairD(0, 0, 260, -1));
+    const f = figure({ kind: 'sam', x: 760, y: 905, h: 430, sit: 1, flat: true, expr: turn < .5 ? { ...FX.fear, small: false } : L > me ? { ...FX.sad, lid: .05, bi: -.25 } : 'fear', look: [lerp(-.6, .95, turn), lerp(-.5, -.25, turn)], turn: lerp(-.2, .4, turn), tilt: .05, armL: [700, 900], armR: [860, 900], t });
+  }, { lineX: lerp(1500, 960, back), focus: L > me ? null : 'L', dim: .45 });
+  counterL('PAGES: 0'); counterR('PAGES: 300');
+  say('it never showed the 300 pages.', 960, 1000, 66, L, c('never'), .8);
+});
+// his hand across the tear; the right one puts the yellow pencil in it (an insert: the two arms over the tear)
+shot('hand', 'slam', null, (L, u, t, c) => {
+  const rc = c('reach'), gv = c('give'), tk = c('take'), reach = eo(seg(L, rc - .1, rc + .8)), give = eio(seg(L, gv - .5, gv)), take = eio(seg(L, tk, tk + .5));
+  camD(push(u, .04), 960, 560, () => {
+    SPLIT(side => { if (side > 0) { stageD(0, { pool: [300, 300, 900, GREEN, .22] }); litterD(5); } else { stageD(0, { pool: [M(300), 300, 900, LAMP, .22] }); for (let i = 0; i < 6; i++) at(M(120 + i * 70), 980 - i * 4, 1, (rnd(i) - .5) * .3, () => pageD(0, 0, 150, 0, { kind: ['monster', 'hero', 'two'][i % 3], q: .9 })); } }, {});
+    const lt = [lerp(560, 1000, reach) - take * 30, lerp(900, 600, reach) + take * 10], rt = [lerp(1420, 1080, give), lerp(360, 560, give)];
+    const arm = (a, m, b, w) => { taper([a, m, b], w.map(v => v + 14), rgba(D.line)); taper([a, m, b], w, lg(0, b[1] - 80, 0, b[1] + 160, [[0, D.cream], [1, D.creamS]])); };
+    arm([-80, 1200], [lerp(300, 560, reach), lerp(1000, 760, reach)], lt, [150, 140, 128]);
+    arm([2040, 200], [lerp(1700, 1300, give), lerp(260, 440, give)], rt, [150, 140, 128]);
+    additive(() => glow(GREEN, lt[0], lt[1], 160, .2));
+    const pt = L < tk ? rt : lt; pencilD(pt[0] + (L < tk ? -70 : 70), pt[1] - 10, 300, L < tk ? 3.0 : .1 - take * .15);
+    if (L > tk && L < tk + .3) { const k = seg(L, tk, tk + .3); ctx.lineWidth = 8 * (1 - k); ctx.strokeStyle = rgba(LAMP, 1 - k); ctx.beginPath(); ctx.arc(lt[0], lt[1], 80 + k * 160, 0, TAU); ctx.stroke(); }
+  });
+});
+// he gets up and slams the window face down: the green dies, the devil shrieks, the medal falls off it
+shot('slam', 'page1', null, (L, u, t, c) => {
+  const ri = c('rise'), sd = c('slamDown'), sh = c('shriek'), mf = c('medalFall'), mc = c('medalClink');
+  const rise = eio(seg(L, ri, ri + .5)), fold = clamp(Math.pow(seg(L, sd - .35, sd), 2)), dead = L > sd, fall = seg(L, mf, mc), shake = dead ? Math.sin((L - sd) * 50) * 22 * (1 - seg(L, sd, sd + .5)) : 0;
+  SPLIT(side => { if (side < 0) { rightDesk(t, L, { noPencil: true, hold: true, look: [.8, .3], expr: { ...FX.smile, lid: .1 } }); return; }
+    ctx.save(); ctx.translate(shake, shake * .4); (() => {
+      stageD(900, { pool: [480, 420, 700, GREEN, dead ? .03 : .2] }); litterD(7);
+      wallWin(L + 34, t, { fold });
+      const d = devBehind(t, { x: 230, y: 940, h: 640, expr: L < sh ? devEx('charm', L, []) : { ...DX.rage, h: .9 }, look: [.8, .2], lean: L > sh ? -.15 : .1, tilt: L > sh ? -.15 : .05, cap: true, medal: L < mf, heat: L > sh ? 1.6 : .9,
+        armL: L > sh ? [120, 300] : [180, 660], armR: L > sh ? [380, 280] : [330, 640] });
+      if (L >= mf) { const mx = lerp(d.sx + 6, 300, fall), my = lerp(d.shY + d.h * .2, 895, fall * fall); medalD(mx, my, d.h * .05, [mx, my - d.h * .1]); if (L > mc) for (let i = 0; i < 3; i++) stroke([[300 + (i - 1) * 30, 870], [300 + (i - 1) * 50, 840]], 4, rgba(GOLD, 1 - seg(L, mc, mc + .3))); }
+      // his arms bring the window down
+      const f = figure({ kind: 'sam', x: lerp(760, 560, rise), y: lerp(905, 880, rise), h: 430 * lerp(1, 1.09, rise), sit: rise < .5 ? 1 : 0, flat: rise < .5, noLegs: rise > .5, expr: L < sd ? { ...FX.strain, sweat: false } : 'resolve', look: [-.3, -.5], tilt: -.05,
+        armL: L < sd + .1 ? [lerp(500, 440, fold), lerp(300, 640, fold)] : [440, 670], armR: L < sd + .1 ? [lerp(620, 600, fold), lerp(290, 640, fold)] : [600, 670], stretch: true, t });
+      earPencil(f, 1);
+      deskD(80, 880, DESK_Y);
+      if (dead) { windowDown(480, .25); for (let i = 0; i < 10; i++) { const k = seg(L, sd, sd + .5), a = rnd(i * 3.3) * Math.PI; disc(480 + Math.cos(a) * (200 + k * 300), DESK_Y - Math.sin(a) * (20 + k * 120), 6 * (1 - k), rgba(GREEN_L, 1 - k)); } }
+    })(); ctx.restore(); }, { focus: null });
+  counterL('PAGES: 0'); counterR('PAGES: 300');
+  if (L >= sd && L < sd + .1) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); rectf(0, 0, W, H, rgba(D.white, .5 * (1 - seg(L, sd, sd + .1)))); ctx.restore(); }
+});
+// ---- 71-96 ONE PAGE A DAY: the left one climbs (1, 40, 120, 300); the slip at 40; Max's door; the tear stitches shut ----
+// his board as it fills again: page 1 (wobbly, top left) and the ones after it, better each time (n pinned)
+function boardAgain(n, o = {}) { const x = 260, y = 140, w = 440, h = 280; outlined(() => { ctx.beginPath(); ctx.rect(M(x) - (SIDE < 0 ? w : 0), y, w, h); }, rgba([120, 92, 66]), 5);
+  const cols = 4, rows = 3, cw = w / cols, chh = h / rows;
+  for (let i = 0; i < Math.min(n, 12); i++) { const cx = M(x + cw * (i % cols + .5) + (rnd(i * 2.1) - .5) * cw * .2), cy = y + chh * (Math.floor(i / cols) + .5) + (rnd(i * 3.3) - .5) * chh * .15;
+    at(cx, cy, chh * .62, (rnd(i * 5.7) - .5) * .25, () => { outlined(() => { ctx.beginPath(); ctx.rect(-.5, -.66, 1, 1.32); }, rgba(PAPER), .015); monsterD(0, .02, .6 + .2 * (i / 11), { rot: i === 0 ? .25 : 0, col: i === 0 ? [90, 90, 100] : [40, 40, 48] }); if (i === 0) for (let k = 0; k < 3; k++) curve([[-.3 + k * .05, -.4], [.2, -.1 + k * .1], [-.2, .3]], .02, rgba([60, 60, 70], .6)); });
+    disc(cx, cy - chh * .38, 5, rgba([220, 60, 50])); } }
+// the left desk after the turn: his lamp back on, his pencil, the devil (its cap still on) beside him with a small window
+function leftAgain(t, L, o = {}) { const wob = o.drawing ? Math.sin(t * 16) * 22 : 0;
+  return deskHalf(t, { lamp: o.lamp ?? 1, pinned: 0, green: false, glowK: 0, pencil: !o.drawing,
+    back: () => boardAgain(o.n ?? 1),
+    boy: { expr: o.expr || { eh: .9, lid: .38, bi: .08, bo: -.02, m: 'flat' }, look: o.look || [.1, .9], armL: o.armL || [430, 676], armR: o.armR || [500 + wob, 668], glowOn: o.green ? [GREEN, o.green] : [LAMP, .2], glowSide: o.green ? -1 : 1, ...(o.boy || {}) },
+    before: f => { if (o.dev) o.dev(f); },
+    after: f => { deskPage(480); if (o.drawing) pencilD(500 + wob, 660, 70, -.6); if (o.after) o.after(f); } }); }
+shot('page1', 'page40', null, (L, u, t, c) => {
+  const w3 = c('win3'), dn = c('down2'), lampOn = eo(seg(L, 0, .3)), open = eo(seg(L, w3 - .2, w3 + .3)), down = eio(seg(L, dn - .2, dn + .1));
+  SPLIT(side => { if (side < 0) { rightDesk(t, L, { noPencil: true, hold: true, look: [.8, .4], expr: { ...FX.calm, lid: .15 } }); return; }
+    leftAgain(t, L, { n: 1, lamp: lampOn, drawing: L < w3 - .3 || L > dn + .3, look: L > w3 && L < dn ? [-.7, -.2] : [.1, .9], expr: L > w3 && L < dn ? { ...FX.sad, lid: .05 } : L > dn ? { ...FX.resolve, lid: .2 } : undefined, green: L > w3 && L < dn + .1 ? .3 : 0,
+      armR: L > dn - .5 && L < dn + .3 ? [lerp(500, 400, eio(seg(L, dn - .5, dn - .2))), lerp(668, 540 + 120 * down, eio(seg(L, dn - .5, dn - .2)))] : undefined,
+      dev: f => devBehind(t, { x: 150, y: 920, h: 600, expr: L < w3 ? devEx('sly', L, [.6]) : L < dn ? devEx('sweet', L, [w3 + 1.2]) : { ...DX.sulk }, look: [.8, .3], lean: .12, cap: true, armR: [lerp(260, 300, open), lerp(640, 520, open)], armL: [110, 650] }),
+      after: f => { if (L > w3 - .25 && L < dn + .1) windowD(345, lerp(600, 500, open) + down * 170, 150 * (1 - down * .2), 112 * (1 - down * .95), 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t)); else if (L >= dn + .1) windowDown(330, .7); } });
+  }, { focus: 'L', dim: .5 });
+  counterL('PAGES: 1'); counterR('PAGES: 300');
+  say('one page a day.', 480, 990, 66, L, c('onePage'), .6);
+  red('they’re years ahead.', 480, 880, 64, L, c('years'), .9);
+});
+// PAGE 40, the slip: the window jumps back to a poster, its arms go round him, his counter sticks at 40
+shot('page40', 'board40', null, (L, u, t, c) => {
+  const ol = c('oneLook'), lk = c('looks'), jp = c('jump'), ar = c('arms'), look = eio(seg(L, lk - .2, lk + .2)), jump = eback(seg(L, jp, jp + .35)), arms = eio(seg(L, ar - .2, ar + .4)), stuck = L > c('stuck');
+  const ww = lerp(160, 330, jump), wh = ww * .75, wx = lerp(300, 220, jump), wy = lerp(470, 480, jump);
+  function open40(L) { return eio(seg(L, ol - .6, ol)) * (1 - jump); }
+  SPLIT(side => { if (side < 0) { rightDesk(t, L, { noPencil: true, hold: true, look: [.8, .4], expr: L > jp ? { ...FX.sad, lid: .1 } : { ...FX.calm, lid: .15 } }); return; }
+    leftAgain(t, L, { n: 6, lamp: lerp(1, .35, jump), drawing: L < lk - .3, look: L > lk - .3 ? [-.8, -.2] : [.1, .9], expr: L < lk ? undefined : stuck ? { ...FX.tempted, lid: .5, bags: true } : 'tempted', green: L > ol ? .3 + .2 * jump : 0,
+      dev: f => devBehind(t, { x: lerp(780, 680, arms), y: 920, h: 600, expr: L < jp ? devEx('sweet', L, [ol + 1.2]) : devEx('grin', L, [ar + 1.0]), look: [-.8, .3], lean: -.12 - .15 * arms, tilt: -.08 * arms, cap: true, capBrim: -1,
+        armL: arms > 0 ? [lerp(640, f.shL[0] - 10, arms), lerp(560, f.shL[1] + 40, arms)] : [lerp(640, 330, open40(L)), lerp(560, 480, open40(L))], armR: arms > 0 ? [lerp(860, f.shR[0] + 10, arms), lerp(650, f.shY + 60, arms)] : [860, 650], heat: .8 + .6 * jump }),
+      after: f => { windowD(wx, wy, ww, wh, 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t), { glow: 1 + jump }); if (L > jp && L < jp + .4) { const k = seg(L, jp, jp + .4); ctx.lineWidth = 8 * (1 - k); ctx.strokeStyle = rgba(GREEN_L, 1 - k); ctx.beginPath(); ctx.roundRect(wx - ww / 2 - k * 60, wy - wh / 2 - k * 50, ww + k * 120, wh + k * 100, 20); ctx.stroke(); } } });
+  }, { focus: 'L', dim: .5 });
+  counterL('PAGES: 40'); counterR('PAGES: 300');
+  red('just one look.', 480, 900, 66, L, ol, .8);
+});
+// his own board, close: page 1 next to page 40
+shot('board40', 'down40', null, (L, u, t, c) => {
+  camD(lerp(1.0, 1.12, eio(u)), 960, 540, () => {
+    rectf(-200, -200, W + 400, H + 400, rgba([120, 92, 66])); for (let i = 0; i < 40; i++) disc(rnd(i * 3.1) * W, rnd(i * 5.7) * H, 3, rgba([90, 68, 50]));
+    additive(() => glow(GREEN, -100, 540, 700, .25 + .06 * Math.sin(t * 7)));
+    const pg = (x, rot, n, wobbly) => at(x, 560, 300, rot, () => { outlined(() => { ctx.beginPath(); ctx.rect(-.5, -.66, 1, 1.32); }, rgba(PAPER), .012); monsterD(0, .05, wobbly ? .62 : .72, { rot: wobbly ? .3 : 0, col: wobbly ? [100, 100, 110] : [40, 40, 48] });
+      if (wobbly) for (let k = 0; k < 4; k++) curve([[-.34 + k * .04, -.42], [.24, -.12 + k * .08], [-.24, .32]], .012, rgba([60, 60, 70], .55)); ink(String(n), .36, -.52, .14, [60, 60, 70]); });
+    pg(640, -.06, 1, true); pg(1280, .05, 40, false); for (const x of [640, 1280]) { disc(x, 360, 12, rgba([220, 60, 50])); disc(x - 3, 357, 4, 'rgba(255,255,255,.6)'); }
+  });
+});
+shot('down40', 'door', null, (L, u, t, c) => {
+  const d3 = c('down3'), down = eio(seg(L, d3 - .3, d3 + .05)), off = eo(seg(L, d3, d3 + .5));
+  SPLIT(side => { if (side < 0) { rightDesk(t, L, { noPencil: true, hold: true, look: [.8, .4], expr: L > d3 ? { ...FX.smile } : { ...FX.calm, lid: .15 } }); return; }
+    leftAgain(t, L, { n: 6, lamp: lerp(.35, 1, off), drawing: L > d3 + .4, look: L < d3 - .3 ? [-.7, -.2] : [.1, .9], expr: L < d3 ? { ...FX.resolve, lid: .1 } : { ...FX.resolve, lid: .25 }, green: .4 * (1 - off),
+      armL: L > d3 - .5 && L < d3 + .4 ? [lerp(430, 300, eio(seg(L, d3 - .5, d3 - .25))), lerp(676, 470 + 200 * down, eio(seg(L, d3 - .5, d3 - .25)))] : undefined,
+      dev: f => devBehind(t, { x: lerp(680, 800, off), y: 920, h: 600, expr: L < d3 ? devEx('grin', L, []) : { ...DX.sulk }, look: [-.8, .3], lean: -.27 + .2 * off, cap: true, capBrim: -1,
+        armL: [lerp(f.shL[0] - 10, 660, off), lerp(f.shL[1] + 40, 640, off)], armR: [lerp(f.shR[0] + 10, 880, off), lerp(f.shY + 60, 650, off)], heat: .8 }),
+      after: f => { if (L < d3) windowD(220, 480 + down * 200, 330, 248 * (1 - down * .95), 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L + 5, t), { glow: 2 - down }); else windowDown(230, .6); } });
+  }, { focus: 'L', dim: .5 });
+  counterL(L >= c('count41') ? 'PAGES: 41' : 'PAGES: 40'); counterR('PAGES: 300');
+});
+// PAGE 120: Max's front door. He holds out a comic of the two of them; Max reads it, laughs, hugs him; the cap falls off the devil
+shot('door', 'stitch', 'PAGES: 120', (L, u, t, c) => {
+  const kn = c('knock'), op = c('open'), ho = c('hold'), rd = c('read'), la = c('laughM'), hg = c('hug2'), cf = c('capFall');
+  const open = eio(seg(L, op, op + .5)), hold = eio(seg(L, ho - .3, ho + .2)), hug = eio(seg(L, hg - .3, hg + .2)), capK = seg(L, cf, cf + .6);
+  camD(push(u, .05), 1000, 560, () => {
+    stageD(900, { pool: [1150, 380, 640, LAMP, .2] });
+    doorD(1250, 900, open, 1);
+    const mx = lerp(1250, lerp(1180, 1090, hug), open), tx = lerp(860, 960, hug);
+    if (open > .3) { const m = figure({ kind: 'sam', x: mx, y: 900, h: 420, expr: L < rd ? 'calm' : L < la ? { ...FX.calm, lid: .2 } : 'laugh', look: L < rd ? [-.9, 0] : L < hg ? [-.3, .8] : [-.6, -.1], turn: -.2,
+        armL: hug > .1 ? [tx + 40, 650] : L > rd ? [mx - 90, 650] : undefined, armR: hug > .1 ? [tx + 10, 600] : L > rd ? [mx - 40, 660] : undefined, stretch: true, t, seed: 5 }); capOn(m, -1); }
+    const th = figure({ kind: 'sam', x: tx, y: 900, h: 420, expr: L < op + .3 ? { ...FX.calm, lid: .2 } : L < la ? { ...FX.tempted, lid: .05, m: 'flat' } : 'laugh', look: [.9, -.1], turn: .25,
+      armR: L < kn + .3 ? [1080, 560 + Math.abs(Math.sin((L - kn) * 20)) * 30 * (L > kn ? 1 : 0)] : hold > 0 && L < rd ? [lerp(960, 1080, hold), lerp(700, 640, hold)] : hug > .1 ? [mx + 30, 640] : undefined, armL: hug > .1 ? [mx + 60, 600] : undefined, stretch: true, t });
+    earPencil(th, 1);
+    // the comic he drew of the two of them: in his hand, then in Max's
+    const cx = L < rd ? lerp(920, 1090, hold) : lerp(1120, 1100, hug), cy = L < rd ? lerp(720, 640, hold) : lerp(640, 760, hug);
+    if (hug < .9) at(cx, cy, 1, 0, () => { if (L > rd) ctx.scale(-1, 1); comicD(0, 0, 200, 1, 0); });
+    // the devil on the step, sulking; the cap falls off it
+    const dv = figure({ kind: 'devil', x: 470, y: 900, h: 560, stage: 3, expr: L < hg ? devEx('sulk', L, [1.2]) : { ...DX.plead, m: 'pout' }, look: [.9, -.2], tilt: -.08, lean: -.06, armL: [430, 700], armR: [520, 700], tail: [-.34, .05], heat: .5, t });
+    if (L < cf) devCap(dv, 1); else { const k = capK; capAt(lerp(dv.head[0], 330, k), lerp(dv.head[1] - dv.hr * .82, 880, k * k), dv.hr * 1.02, k * 2.4, CAP, 1); }
+  });
+});
+// PAGE 300: the counters meet and the tear stitches shut; the two of him slide together into one
+shot('stitch', 'last', null, (L, u, t, c) => {
+  const cs = c('count300'), cd = c('countDone'), sw = c('sew'), se = c('sewEnd'), on = c('one');
+  const n = Math.round(lerp(120, 300, eio(seg(L, cs, cd)))), sew = seg(L, sw, se), merge = eio(seg(L, se, on));
+  SPLIT(side => { if (side < 0) { rightDesk(t, L, { noPencil: true, hold: L < se, look: L < cd ? [.8, .4] : [.1, .7], expr: L > cd ? 'smile' : { ...FX.calm, lid: .15 } }); return; }
+    leftAgain(t, L, { n: 12, lamp: 1, drawing: L < cd, look: L < cd ? [.1, .9] : [.1, .7], expr: L > cd ? 'smile' : undefined });
+  }, { stitch: sew, slide: 1 - merge, gap: 12 });
+  if (merge > .6) { ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); additive(() => glow([255, 240, 210], 960, 540, 900, .5 * Math.sin(seg(merge, .6, 1) * Math.PI))); ctx.restore(); }
+  if (merge < .2) { counterL('PAGES: ' + n); counterR('PAGES: 300'); }
+});
+// ---- 96-106 THE LAST PICTURE: one boy, one desk; the devil, plain, with a window the size of a stamp ----
+shot('last', 'title', 'PAGES: 300', (L, u, t, c) => {
+  const st = c('stamp'), ah = c('ahead'), sm = c('smile'), gd = c('good'), tp = c('tap'), dk = c('dark2');
+  const show = eo(seg(L, st - .2, st + .3)), tap = eio(seg(L, tp - .45, tp)), shut = L >= tp, dark = seg(L, dk, dk + 1.6);
+  camD(lerp(1.1, 1.22, eio(u)), 860, 560, () => {
+    deskHalf(t, { X: 960, lamp: 1 - dark * .9, pinned: 0, back: () => { SIDE = 1; ctx.save(); ctx.translate(480, 0); boardAgain(12); ctx.restore(); }, pile: 300, pencil: L < tp - .6 || L > tp + .4,
+      boy: { expr: L < sm ? { eh: .9, lid: .38, bi: .08, bo: -.02, m: 'flat' } : L < tp - .5 ? samEx('smile', L, [gd + .9]) : 'smile', look: L < ah ? [.1, .9] : L < tp - .5 ? [-.7, .1] : [-.7, .4], turn: L > ah ? -.2 : 0,
+        armL: L > tp - .6 && L < tp + .4 ? [lerp(900, 690, tap), lerp(676, 600, tap)] : [900, 676], armR: [1010, 668] },
+      after: f => {
+        // the devil, plain: no cap, no medal, leaning on the desk with its chin on its arms
+        const d = figure({ kind: 'devil', x: 600, y: 940, h: 560, stage: 3, noLegs: true, expr: L < ah ? devEx('sulk', L, [1.0]) : L < tp ? devEx('sweet', L, [ah + 1.4]) : { ...DX.sulk, h: .35 }, look: [.8, -.1], lean: .25, tilt: .18, armL: [560, 680], armR: [690, 640], heat: .45, t });
+        const wx = 700, wy = 600; if (!shut) windowD(wx, wy, 70 * show, 52 * show, 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t), { glow: .8 }); else { windowD(wx, wy + 18, 70, 6, 1, null, { back: true, glow: .2 * (1 - seg(L, tp, tp + .4)) }); }
+        if (L > tp - .6 && L < tp + .4) pencilD(lerp(900, 712, tap), lerp(660, 585, tap), 80, lerp(-.6, -2.2, tap));
+        if (L > tp && L < tp + .3) { const k = seg(L, tp, tp + .3); ctx.lineWidth = 5 * (1 - k); ctx.strokeStyle = rgba(GREEN_L, 1 - k); ctx.beginPath(); ctx.arc(wx, wy, 20 + k * 90, 0, TAU); ctx.stroke(); }
+        deskPage(1000); } });
+  });
+  red('they’re still ahead.', 520, 260, 62, L, ah, .9);
+  say('good for them.', 1560, 470, 78, L, gd, .6);
+});
+shot('title', 'END', null, (L, u, t, c) => {
+  const ti = c('titleIn'), k = eo(seg(L, ti, ti + .5));
+  if (L >= ti) over(() => { ctx.save(); ctx.globalAlpha = k; _hw('ENVY', 960, 470, 150, 'say', { rot: 0 }); _hw('it showed him everyone else', 960, 590, 46, 'devil', { rot: 0, weight: 400 }); ctx.restore(); });
+});
+// ---- the hook (source 200-204.6): SAME BOY. SAME DESK. / "why not me?" / "look." ----
+// 1. the split at its widest, a mirror image, dimmed so the eye lands on the two huge counters first
+shot('hk1', 'hk2', null, (L, u, t, c) => {
+  const lift = eo(seg(L, .15, 1.2));
+  camD(lerp(1.06, 1.0, eio(u)), 960, 540, () => SPLIT(side => { if (side < 0) { rightDesk(t, L + 30, { rub: false, look: [.1, .9] }); return; }
+    stageD(900, { pool: [480, 420, 700, GREEN, .2] }); litterD(); wallWin(L + 40, t);
+    const f = figure({ kind: 'sam', x: 520, y: 880, h: 470, noLegs: true, expr: { ...FX.sad, lid: .3, bags: true }, look: [-.4, -.95], tilt: -.12, glowOn: [GREEN, .5], glowSide: -1, armL: [440, 680], armR: [600, 684], t });
+    devBehind(t, { x: 230, y: 940, h: 640, expr: devEx('grin', L, []), look: [.7, .3], lean: .2, tilt: .1, cap: true, medal: true, heat: 1.2, armR: [f.head[0] - f.hr * .9, f.head[1] + f.hr * .1], armL: [f.head[0] + f.hr * .2, f.head[1] + f.hr * .55], bendR: -.2, bendL: .6 });
+    deskD(80, 880, DESK_Y); }, {}));
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); rectf(0, 0, W, H, rgba([0, 0, 0], lerp(.62, .22, lift))); ctx.restore();
+  counterL('PAGES: 0', 110); counterR('PAGES: 300', 110);
+  slam('SAME BOY. SAME DESK.', 960, 1000, 92, L, c('hkSame'), 'say');
+});
+// 2. close on the left one's face, lit green from below; the devil's grin behind him
+shot('hk2', 'hk3', null, (L, u, t, c) => {
+  camD(lerp(1.0, 1.08, eio(u)), 960, 540, () => {
+    stageD(0, { pool: [960, 1000, 900, GREEN, .3] });
+    const d = figure({ kind: 'devil', x: 520, y: 2000, h: 1900, stage: 3, noLegs: true, noArms: true, noTail: true, expr: devEx('grin', L, [1.0]), look: [.8, .4], tilt: .14, lean: .1, heat: 1.1, t }); devCap(d, 1);
+    const f = figure({ kind: 'sam', x: 1180, y: 2140, h: 1900, noLegs: true, noArms: true, expr: { ...FX.tempted, lid: .35, bags: true }, look: [-.3, .7], tilt: -.04, glowOn: [GREEN, .6], glowSide: 0, t });
+    additive(() => glow(GREEN, 1180, 1100, 700, .35));
+  });
+  say('why not me?', 960, 170, 96, L, c('hkWhy'), .5);
+});
+// 3. the devil turns to the camera and holds its window out to us
+shot('hk3', 'hk4', null, (L, u, t, c) => {
+  const turn = eio(seg(L, 0, .35)), out = eback(seg(L, .1, .5));
+  camD(lerp(1.0, 1.06, eio(u)), 960, 540, () => {
+    stageD(0, { pool: [960, 560, 800, GREEN, .22] });
+    const d = figure({ kind: 'devil', x: 960, y: 1700, h: 1500, stage: 3, noLegs: true, expr: L < .35 ? devEx('sly', L, []) : devEx('charm', L, [1.1]), look: [lerp(-.8, 0, turn), lerp(.2, .1, turn)], turn: lerp(-.4, 0, turn), heat: 1, t, armL: [700, 760], armR: [1220, 760] });
+    devCap(d, 1); medalD(d.sx, d.shY + d.h * .2, d.h * .05, [d.sx, d.shY + d.h * .04]);
+    windowD(960, lerp(1060, 870, out), lerp(280, 540, out), lerp(210, 405, out), 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L + 2, t), { glow: 1.4 });
+  });
+  red('look.', 1560, 300, 130, L, c('hkLook'), .3);
+});
+// ---- THE EDIT: what ships. The shots above are the source, timed by cues.js; cut(shot, { a, b, sp, cam: [zoom, x, y] }) plays
+// seconds a..b of a source shot at speed sp, with an optional punch-in; blink() is a beat of black between chapters.
+// the hook: SAME BOY. SAME DESK. / "why not me?" / "look."
+cut('hk1', { sp: 1.15 }); cut('hk2', { sp: 1.1 }); cut('hk3', { sp: 1.1 });
+// together
+cut('floor', { a: 0, b: 1.5, sp: 1.3 }); cut('floor', { a: 1.5, b: 2.6, sp: 1.3, cam: [1.8, 960, 800] }); cut('floor', { a: 2.6, b: 4.3, sp: 1.25 });
+// the window
+cut('night', { a: 0, b: 1.4, sp: 1.3 }); cut('night', { a: 1.4, b: 2.4, sp: 1.25 }); cut('night', { a: 2.4, b: 3.4, sp: 1.25, cam: [1.9, 600, 450] });
+cut('night', { a: 3.4, b: 4.4, sp: 1.3 }); cut('night', { a: 4.4, b: 5.6, sp: 1.2 }); cut('night', { a: 5.6, b: 6.6, sp: 1.2, cam: [2.1, 950, 520] });
+// round 1: their comic, crumpled and eaten; the window grows; the cap
+cut('crumple', { a: 0, b: 1.3, sp: 1.3 }); cut('crumple', { a: 1.3, b: 2.2, sp: 1.25, cam: [1.8, 980, 520] }); cut('crumple', { a: 2.2, b: 3.6, sp: 1.3 });
+cut('crumple', { a: 3.6, b: 4.6, sp: 1.25 }); cut('crumple', { a: 4.6, b: 6.2, sp: 1.35, cam: [1.6, 720, 430] });
+// the split: the rip, the slide, the mirror, one difference
+cut('split', { a: 0, b: 1.6, sp: 1.4 }); cut('split', { a: 1.6, b: 2.6, sp: 1.0 }); cut('split', { a: 2.6, b: 3.6, sp: 1.0 });
+cut('split', { a: 3.6, b: 4.6, sp: 1.1, cam: [1.5, 560, 560] }); cut('split', { a: 4.6, b: 6.0, sp: 1.1, cam: [1.5, 1360, 600] });
+// round 2: the cuts alternate between the halves
+cut('medal', { a: 0, b: 1.6, sp: 1.2 }); cut('work', { a: 0, b: 1.2, sp: 1.3 }); cut('medal', { a: 1.6, b: 3.0, sp: 1.3 }); cut('work', { a: 1.2, b: 2.5, sp: 1.3 });
+cut('medal', { a: 3.0, b: 4.2, sp: 1.25, cam: [1.7, 380, 500] }); cut('work', { a: 2.5, b: 3.6, sp: 1.3 }); cut('medal', { a: 4.2, b: 5.4, sp: 1.3 }); cut('work', { a: 3.6, b: 5.0, sp: 1.3 });
+cut('medal', { a: 5.4, b: 6.5, sp: 1.3 });
+// the cost: the card, Max's show
+cut('card', { a: 0, b: 1.05, sp: 1.2 }); cut('card', { a: 1.05, b: 2.4, sp: 1.25 }); cut('card', { a: 2.4, b: 3.5, sp: 1.3 });
+cut('showR', { sp: 1.3 });
+cut('showL', { a: 0, b: 1.4, sp: 1.3 }); cut('showL', { a: 1.4, b: 2.0, sp: 1.2, cam: [2.0, 1240, 560] }); cut('showL', { a: 2.0, b: 3.6, sp: 1.3 });
+cut('showL', { a: 3.6, b: 4.8, sp: 1.3 }); cut('showL', { a: 4.8, b: 6.4, sp: 1.1, cam: [2.4, 1240, 540] });
+blink();
+// the worst: his own monster on the prize
+cut('worst', { a: 0, b: 1.8, sp: 1.3 }); cut('worst', { a: 1.8, b: 4.0, sp: 1.3 }); cut('cover', { sp: 1.2 }); cut('wide', { sp: 1.1 });
+// the turn
+cut('wrench', { a: 0, b: 1.4, sp: 1.2 }); cut('wrench', { a: 1.4, b: 3.0, sp: 1.2 });
+cut('eyes', { a: 0, b: 1.0, sp: 1.2 }); cut('eyes', { a: 1.0, b: 2.2, sp: 1.0 }); cut('eyes', { a: 2.2, b: 4.0, sp: 1.15 });
+cut('hand', { a: 0, b: 1.2, sp: 1.3 }); cut('hand', { a: 1.2, b: 2.8, sp: 1.2 });
+cut('slam', { a: 0, b: 1.0, sp: 1.2 }); cut('slam', { a: 1.0, b: 2.4, sp: 1.25 });
+blink();
+// one page a day
+cut('page1', { a: 0, b: 1.5, sp: 1.3 }); cut('page1', { a: 1.5, b: 2.9, sp: 1.3, cam: [1.6, 360, 520] }); cut('page1', { a: 2.9, b: 4.3, sp: 1.3 });
+cut('page40', { a: 0, b: 1.5, sp: 1.3 }); cut('page40', { a: 1.5, b: 2.6, sp: 1.2 }); cut('page40', { a: 2.6, b: 3.5, sp: 1.2, cam: [2.0, 470, 470] }); cut('page40', { a: 3.5, b: 5.0, sp: 1.3 });
+cut('board40', { sp: 1.2 }); cut('down40', { sp: 1.3 });
+cut('door', { a: 0, b: 1.6, sp: 1.3 }); cut('door', { a: 1.6, b: 2.9, sp: 1.3, cam: [2.0, 1140, 520] }); cut('door', { a: 2.9, b: 4.0, sp: 1.2 });
+cut('door', { a: 4.0, b: 5.0, sp: 1.2, cam: [1.8, 460, 680] }); cut('door', { a: 5.0, b: 6.5, sp: 1.3 });
+cut('stitch', { a: 0, b: 2.0, sp: 1.3 }); cut('stitch', { a: 2.0, b: 5.0, sp: 1.15 });
+// the last picture, the title
+cut('last', { a: 0, b: 2.4, sp: 1.2 }); cut('last', { a: 2.4, b: 3.6, sp: 1.1, cam: [1.7, 960, 500] }); cut('last', { a: 3.6, b: 5.4, sp: 1.1 }); cut('last', { a: 5.4, b: 7.0, sp: 1.0 });
+cut('title', { sp: 1.0 });

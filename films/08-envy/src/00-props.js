@@ -130,6 +130,8 @@ function SPLIT(half, o = {}) { const tear = o.tear ?? 1, g = (o.gap ?? 12) * (1 
   ctx.restore();
   if (tear > 0 && tear < 1) additive(() => glow([255, 240, 220], ln, ty, 80, .7));
 }
+// zoom about a point without moving it (inside a half of the split, camD would re-centre the half on the screen)
+function zoomAt(z, x, y, fn) { ctx.save(); ctx.translate(x, y); ctx.scale(z, z); ctx.translate(-x, -y); fn(); ctx.restore(); }
 // the counters of the split: one at the top of each half (the pages he has drawn)
 const counterL = (text, size = 46) => hw(text, 90, 40 + size * .95, size, 'say', { align: 'left', rot: 0 });
 const counterR = (text, size = 46) => hw(text, W - 90, 40 + size * .95, size, 'say', { align: 'right', rot: 0 });

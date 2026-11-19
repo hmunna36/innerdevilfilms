@@ -9,7 +9,7 @@ shot('hk1', 'hk2', null, (L, u, t, c) => {
     deskD(80, 880, DESK_Y); }, {}));
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); rectf(0, 0, W, H, rgba([0, 0, 0], lerp(.62, .22, lift))); ctx.restore();
   counterL('PAGES: 0', 110); counterR('PAGES: 300', 110);
-  slam('SAME BOY. SAME DESK.', 960, 1000, 92, L, c('hkSame'), 'say');
+  slam('SAME BOY. SAME DESK.', 960, 1030, 90, L, c('hkSame'), 'say');
 });
 // 2. close on the left one's face, lit green from below; the devil's grin behind him
 shot('hk2', 'hk3', null, (L, u, t, c) => {
@@ -19,14 +19,14 @@ shot('hk2', 'hk3', null, (L, u, t, c) => {
     const f = figure({ kind: 'sam', x: 1220, y: 2380, h: 1900, noLegs: true, noArms: true, expr: { ...FX.tempted, lid: .35, bags: true }, look: [-.3, .7], tilt: -.04, glowOn: [GREEN, .6], glowSide: 0, t });
     additive(() => glow(GREEN, 1180, 1100, 700, .35));
   });
-  say('why not me?', 470, 930, 96, L, c('hkWhy'), .5);
+  say('why not me?', 1460, 170, 100, L, c('hkWhy'), .5);
 });
 // 3. the devil turns to the camera and holds its window out to us
 shot('hk3', 'hk4', null, (L, u, t, c) => {
   const turn = eio(seg(L, 0, .35)), out = eback(seg(L, .1, .5));
   camD(lerp(1.0, 1.06, eio(u)), 960, 540, () => {
     stageD(0, { pool: [960, 560, 800, GREEN, .22] });
-    const d = figure({ kind: 'devil', x: 960, y: 1700, h: 1500, stage: 3, noLegs: true, expr: L < .35 ? devEx('sly', L, []) : devEx('charm', L, [1.1]), look: [lerp(-.8, 0, turn), lerp(.2, .1, turn)], turn: lerp(-.4, 0, turn), heat: 1, t, armL: [700, 760], armR: [1220, 760] });
+    const d = figure({ kind: 'devil', x: 960, y: 1700, h: 1500, stage: 3, noLegs: true, noTail: true, expr: L < .35 ? devEx('sly', L, []) : devEx('charm', L, [1.1]), look: [lerp(-.8, 0, turn), lerp(.2, .1, turn)], turn: lerp(-.4, 0, turn), heat: 1, t, armL: [700, 760], armR: [1220, 760] });
     devCap(d, 1); medalD(d.sx, d.shY + d.h * .2, d.h * .05, [d.sx, d.shY + d.h * .04]);
     windowD(960, lerp(1060, 870, out), lerp(280, 540, out), lerp(210, 405, out), 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L + 2, t), { glow: 1.4 });
   });

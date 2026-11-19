@@ -31,7 +31,7 @@ function round2L(L, t, c, o = {}) {
       armL: up > 0 && L < m2 ? [lerp(430, 380 - rip * 60, up), lerp(680, 560, up)] : undefined, armR: up > 0 && L < m2 ? [lerp(530, 580 + rip * 60, up), lerp(680, 560, up)] : undefined, glowOn: [GREEN, .42], glowSide: -1 },
     before: f => { D_ = devBehind(t, { x: 210, y: 900, h: 600, expr: L < w2 + .2 ? devEx('charm', L, []) : L < rp ? devEx('sweet', L, [w2 + 1.4]) : L < m2 + .6 ? { ...DX.happy, m: 'open', h: .6 } : L < mt - .3 ? devEx('grin', L, []) : devEx('charm', L, [mo + .4]),
         look: L < rp ? [.6, -.2] : [.8, .3], lean: .18, tilt: .08,
-        bendR: L > pl - .5 && L < cr + .1 ? 3.2 : -.4, armR: L > pl - .5 && L < cr + .1 ? [lerp(lerp(450, f.head[0] + f.hr * .7, pluck), 300, toMouth), lerp(lerp(500, f.head[1] - f.hr * .5, pluck), 400, toMouth)] : L > m2 - .5 && L < m2 + .5 ? [lerp(560, 330, eat), lerp(520, 420, eat)] : L > mt - .5 && L < mo + .2 ? [lerp(lerp(380, wx + 40, take), 260, put), lerp(lerp(520, wy, take), 520, put)] : [450, 560],
+        bendR: L > pl - .5 && L < cr + .1 ? 3.2 : -.4, armR: L > pl - .5 && L < cr + .1 ? [lerp(lerp(450, f.head[0] + f.hr * .7, pluck), 300, toMouth), lerp(lerp(500, f.head[1] - f.hr * .5, pluck), 400, toMouth)] : L > m2 - .5 && L < m2 + .5 ? [lerp(560, 330, eat), lerp(520, 420, eat)] : L > mt - .5 && L < mo + .2 ? [lerp(lerp(380, wx + 40, take), 260, put), lerp(lerp(520, wy, take), 520, put)] : [400, 660],
         armL: [170, 640], cap: true, medal: L >= mo, heat: .9 + (L > m2 && L < m2 + .6 ? 1 : 0) + (L > cr && L < cr + .5 ? 1 : 0) }); },
     after: f => {
       windowD(wx, wy, ww, wh, 1, (x0, y0, w, h) => SHOW.medal(x0, y0, w, h, L, t), { glow: 1.2 });

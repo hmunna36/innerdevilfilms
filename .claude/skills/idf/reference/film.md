@@ -30,7 +30,7 @@ films: YouTube's partner review rejects mass-produced, repetitive channels.
 1. **The devil's character and trick.** Who is it to him (THE BOTTLE: his best friend who wants his place), what is its
    one rule the audience learns without a word (it grows a size each time it is fed), how does it speak (it never
    lies). A new one per vice: ENVY's might wear other people's faces; GREED's might keep a ledger.
-2. **A structure** from the table below that none of the last three films used (07 used THE YEARS).
+2. **A structure** from the table below that none of the last three films used (07 used THE YEARS, 08 TWO OF HIM).
 3. **A place and props of its own**, an accent colour that means something, a light of its own (the pool's colour).
 4. **Its own hook, its own reveal, its own comeback setting, its own last line, its own tune.**
 5. **Its own thumbnail composition** (`reference/publish.md`).
@@ -41,7 +41,7 @@ films: YouTube's partner review rejects mass-produced, repetitive channels.
 | ONE NIGHT | a single evening in real time, a clock counter | it grows every time he gives in | the clock says morning |
 | THE DEAL | the devil is a host across a table; round after round he slides something across | its side of the table fills | the receipt of everything he gave |
 | THE CHASE | he is hunted through outside places | it catches up each time he gives in | cornered, he turns and faces it |
-| TWO OF HIM | the same day side by side: the one who feeds it and the one who doesn't | it grows on one side only | the two look at each other |
+| TWO OF HIM (08) | one boy torn down the middle into two mirrored boys at two desks, a counter over each half (08: PAGES): the one who feeds it and the one who doesn't | on one side only (08: it gets closer and dresses up in what its window shows; its window grows) | the two look at each other; the tear stitches shut when the counters meet |
 | ITS SIDE | told from the devil's point of view, its red words are its diary | the hunt tightens | he gets away and it starves |
 | NIGHTS | night after night in one room (LUST, 04, 05: rested) | one step closer each night | |
 

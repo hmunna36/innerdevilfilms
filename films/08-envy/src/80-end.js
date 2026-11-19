@@ -19,5 +19,5 @@ shot('last', 'title', 'PAGES: 300', (L, u, t, c) => {
 });
 shot('title', 'END', null, (L, u, t, c) => {
   const ti = c('titleIn'), k = eo(seg(L, ti, ti + .5));
-  if (L >= ti) over(() => { ctx.save(); ctx.globalAlpha = k; _hw('ENVY', 960, 470, 150, 'say', { rot: 0 }); _hw('it showed him everyone else', 960, 590, 46, 'devil', { rot: 0, weight: 400 }); ctx.restore(); });
+  if (L >= ti) over(() => { ctx.save(); ctx.globalAlpha = k; _hw('ENVY', 960, 470, 150, 'say', { rot: 0 }); _hw('it showed him everyone else', 960, 600, 66, 'devil', { rot: 0, weight: 400 }); ctx.restore(); });
 });

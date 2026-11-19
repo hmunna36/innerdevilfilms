@@ -36,7 +36,7 @@ shot('page40', 'board40', null, (L, u, t, c) => {
       after: f => { windowD(wx, wy, ww, wh, 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t), { glow: 1 + jump }); if (L > jp && L < jp + .4) { const k = seg(L, jp, jp + .4); ctx.lineWidth = 8 * (1 - k); ctx.strokeStyle = rgba(GREEN_L, 1 - k); ctx.beginPath(); ctx.roundRect(wx - ww / 2 - k * 60, wy - wh / 2 - k * 50, ww + k * 120, wh + k * 100, 20); ctx.stroke(); } } });
   }, { focus: 'L', dim: .5 });
   counterL('PAGES: 40'); counterR('PAGES: 300');
-  red('just one look.', 480, 900, 66, L, ol, .8);
+  if (L < jp + .3) red('just one look.', 480, 900, 66, L, ol, .8);
 });
 // his own board, close: page 1 next to page 40
 shot('board40', 'down40', null, (L, u, t, c) => {

@@ -8,7 +8,7 @@ function wallWin(L, t, o = {}) { const fold = o.fold || 0, sway = o.sway || 0;
   if (fold < 1) windowD(M(WALL.x), bottom - Math.max(h, 8) / 2, w, Math.max(h, 8), 1, (x0, y0, ww, hh) => SHOW.him(x0, y0, ww, hh, L, t), { back: fold > .5, glow: 1.6 * (1 - fold) });
 }
 // the torn pages and balls on his floor (left half)
-function litterD(n = 9) { for (let i = 0; i < n; i++) { const x = 60 + rnd(i * 4.3) * 860, y = 905 + rnd(i * 2.1) * 60; if (i % 3) ballD(M(x), y, 18 + rnd(i) * 10, i); else at(M(x), y, 1, (rnd(i * 7) - .5) * 1.4, () => pageD(0, 0, 60, 0, { kind: 'monster', q: .5 })); } }
+function litterD(n = 9) { for (let i = 0; i < n; i++) { const x = 60 + rnd(i * 4.3) * 860, y = 905 + rnd(i * 2.1) * 30; if (i % 3) ballD(M(x), y, 18 + rnd(i) * 10, i); else at(M(x), y, 1, (rnd(i * 7) - .5) * 1.4, () => pageD(0, 0, 60, 0, { kind: 'monster', q: .5 })); } }
 // the right one at his desk late at night: 300 pages, rubbing out a page, the leak beside him. o: noPencil, look, expr, hold (his pile in his arms)
 function rightDesk(t, L, o = {}) { const rub = o.rub ? Math.sin(t * 30) * 26 : 0;
   return deskHalf(t, { lamp: 1, pinned: 12, q: .85, letter: true, pile: o.hold ? 0 : 300, pencil: !o.noPencil,
@@ -26,7 +26,7 @@ shot('worst', 'cover', null, (L, u, t, c) => {
     deskD(80, 880, DESK_Y);
   }, { lineX: lerp(960, 1500, slide), focus: 'L', dim: .55 });
   counterL('PAGES: 0'); counterR('PAGES: 300');
-  slam('LOOK. ISN’T HE AMAZING?', 760, 1030, 78, L, am);
+  slam('LOOK. ISN’T HE AMAZING?', 760, 1038, 76, L, am);
 });
 // close on what the window shows: the young man everyone loves holds up a printed comic; the cover is his monster
 shot('cover', 'wide', null, (L, u, t, c) => {
@@ -55,7 +55,7 @@ shot('wrench', 'eyes', null, (L, u, t, c) => {
       const d = devBehind(t, { x: 330, y: 940, h: 640, expr: L < sl ? { ...DX.rage, m: 'grin' } : devEx('rage', L, []), look: [.8, .3], lean: .2 - .1 * free, tilt: .1, cap: true, medal: true, heat: 1.4,
         armR: [lerp(hx + 70, 420, free), lerp(514, 300, free)], armL: [lerp(hx - 80, 260, free), lerp(524, 360, free)], bendR: -.5, bendL: .4 });
       const f = figure({ kind: 'sam', x: bx, y: by, h: 470, noLegs: true, expr: L < sl ? { ...FX.resolve, lid: .15 } : L < th ? 'fear' : { ...FX.horror }, look: L < sl ? [jerk, -.5] : [.3, -.3], tilt: jerk * .25 + fall * .5, lean: fall * .5, glowOn: [GREEN, .45], glowSide: -1,
-        armL: L < sl ? [bx - 120, by - 400] : [bx - 130, by - 230], armR: L < sl ? [bx + 110, by - 410] : [bx + 140, by - 250], t });
+        armL: L < sl ? [bx - 120, by - 400] : [bx - 150, by - 430], armR: L < sl ? [bx + 110, by - 410] : [bx + 150, by - 440], t });
       // the chair tipping back
       if (L > fb - .2) { const k = fall; at(hx + 150, 900, 1, k * .9, () => chairD(0, 0, 260, -1)); }
       deskD(80, 880, DESK_Y);
@@ -76,7 +76,7 @@ shot('eyes', 'hand', null, (L, u, t, c) => {
     const f = figure({ kind: 'sam', x: 770, y: 905, h: 440, kneel: 1, expr: turn < .5 ? { ...FX.fear, small: false } : L > me ? { ...FX.sad, lid: .05, bi: -.25 } : 'fear', look: [lerp(-.6, .95, turn), lerp(-.5, -.25, turn)], turn: lerp(-.2, .4, turn), tilt: .05, armL: [700, 880], armR: [850, 880], t });
   }, { lineX: lerp(1500, 960, back), focus: L > me ? null : 'L', dim: .45 });
   counterL('PAGES: 0'); counterR('PAGES: 300');
-  say('it never showed the 300 pages.', 960, 1000, 66, L, c('never'), .8);
+  say('it never showed the 300 pages.', 960, 1035, 66, L, c('never'), .8);
 });
 // his hand across the tear; the right one puts the yellow pencil in it (an insert: the two arms over the tear)
 shot('hand', 'slam', null, (L, u, t, c) => {

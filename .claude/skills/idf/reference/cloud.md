@@ -41,9 +41,9 @@ films, api.elevenlabs.io (`preflight.sh film` checks it).
 - `stage/make.sh` renders JPEG frames into `<folder>/out/frames` and then joins them: if it is cut off, run it again
   (or `stage.sh make <folder> encode` if all the frames are there).
 - Speed. The stage on the Mac (17 Nov 2026, 2 browsers): a 28 s Short (838 frames) in about 1.5 minutes, the 86 s film
-  in about 5. The stage has NOT been timed in the cloud yet (the old engine there drew about 60 ms a frame with 4
-  browsers): note the time in the first report. The setup (preflight) takes about 40 s and a fresh clone about 2
-  minutes. The Mac has only 8 GB: never more than 2 browsers there. Sheets and stills take seconds: use them for every
+  in about 5. In the cloud (4 browsers): a 28 s Short in 90 s (18 Nov 2026); the 87 s film 08 (2,618 frames) in about
+  5 minutes the first time and 3 minutes on a re-render (19 Nov 2026). The setup (preflight) takes about 40 s and a fresh
+  clone about 2 minutes. The Mac has only 8 GB: never more than 2 browsers there. Sheets and stills take seconds: use them for every
   look before a full render.
 
 ## Git

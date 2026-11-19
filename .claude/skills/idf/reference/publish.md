@@ -87,6 +87,7 @@ edge, and the hook is small and always "IT …".
    | 05 DOOMSCROLLING (old look) | one giant phone; in its black glass his face split young/old, the devil grinning behind | icy blue | bottom |
    | 06 RAGE (old look; the code stand-in stayed) | the devil bent double under the kitchen ceiling, its claws round his fists | ember orange | top |
    | 07 THE BOTTLE | the bottle huge in the middle with him trapped inside, palms on the glass, the giant devil behind it with both claws round the bottle | black and red, pale teal glass | on the left, stacked (THE / BOTTLE), the hook "IT WAS SO SMALL" under it |
+   | 08 ENVY (the code stand-in; the ChatGPT one is still to make) | his face lit green from below, the devil's grin behind him in Max's blue cap | black, red, the window's green | top, the hook "IT SHOWED HIM EVERYONE ELSE" under it; for the ChatGPT one, an idea not used yet: the split frame of the two of him (green with the devil and torn pages on the left, warm with a wall of drawings on the right) |
 
    Add each new film's row. Ideas not used yet: its point of view looking down on him tiny; a split frame of the two
    of him; her face huge with the devil reflected in her eye; his hand reaching for the object with its hand on top.

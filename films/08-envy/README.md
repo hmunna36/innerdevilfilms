@@ -2,6 +2,12 @@
 
 - **Status:** built in the cloud routine on 19 Nov 2026, in the look of film 07 (the black stage, the cream people, the
   black devil with the red glowing edge of `stage/rig.js`, untouched; handwritten words; no narration).
+- **Uploaded 19 Nov 2026:** https://youtu.be/wOtsA5y67uU, private until it goes public on **23 Nov 2026 05:30 IST**
+  (Sun 22 Nov 19:00 New York, `--schedule=auto`); processing succeeded; the code-drawn thumbnail is set (`thumb.jpg`, the
+  devil's grin over his green-lit face, ENVY on top). `film08_phone.mp4` is the small archive copy, `sheet_final.jpg`
+  48 frames of the uploaded render.
+- **Left for the owner, by hand:** `/idf thumb 08` on the Mac (the ChatGPT thumbnail, before Sunday; an unused idea: the
+  split frame of the two of him); in Studio, the end screen and the pinned comment.
 - **What it is:** 1:27 (87.3 s), 16:9, 1920 x 1080, 30 fps; a three-shot hook in the first 4.1 s; 76 cuts (a cut every
   1.15 s); two beats of black.
 - **The story** is in `STORY.md` (locked after three critic rounds: v1 scored 4-7, v2 6-8, v3 8-9 on every item; the
@@ -32,7 +38,7 @@ half-scene), `src/10-…80` (the scenes), `src/90-hook.js`, `src/95-edit.js` (th
 
 Rounds: story 3 critic rounds; picture about 8 sheet rounds before the first render (the window hid the devil's face in
 three scenes; words over the cap, the horns, the board and the litter; the halves of the split; the mirror trick), then
-3 full renders:
+4 full renders:
 
 1. Render 1 (5 min, 4 browsers): qa.mjs all ok. A blind sound-off viewer (no context, the sheets only) told the whole
    story back: the friends, the devil's window and its praise, the split ("same boy, two paths"), the walk-out, "it
@@ -44,13 +50,17 @@ three scenes; words over the cap, the horns, the board and the litter; the halve
    arm stretched along the floor at the fall.
 2. Render 2 (3 min): two small fixes for render 3 (the crush face, the door punch-in and the cap falling away from the
    devil's face).
-3. Render 3 (3 min): qa.mjs all ok (87.27 s, -18.13 LUFS, -1.99 dBTP; the one black stretch, 84.30-84.60, is the
+3. Render 3 (3 min): a second blind viewer (fresh, on render 2's sheets) also told the story back (8/10; weakest
+   stretch 45-57 s, the turn) and flagged words on the devil's teeth and on the floor litter, the devil's arm across his
+   mouth in round 2, a floating tail tip in the hook, a tangle as he falls, the slip's red line on the window's edge in
+   the punch-in and a small title line: all fixed for render 4.
+4. Render 4 (the upload): qa.mjs all ok (87.27 s, -18.13 LUFS, -1.99 dBTP; the one black stretch, 84.30-84.60, is the
    planned fade of the last picture before the title).
 
 | Item | Score | Why |
 |---|---|---|
 | 1 Hook | 8 | three shots with words in the first 4.1 s: SAME BOY. SAME DESK. under the two huge counters; "why not me?" on his green-lit face with its grin; "look." with the window held out to us. The first frame is the split. |
-| 2 Sound off | 9 | a viewer with no context told the story back with the sound off |
+| 2 Sound off | 9 | two viewers with no context told the story back with the sound off (the second scored it 8/10) |
 | 3 Pace | 9 | 76 cuts in 87.3 s (one every 1.15 s), punch-ins, two blacks where the chapters turn; nothing over 3 s but the stitch (2.6) and the title (3.0) |
 | 4 The devil | 8 | the rig untouched; its red edge and face read at phone size; its own trick (the window, the dressing up, praise only); it gets closer, then is undressed |
 | 5 The people | 8 | on model, a clear face in every face shot; the faces the viewer found hidden are clear now |

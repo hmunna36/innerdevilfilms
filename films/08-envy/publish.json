@@ -19,12 +19,16 @@
   ],
   "cover": "thumb.jpg",
   "youtube": {
-    "publishAt": "auto",
+    "publishAt": "2026-11-23T00:00:00.000Z",
     "privacy": "private",
     "categoryId": "1",
     "language": "en",
     "madeForKids": false,
     "syntheticMedia": false,
-    "notifySubscribers": true
+    "notifySubscribers": true,
+    "id": "wOtsA5y67uU",
+    "url": "https://youtu.be/wOtsA5y67uU",
+    "uploaded": "2026-11-19T06:06:08.794Z",
+    "thumbnailSet": true
   }
 }

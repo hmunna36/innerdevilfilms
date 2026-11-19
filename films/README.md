@@ -8,8 +8,10 @@
 | 04 | GAMBLING \| The House Always Wins | 1:57 | https://youtu.be/kfhGpirPNsk | 2 Nov 2026 05:30 IST (Sun 1 Nov 19:00 New York) |
 | 05 | DOOMSCROLLING \| It Eats Your Hours | 1:58 | https://youtu.be/4cDycr2W4p0 | 2 Nov 2026 05:30 IST (re-made 31 Oct; first scheduled for 9 Nov as 3Kdysv-5uwA) |
 | 06 | RAGE \| It Holds His Fists | 1:56 | https://youtu.be/aWCx-6AL-U8 | 9 Nov 2026 05:30 IST (Sun 8 Nov 19:00 New York) |
+| 07 | THE BOTTLE \| It Was So Small | 1:26 | https://youtu.be/ivH0FQPHEVo | 17 Nov 2026 21:00 IST (the first film in the new look) |
+| 08 | ENVY \| It Showed Him Everyone Else | 1:27 | https://youtu.be/wOtsA5y67uU | 23 Nov 2026 05:30 IST (Sun 22 Nov 19:00 New York) |
 
 Films 01-02 are the old Devil Mode style (Remotion, `anim/`; `01-tomorrow/tomorrow.mp4` is its master). From 03 on, every
 film is made on the canvas engine (`engine/`, `.claude/skills/idf/reference/engine.md`): `film.js` is the film,
-`music.json` what ElevenLabs made, `mix.py` the sound, and `filmNN_phone.mp4` or the like a small archive copy. A full-size
+`music.json` what ElevenLabs made, `mix.py` the sound, and `filmNN_phone.mp4` or the like a small archive copy. From 07 on, every film is made on the stage (`stage/`, the look of film 07; `.claude/skills/idf/reference/engine.md`). A full-size
 film is rebuilt from source: `python films/NN/mix.py`, then `.claude/skills/idf/bin/render.sh film films/NN-slug`.

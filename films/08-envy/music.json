@@ -1,0 +1,88 @@
+{
+ "model": "music_v2_5",
+ "note": "ENVY | It Showed Him Everyone Else. The devil's tune is a sly little TANGO in A minor at 120 bpm (a bar every 2 s): its window, its rounds, the split. HEAVY is the same tango huge and dark (the show, the worst); DREAD is two crushing hits for the worst and the turn. WORK is his own music, a small warm piano figure (the right side, the practice), and grows into RISE, the comeback anthem; ENDING is the door and the last desk. impact, marker, zoom, whoosh and bloop are film 07's recordings (copied with their .json so the cache hits: nothing is made again). New effects: window (the motif), crumple, tear, munch, pencil, slide, applause, keys, slam.",
+ "cues": {
+  "TANGO": {
+   "ms": 36000,
+   "prompt": "A sly, slinky, catchy tango in A minor at exactly 120 BPM in 4/4, starting on the first beat with no intro: pizzicato strings and a plucked double bass play the habanera rhythm, a solo violin plays a short sneaky four-note tune that repeats, an accordion answers it, light castanet ticks. Teasing, charming and seductive, like a smiling salesman showing you something you cannot have. Instrumental, no vocals, no drum kit."
+  },
+  "HEAVY": {
+   "ms": 16000,
+   "prompt": "A huge, dark, menacing tango in A minor at exactly 120 BPM in 4/4, starting at full strength on the first beat with no intro and no fade-in: low brass and a tuba play a strutting habanera rhythm, pounding timpani and a deep bass drum on every beat, an accordion and screeching violins on top, grand and sinister like a giant showman taking a bow, getting bigger every bar to the end. Instrumental, no vocals."
+  },
+  "DREAD": {
+   "ms": 10000,
+   "prompt": "Full cinematic horror in A minor that starts at full weight on the first beat with no intro and no fade-in: two colossal low brass and drum hits four seconds apart, each with a rumble of low drums and a dark wordless choir pad, screeching high strings rising between them, enormous and terrifying. Instrumental, no vocals."
+  },
+  "WORK": {
+   "ms": 20000,
+   "prompt": "A small, warm, patient felt piano figure in C major at exactly 120 BPM in 4/4, starting on the first beat: a gentle repeating pattern of eighth notes like a pencil working late at night, a soft cello joining after eight seconds, quiet, focused and hopeful, a young artist practising alone at his desk. Intimate and simple. Instrumental, no vocals, no drums."
+  },
+  "RISE": {
+   "ms": 30000,
+   "prompt": "A driving, hopeful comeback anthem in C major at exactly 120 BPM that opens on one big impact: a felt piano plays steady eighth notes like a pencil working, a pulsing bass and a tight kick and claps join, warm strings and bright horns build bar by bar to a big, glowing, triumphant peak with timpani, determined and humble, a young artist working every day for a year. Instrumental, no vocals."
+  },
+  "ENDING": {
+   "ms": 18000,
+   "prompt": "Warm, tender solo piano in C major at 70 BPM joined by soft swelling strings, gentle and full of relief, two old friends laughing together again, rising to one quiet glowing chord and ringing out. No drums, no vocals."
+  }
+ },
+ "sfx": {
+  "window": {
+   "sec": 2.0,
+   "text": "a magical glassy shimmer swelling up and ending in one bright clear glass bell ding, a small enchanted window opening, sparkling, close up"
+  },
+  "crumple": {
+   "sec": 1.2,
+   "text": "a sheet of paper crumpled quickly into a tight ball in two hands, crisp crackling paper, close up, dry"
+  },
+  "tear": {
+   "sec": 1.5,
+   "text": "a thick sketchbook torn in half in one long ripping tear, loud paper rip, close up, dry"
+  },
+  "munch": {
+   "sec": 1.5,
+   "text": "a small cartoon creature greedily munching and crunching a ball of paper, three quick crunchy chomps and a gulp, comic, close up, no voice"
+  },
+  "pencil": {
+   "sec": 3.0,
+   "text": "a pencil sketching quickly on paper, continuous soft graphite scratching strokes and short hatching, close up, quiet room"
+  },
+  "slide": {
+   "sec": 1.2,
+   "text": "a paper envelope sliding fast across a wooden floor under a door, a short dry papery swish, close up"
+  },
+  "applause": {
+   "sec": 4.0,
+   "text": "a small crowd clapping and cheering warmly at an art gallery opening, applause only, no words, indoors"
+  },
+  "keys": {
+   "sec": 1.0,
+   "text": "a ring of metal car keys jingling once, bright metallic jingle, close up"
+  },
+  "slam": {
+   "sec": 1.5,
+   "text": "a glass picture frame slammed face down hard on a wooden desk, a heavy wooden thump with a sharp glass crack, close up"
+  },
+  "impact": {
+   "sec": 2.5,
+   "text": "a deep cinematic impact, one huge punchy low boom hit with a sharp attack and a short dark tail, a trailer hit"
+  },
+  "marker": {
+   "sec": 3.0,
+   "text": "a felt marker pen writing quickly on paper, continuous scratchy squeaky scribbling strokes, close up, dry"
+  },
+  "zoom": {
+   "sec": 0.8,
+   "text": "a very short, tight, fast snap whoosh, a sharp airy swish ending in a small soft click, a camera snap zoom sound"
+  },
+  "whoosh": {
+   "sec": 1.0,
+   "text": "a soft, quick whoosh of air passing, one smooth short swish, a transition sound, no impact"
+  },
+  "bloop": {
+   "sec": 0.6,
+   "text": "a single cute cartoon pop, one bubbly bright bloop like a bubble popping, short and dry"
+  }
+ }
+}

@@ -50,7 +50,7 @@ shot('crumple', 'split', 'PAGES: 30', (L, u, t, c) => {
   over(() => counter(counted ? 'PAGES: 29' : 'PAGES: 30'));
   camD(push(u, .05) * 1.1, 760, 520, () => {
     deskHalf(t, { X: 960, lamp: .8, pinned: 3, q: .5, glowK: 1 + grow * .3,
-      boy: { expr: L < ep ? { ...FX.sad, lid: .1 } : L < cr ? 'tempted' : L < to + .3 ? { ...FX.strain, sweat: false } : 'sad', look: L < ep ? [-.8, -.05] : L < cr ? [.6, -.6] : L < to ? [0, .4] : [-.8, .0], turn: L < ep ? -.2 : L < cr ? .2 : -.1,
+      boy: { expr: L < ep ? { ...FX.sad, lid: .1 } : L < cr ? 'tempted' : L < to + .3 ? { ...FX.resolve, m: 'grit', lid: .1 } : 'sad', look: L < ep ? [-.8, -.05] : L < cr ? [.6, -.6] : L < to ? [0, .4] : [-.8, .0], turn: L < ep ? -.2 : L < cr ? .2 : -.1,
         armR: L > ep + .1 && L < to + .2 ? [lerp(1060, 1000, crushK), lerp(lerp(500, 300, take), 600, crushK)] : undefined, armL: L > cr && L < to + .2 ? [lerp(900, 950, crushK), 600 - 40 * crushK] : undefined,
         glowOn: [GREEN, .32 + .12 * grow], glowSide: -1 },
       back: () => { if (L < ep + .2) { comicD(1130, 260, 210, 1, .05); disc(1130, 160, 6, rgba([220, 60, 50])); } else if (L < cr) comicD(lerp(1130, 1060, take), lerp(260, 300, take), 210 * (1 - take * .2), 1, .05 + take * .3); },

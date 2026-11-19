@@ -36,7 +36,7 @@ cut('page1', { a: 0, b: 1.5, sp: 1.3 }); cut('page1', { a: 1.5, b: 2.9, sp: 1.3,
 cut('page40', { a: 0, b: 1.5, sp: 1.3 }); cut('page40', { a: 1.5, b: 2.6, sp: 1.2 }); cut('page40', { a: 2.6, b: 3.5, sp: 1.2, cam: [2.0, 470, 470] }); cut('page40', { a: 3.5, b: 5.0, sp: 1.3 });
 cut('board40', { sp: 1.2 }); cut('down40', { sp: 1.3 });
 cut('door', { a: 0, b: 1.6, sp: 1.3 }); cut('door', { a: 1.6, b: 2.9, sp: 1.3, cam: [2.0, 1140, 520] }); cut('door', { a: 2.9, b: 4.0, sp: 1.2 });
-cut('door', { a: 4.0, b: 5.0, sp: 1.2, cam: [1.8, 460, 680] }); cut('door', { a: 5.0, b: 6.5, sp: 1.3 });
+cut('door', { a: 4.0, b: 5.0, sp: 1.2, cam: [1.55, 520, 600] }); cut('door', { a: 5.0, b: 6.5, sp: 1.3 });
 cut('stitch', { a: 0, b: 2.0, sp: 1.3 }); cut('stitch', { a: 2.0, b: 5.0, sp: 1.15 });
 // the last picture, the title
 cut('last', { a: 0, b: 2.4, sp: 1.2 }); cut('last', { a: 2.4, b: 3.6, sp: 1.1, cam: [1.7, 960, 500] }); cut('last', { a: 3.6, b: 5.4, sp: 1.1 }); cut('last', { a: 5.4, b: 7.0, sp: 1.0 });

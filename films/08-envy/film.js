@@ -270,7 +270,7 @@ shot('crumple', 'split', 'PAGES: 30', (L, u, t, c) => {
   over(() => counter(counted ? 'PAGES: 29' : 'PAGES: 30'));
   camD(push(u, .05) * 1.1, 760, 520, () => {
     deskHalf(t, { X: 960, lamp: .8, pinned: 3, q: .5, glowK: 1 + grow * .3,
-      boy: { expr: L < ep ? { ...FX.sad, lid: .1 } : L < cr ? 'tempted' : L < to + .3 ? { ...FX.strain, sweat: false } : 'sad', look: L < ep ? [-.8, -.05] : L < cr ? [.6, -.6] : L < to ? [0, .4] : [-.8, .0], turn: L < ep ? -.2 : L < cr ? .2 : -.1,
+      boy: { expr: L < ep ? { ...FX.sad, lid: .1 } : L < cr ? 'tempted' : L < to + .3 ? { ...FX.resolve, m: 'grit', lid: .1 } : 'sad', look: L < ep ? [-.8, -.05] : L < cr ? [.6, -.6] : L < to ? [0, .4] : [-.8, .0], turn: L < ep ? -.2 : L < cr ? .2 : -.1,
         armR: L > ep + .1 && L < to + .2 ? [lerp(1060, 1000, crushK), lerp(lerp(500, 300, take), 600, crushK)] : undefined, armL: L > cr && L < to + .2 ? [lerp(900, 950, crushK), 600 - 40 * crushK] : undefined,
         glowOn: [GREEN, .32 + .12 * grow], glowSide: -1 },
       back: () => { if (L < ep + .2) { comicD(1130, 260, 210, 1, .05); disc(1130, 160, 6, rgba([220, 60, 50])); } else if (L < cr) comicD(lerp(1130, 1060, take), lerp(260, 300, take), 210 * (1 - take * .2), 1, .05 + take * .3); },
@@ -318,7 +318,7 @@ function round2L(L, t, c, o = {}) {
   const rip = eo(seg(L, rp - .15, rp + .25)), up = eio(seg(L, rp - 1, rp - .2)), eat = seg(L, m2 - .1, m2 + .5), pluck = eio(seg(L, pl - .3, pl)), toMouth = eio(seg(L, pl + .05, cr)), take = eio(seg(L, mt - .3, mt)), put = eio(seg(L, mt, mo)), lamp = 1 - eo(seg(L, lo, lo + .15));
   const ww = 260, wh = 196, wx = 250, wy = 590;
   deskHalf(t, { lamp: .45 * lamp, pinned: L > rp ? 0 : 2, green: true, glowK: 1.2, pencil: L < pl - .05, pile: 0,
-    boy: { expr: L < w2 + .4 ? { ...FX.sad, lid: .1 } : L < rp - .2 ? 'tempted' : L < rp + .5 ? { ...FX.strain, sweat: false } : L < pl - .3 ? 'sad' : L < cr + .3 ? 'fear' : { ...FX.sad, lid: .35, bags: true },
+    boy: { expr: L < w2 + .4 ? { ...FX.sad, lid: .1 } : L < rp - .2 ? 'tempted' : L < rp + .5 ? { ...FX.resolve, m: 'grit', lid: .1 } : L < pl - .3 ? 'sad' : L < cr + .3 ? 'fear' : { ...FX.sad, lid: .35, bags: true },
       look: L < rp - 1 ? [-.8, -.2] : L < rp + .5 ? [0, .3] : L < pl ? [-.6, -.1] : [-.3, .3], turn: L < rp - 1 ? -.25 : 0,
       armL: up > 0 && L < m2 ? [lerp(430, 380 - rip * 60, up), lerp(680, 560, up)] : undefined, armR: up > 0 && L < m2 ? [lerp(530, 580 + rip * 60, up), lerp(680, 560, up)] : undefined, glowOn: [GREEN, .42], glowSide: -1 },
     before: f => { D_ = devBehind(t, { x: 210, y: 900, h: 600, expr: L < w2 + .2 ? devEx('charm', L, []) : L < rp ? devEx('sweet', L, [w2 + 1.4]) : L < m2 + .6 ? { ...DX.happy, m: 'open', h: .6 } : L < mt - .3 ? devEx('grin', L, []) : devEx('charm', L, [mo + .4]),
@@ -611,7 +611,7 @@ shot('door', 'stitch', null, (L, u, t, c) => {
     if (hug < .9) comicD(cx, cy, 200, 1, 0);
     // the devil on the step, sulking; the cap falls off it
     const dv = figure({ kind: 'devil', x: 470, y: 900, h: 560, stage: 3, expr: L < hg ? devEx('sulk', L, [1.2]) : { ...DX.plead, m: 'pout' }, look: [.9, -.2], tilt: -.08, lean: -.06, armL: [430, 700], armR: [520, 700], tail: [-.34, .05], heat: .5, t });
-    if (L < cf) devCap(dv, 1); else { const k = capK; capAt(lerp(dv.head[0], 330, k), lerp(dv.head[1] - dv.hr * .82, 880, k * k), dv.hr * 1.02, k * 2.4, CAP, 1); }
+    if (L < cf) devCap(dv, 1); else { const k = capK, x0 = dv.head[0], y0 = dv.head[1] - dv.hr * 1.15; capAt(lerp(x0, x0 + 280, k), lerp(y0, 880, k * k) - 90 * Math.sin(k * Math.PI), dv.hr * 1.02, k * 2.4, CAP, 1); }
   });
 });
 // PAGE 300: the counters meet and the tear stitches shut; the two of him slide together into one
@@ -719,7 +719,7 @@ cut('page1', { a: 0, b: 1.5, sp: 1.3 }); cut('page1', { a: 1.5, b: 2.9, sp: 1.3,
 cut('page40', { a: 0, b: 1.5, sp: 1.3 }); cut('page40', { a: 1.5, b: 2.6, sp: 1.2 }); cut('page40', { a: 2.6, b: 3.5, sp: 1.2, cam: [2.0, 470, 470] }); cut('page40', { a: 3.5, b: 5.0, sp: 1.3 });
 cut('board40', { sp: 1.2 }); cut('down40', { sp: 1.3 });
 cut('door', { a: 0, b: 1.6, sp: 1.3 }); cut('door', { a: 1.6, b: 2.9, sp: 1.3, cam: [2.0, 1140, 520] }); cut('door', { a: 2.9, b: 4.0, sp: 1.2 });
-cut('door', { a: 4.0, b: 5.0, sp: 1.2, cam: [1.8, 460, 680] }); cut('door', { a: 5.0, b: 6.5, sp: 1.3 });
+cut('door', { a: 4.0, b: 5.0, sp: 1.2, cam: [1.55, 520, 600] }); cut('door', { a: 5.0, b: 6.5, sp: 1.3 });
 cut('stitch', { a: 0, b: 2.0, sp: 1.3 }); cut('stitch', { a: 2.0, b: 5.0, sp: 1.15 });
 // the last picture, the title
 cut('last', { a: 0, b: 2.4, sp: 1.2 }); cut('last', { a: 2.4, b: 3.6, sp: 1.1, cam: [1.7, 960, 500] }); cut('last', { a: 3.6, b: 5.4, sp: 1.1 }); cut('last', { a: 5.4, b: 7.0, sp: 1.0 });

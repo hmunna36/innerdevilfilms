@@ -26,7 +26,7 @@ function round2L(L, t, c, o = {}) {
   const rip = eo(seg(L, rp - .15, rp + .25)), up = eio(seg(L, rp - 1, rp - .2)), eat = seg(L, m2 - .1, m2 + .5), pluck = eio(seg(L, pl - .3, pl)), toMouth = eio(seg(L, pl + .05, cr)), take = eio(seg(L, mt - .3, mt)), put = eio(seg(L, mt, mo)), lamp = 1 - eo(seg(L, lo, lo + .15));
   const ww = 260, wh = 196, wx = 250, wy = 590;
   deskHalf(t, { lamp: .45 * lamp, pinned: L > rp ? 0 : 2, green: true, glowK: 1.2, pencil: L < pl - .05, pile: 0,
-    boy: { expr: L < w2 + .4 ? { ...FX.sad, lid: .1 } : L < rp - .2 ? 'tempted' : L < rp + .5 ? { ...FX.strain, sweat: false } : L < pl - .3 ? 'sad' : L < cr + .3 ? 'fear' : { ...FX.sad, lid: .35, bags: true },
+    boy: { expr: L < w2 + .4 ? { ...FX.sad, lid: .1 } : L < rp - .2 ? 'tempted' : L < rp + .5 ? { ...FX.resolve, m: 'grit', lid: .1 } : L < pl - .3 ? 'sad' : L < cr + .3 ? 'fear' : { ...FX.sad, lid: .35, bags: true },
       look: L < rp - 1 ? [-.8, -.2] : L < rp + .5 ? [0, .3] : L < pl ? [-.6, -.1] : [-.3, .3], turn: L < rp - 1 ? -.25 : 0,
       armL: up > 0 && L < m2 ? [lerp(430, 380 - rip * 60, up), lerp(680, 560, up)] : undefined, armR: up > 0 && L < m2 ? [lerp(530, 580 + rip * 60, up), lerp(680, 560, up)] : undefined, glowOn: [GREEN, .42], glowSide: -1 },
     before: f => { D_ = devBehind(t, { x: 210, y: 900, h: 600, expr: L < w2 + .2 ? devEx('charm', L, []) : L < rp ? devEx('sweet', L, [w2 + 1.4]) : L < m2 + .6 ? { ...DX.happy, m: 'open', h: .6 } : L < mt - .3 ? devEx('grin', L, []) : devEx('charm', L, [mo + .4]),

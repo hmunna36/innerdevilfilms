@@ -78,7 +78,7 @@ shot('door', 'stitch', null, (L, u, t, c) => {
     if (hug < .9) comicD(cx, cy, 200, 1, 0);
     // the devil on the step, sulking; the cap falls off it
     const dv = figure({ kind: 'devil', x: 470, y: 900, h: 560, stage: 3, expr: L < hg ? devEx('sulk', L, [1.2]) : { ...DX.plead, m: 'pout' }, look: [.9, -.2], tilt: -.08, lean: -.06, armL: [430, 700], armR: [520, 700], tail: [-.34, .05], heat: .5, t });
-    if (L < cf) devCap(dv, 1); else { const k = capK; capAt(lerp(dv.head[0], 330, k), lerp(dv.head[1] - dv.hr * .82, 880, k * k), dv.hr * 1.02, k * 2.4, CAP, 1); }
+    if (L < cf) devCap(dv, 1); else { const k = capK, x0 = dv.head[0], y0 = dv.head[1] - dv.hr * 1.15; capAt(lerp(x0, x0 + 280, k), lerp(y0, 880, k * k) - 90 * Math.sin(k * Math.PI), dv.hr * 1.02, k * 2.4, CAP, 1); }
   });
 });
 // PAGE 300: the counters meet and the tear stitches shut; the two of him slide together into one

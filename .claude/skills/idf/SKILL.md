@@ -1,7 +1,7 @@
 ---
 name: idf
 description: Produce The Devil You Feed videos (the channel was Inner Devil Films; id UCMWgThNed--oMhcPwyDKceA) end to end in the house look of the film THE BOTTLE | It Was So Small (17 Nov 2026) - animated short films about a bad habit's devil, code-drawn on the channel's stage (a near-black stage, cream cartoon people with marker faces, a black devil with a red glowing edge, handwritten words), with no narration (music, a sound effect on everything, a story that reads from the pictures alone), a hook in the first four seconds and a cut about every 1.3 s. `/idf short next` (daily, cloud) cuts a 25-35 s vertical Short from the latest public film in that look, QA's it, uploads it for 20:00 IST and pushes. `/idf film next` (weekly, cloud) makes a 1:20-2:00 film on the next topic in topics.md (story locked by a critic, ElevenLabs music, the stage, QA to the ship bar), uploads it with a code-drawn thumbnail for Sunday 19:00 New York, plans its seven Shorts and pushes to github.com/hmunna36/innerdevilfilms. `/idf thumb NN` (the Mac only) draws the film's thumbnail with ChatGPT in the owner's Chrome and swaps it in.
-argument-hint: short next | film next | thumb <NN> | short <NN> | film <topic>
+argument-hint: short next | film next | thumb <NN> | thumb next | short <NN> | film <topic>
 effort: max
 ---
 
@@ -137,18 +137,30 @@ A film is `films/NN-slug/`: `cues.js` (one time table for picture and sound), `s
    item 8+, or fix and re-render. If it cannot get there, upload nothing: push the work and report.
 7. The code thumbnail (a strong film frame with the word and the hook lettered on it, `reference/publish.md`), the
    title and description, `publish.json` (kind film, cover thumb.jpg), upload with `--schedule=auto`.
+   Also write `films/NN-slug/PAIRS.md`: THREE thumbnail-and-title pairs for the test the Mac sets afterwards (the
+   owner, 22 Nov 2026: "create 3 thumbnails from chatgpt and always A/B test"; `reference/thumbnail-test.md`, step 1,
+   and `reference/publish.md`, "Three thumbnails and the test"). Pair 1 = the uploaded title with the film's
+   strongest picture; pairs 2 and 3 = two other pictures of this film, each with its own title. For each pair: the
+   scene in one sentence, the time in the edit of its best reference frame, the word and the hook, the title.
 8. Plan its seven Shorts in `$K/shorts.md`, after the ones still waiting. Update `topics.md`, `reference/log.md`,
    `films/README.md`. Push.
 
-## Job 3: `/idf thumb NN` (the Mac only) -> `reference/publish.md`, "Thumbnails"
+## Job 3: `/idf thumb NN` and `/idf thumb next` (the Mac only) -> `reference/publish.md`, "Thumbnails"
 
-The thumbnail, drawn by ChatGPT in the owner's Chrome from three film frames, checked at 320 px, saved as
-`films/NN-slug/thumb.jpg` (under 2 MB), swapped in with `node $K/bin/yt.mjs thumb <videoId> films/NN-slug/thumb.jpg`,
-pushed. Do it before the film goes public (films go out Sunday 19:00 New York).
+THREE thumbnails drawn by ChatGPT in the owner's Chrome and THREE titles, set as YouTube's "Title and thumbnail"
+A/B test on every film (the owner, 22 Nov 2026: "create 3 thumbnails from chatgpt and always A/B test";
+`reference/thumbnail-test.md` is the shared procedure, `reference/publish.md`, "Three thumbnails and the test", this
+channel's details). Each is drawn from film frames, checked at 320 px, saved as `films/NN-slug/thumb.jpg`,
+`thumb-b.jpg`, `thumb-c.jpg` (under 2 MB each). The first is swapped in with
+`node $K/bin/yt.mjs thumb <videoId> films/NN-slug/thumb.jpg`; then the test is set in Studio with all three pairs;
+then everything is pushed. Do it before the film goes public (films go out Sunday 19:00 New York): the test can be
+set on a scheduled film and starts at release. `thumb next` (the Mac's weekly routine, Thursday afternoon IST, after
+the cloud film run) = the newest uploaded film that has no test yet; it also reads the earlier films' test reports
+into `reference/log.md`.
 
 ## The report (the last message of every run)
 
 Title, length, the YouTube link and release time (IST), QA rounds and what they fixed, the sound report's numbers
 (loudness, silence), ElevenLabs credits spent (films), where it was pushed, and what is left for the owner by hand: the
-ChatGPT thumbnail (`/idf thumb NN` on the Mac) for a film; in Studio, a Short's Related video (the film), a film's end
+three ChatGPT thumbnails and the A/B test for a film (the Mac's Thursday routine does `/idf thumb next`; say whether PAIRS.md is written); in Studio, a Short's Related video (the film), a film's end
 screen and pinned comment. Say plainly that nobody has listened to the sound: it is judged from measurements.

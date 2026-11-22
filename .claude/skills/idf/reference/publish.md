@@ -44,8 +44,37 @@ cloud cannot reach ChatGPT. So:
    (`<t>` seconds in the edit; `--cam=zoom,x,y` frames it; `--pos=top|bottom|left`). It writes `thumb_code.jpg`
    (1280 x 720): look at it at 320 px wide, copy it to `thumb.jpg` (the cover in `publish.json`). It is a stand-in until
    the Mac swaps in the ChatGPT one. The film never goes out with a random frame.
-2. **The Mac** (`/idf thumb NN`, the owner's Chrome, any day before the release) makes the real one and swaps it in. The
-   report of every film run says so.
+2. **The Mac** (`/idf thumb NN`, or the Thursday routine's `/idf thumb next`, in the owner's Chrome, before the
+   release) makes the real ones, THREE of them, swaps the first in and sets the test. The report of every film run
+   says so.
+
+### Three thumbnails and the test (every film, since 22 Nov 2026)
+
+The owner, 22 Nov 2026: "update all my active long form schedulers, it should follow these, create 3 thumbnails from
+chatgpt and always A/B test". The shared procedure is `reference/thumbnail-test.md`. This channel's details:
+
+- **The pairs** come from `films/NN-slug/PAIRS.md`, written by the cloud film run; if it is missing, write it on the
+  Mac from the film's STORY.md and stills. Pair 1 = the uploaded title ("WORD | It …") with the film's strongest
+  picture. Pairs 2 and 3 = two other pictures of this film (ideas from the list below that the last three films did
+  not use), each with its own title: the same word with another "It …" line, or a plain sentence about what the
+  habit does ("He Checked His Phone 300 Times That Night"). All true to the film; no sexual wording; no real brands.
+- **Drawing**: the method of "`/idf thumb NN` on the Mac" below, once per pair in ONE chat (three frames attached in
+  the first message; "same style, same characters" for pictures 2 and 3; a different composition and word position
+  each). Words are drawn by ChatGPT: the word huge across the top or the left, never in the bottom-right corner.
+  Save `thumb.jpg`, `thumb-b.jpg`, `thumb-c.jpg`. Add each composition to the table below.
+- **Swap in the first**: `node .claude/skills/idf/bin/yt.mjs thumb <videoId> films/NN-slug/thumb.jpg` (this is the
+  last time the API touches this film's thumbnail or title: after the test is set, either would end it).
+- **Set the test** in Studio in the owner's Chrome: `https://studio.youtube.com/video/<videoId>/edit?authuser=0`
+  (the channel is a Brand Account on the owner's main login; the page must show this film's title; never use the
+  account switcher), "A/B testing" → "Title and thumbnail"; slot 1 is the film's own pair; `thumb-b.jpg` + title 2;
+  `thumb-c.jpg` + title 3; "Set test"; "Save"; reload and check the three titles are listed.
+- **Record** the three pairs and the time in the film's README and `reference/log.md`; push with `bin/push.sh`.
+- **`thumb next`**: the film to do is the newest `[x]` film in `topics.md` with a YouTube id whose README has no
+  "test set" line. Before it, open each earlier film that has a test, "View test report", and write the winner (or
+  "still running") into `reference/log.md`; the next PAIRS.md follows the winner's pattern.
+- **If it cannot be done**: ChatGPT unreachable after one retry → the film keeps its code thumbnail and the report
+  says "THUMBNAILS NOT MADE" first; Studio asks for a sign-in, a password, new terms or a permission → "TEST NOT
+  SET" first, with the three pairs. Never type a password.
 
 What the genre's thumbnails share (measured on Day One Films, 7 Oct 2026), and ours follow: a near-black field; ONE
 face filling about half the height in ONE hard emotion (fear, exhaustion, rage); ONE everyday object (a bottle, a phone,

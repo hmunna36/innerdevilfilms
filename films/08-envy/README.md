@@ -2,7 +2,7 @@
 
 - **Status:** built in the cloud routine on 19 Nov 2026, in the look of film 07 (the black stage, the cream people, the
   black devil with the red glowing edge of `stage/rig.js`, untouched; handwritten words; no narration).
-- **Uploaded 19 Nov 2026:** https://youtu.be/wOtsA5y67uU, private until it goes public on **23 Nov 2026 05:30 IST**
+- **Uploaded 19 Nov 2026:** https://youtu.be/IJiYpjTS_wE, private until it goes public on **23 Nov 2026 05:30 IST**
   (Sun 22 Nov 19:00 New York, `--schedule=auto`); processing succeeded; the code-drawn thumbnail is set (`thumb.jpg`, the
   devil's grin over his green-lit face, ENVY on top). `film08_phone.mp4` is the small archive copy, `sheet_final.jpg`
   48 frames of the uploaded render.

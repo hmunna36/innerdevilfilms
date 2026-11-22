@@ -19,16 +19,20 @@
   ],
   "cover": "thumb.jpg",
   "youtube": {
-    "publishAt": "2026-11-23T00:00:00.000Z",
     "privacy": "private",
     "categoryId": "1",
     "language": "en",
     "madeForKids": false,
     "syntheticMedia": false,
     "notifySubscribers": true,
-    "id": "wOtsA5y67uU",
-    "url": "https://youtu.be/wOtsA5y67uU",
-    "uploaded": "2026-11-19T06:06:08.794Z",
+    "publishAt": "2026-11-23T00:00:00.000Z",
+    "id": "IJiYpjTS_wE",
+    "url": "https://youtu.be/IJiYpjTS_wE",
+    "uploaded": "2026-11-22T07:13:02.034Z",
     "thumbnailSet": true
+  },
+  "replaces": {
+    "id": "wOtsA5y67uU",
+    "note": "version 1 (split screen), made private on 22 Nov 2026 before it went public"
   }
 }

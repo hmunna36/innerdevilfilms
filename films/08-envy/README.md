@@ -6,8 +6,23 @@
   (Sun 22 Nov 19:00 New York, `--schedule=auto`); processing succeeded; the code-drawn thumbnail is set (`thumb.jpg`, the
   devil's grin over his green-lit face, ENVY on top). `film08_phone.mp4` is the small archive copy, `sheet_final.jpg`
   48 frames of the uploaded render.
-- **Left for the owner, by hand:** `/idf thumb 08` on the Mac (the ChatGPT thumbnail, before Sunday; an unused idea: the
-  split frame of the two of him); in Studio, the end screen and the pinned comment.
+- **Two uploads exist (found 22 Nov 2026):** `wOtsA5y67uU` is VERSION 1, made private before it went public (no
+  schedule). The film that goes public on 23 Nov 2026 05:30 IST is VERSION 2, **https://youtu.be/IJiYpjTS_wE**
+  (`yt.mjs upcoming` shows it; this file was never updated for it). Always take the video id from `yt.mjs upcoming`.
+- **Test set 22 Nov 2026, about 14:40 IST, on IJiYpjTS_wE** (the owner: "create 3 thumbnails from chatgpt and always
+  A/B test", and "Yes, all three" for that day's films): YouTube's "Title and thumbnail" test, three pairs, the
+  winner by share of watch time is kept by YouTube. Studio showed "Ineligible: your video is not public" until
+  release: check after 05:30 IST that it says "Running…".
+  1. `thumb.jpg` (a picture torn in two: the boy slumped in green light beside the devil's screen / the same boy
+     drawing under his lamp, a wall of drawings behind him; hook IT SHOWED HIM EVERYONE ELSE) + "ENVY | It Showed Him Everyone Else"
+  2. `thumb-b.jpg` (close-up: the devil holds the green screen in front of his eyes and slides the pencil from behind
+     his ear; hook IT STOLE EVERY PAGE) + "ENVY | Every Look Cost Him a Page"
+  3. `thumb-c.jpg` (the art show: the devil steers him out, Max's smile falls; hook IT MADE HIM WALK OUT) + "ENVY | It Made Him Walk Out on His Best Friend"
+  Drawn in ChatGPT (chat https://chatgpt.com/c/6b02a8d5-48fc-83e8-8750-fdc2ac7344f6; `thumb_code.jpg` and three
+  frames of the version 2 sheet attached). `thumb.jpg` was put on the film with `yt.mjs thumb` BEFORE the test was
+  set; do not set the thumbnail or title again, it ends the test. By mistake the same thumbnail and test were first
+  put on the private version 1 (`wOtsA5y67uU`): harmless while it stays private, left as it is.
+- **Left for the owner, by hand:** in Studio, the end screen and the pinned comment (the ChatGPT thumbnails and the test are done, above).
 - **What it is:** 1:27 (87.3 s), 16:9, 1920 x 1080, 30 fps; a three-shot hook in the first 4.1 s; 76 cuts (a cut every
   1.15 s); two beats of black.
 - **The story** is in `STORY.md` (locked after three critic rounds: v1 scored 4-7, v2 6-8, v3 8-9 on every item; the

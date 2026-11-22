@@ -57,8 +57,15 @@ Thumbnail 1 and title 1 go up with the video exactly as before (Studio or the AP
 
 ## 4. Set the test in Studio (it can be set while the video is still scheduled)
 
-Checked on 22 Nov 2026 on two scheduled films: the button is there before release, and the test starts by itself
-when the video goes public.
+Done on 22 Nov 2026 on three scheduled films: the button is there before release and the test saves. Until the
+video is public, Studio shows "Ineligible" under "A/B testing titles" (hover: "Your video is not public"): that is
+expected. It is meant to start by itself at release; NOT YET CONFIRMED on a real release (the first three go public
+22 and 23 Nov 2026), so the next run of each channel checks that the previous film says "Running…" and, if it still
+says "Ineligible" on a public video, opens the test and saves it again.
+
+Use the right video: take the video id from the channel's own schedule (`yt.mjs upcoming`, or Studio's content
+list), never from a notes file. On 22 Nov 2026 a film had two uploads (a private first version and the scheduled
+second one) and its notes named the wrong one.
 
 1. Open `https://studio.youtube.com/video/<videoId>/edit?authuser=0` in a new tab. If the page says "Oops", try
    `authuser=1`, `2`, `3` until the page shows this video's title (History Frontline is a separate Google login; it

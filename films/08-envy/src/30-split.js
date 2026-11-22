@@ -22,7 +22,7 @@ shot('split', 'medal', null, (L, u, t, c) => {
 });
 // ---- ROUND 2: the left half (its window a poster now; the sketchbook torn, the pencil eaten, the medal taken) ----
 function round2L(L, t, c, o = {}) {
-  const w2 = c('win2'), rp = c('rip'), m2 = c('munch2'), pl = c('pluck'), cr = c('crunch'), mt = c('medalTake'), mo = c('medalOn'), lo = c('lampOff');
+  const w2 = c('win2'), rp = c('rip'), m2 = c('munch2'), pl = 99, cr = 99, mt = c('medalTake'), mo = c('medalOn'), lo = c('lampOff');
   const rip = eo(seg(L, rp - .15, rp + .25)), up = eio(seg(L, rp - 1, rp - .2)), eat = seg(L, m2 - .1, m2 + .5), pluck = eio(seg(L, pl - .3, pl)), toMouth = eio(seg(L, pl + .05, cr)), take = eio(seg(L, mt - .3, mt)), put = eio(seg(L, mt, mo)), lamp = 1 - eo(seg(L, lo, lo + .15));
   const ww = 260, wh = 196, wx = 250, wy = 590;
   deskHalf(t, { lamp: .45 * lamp, pinned: L > rp ? 0 : 2, green: true, glowK: 1.2, pencil: L < pl - .05, pile: 0,
@@ -63,7 +63,8 @@ function round2R(L, t, c, o = {}) {
 shot('medal', 'work', null, (L, u, t, c) => { const Dw = CUE.card - CUE.work;
   SPLIT(side => side > 0 ? round2L(L, t, c) : round2R(L * Dw / (CUE.work - CUE.medal), t, n => CUE[n] - CUE.work), { focus: 'L', dim: .55 });
   counterL(L >= c('rip') ? 'PAGES: 0' : 'PAGES: 29');
-  if (L < c('rip') + .4) red('and he’s only fourteen.', 470, 960, 70, L, c('fourteen'), 1.0);
+  if (L < c('rip') + .4) red('and he’s only fourteen.', 960, 975, 72, L, c('fourteen'), 1.0);
+  if (L > c('rip') + .2) say('every look cost him a page.', 960, 975, 68, L, c('rip') + .2, .7);
 });
 shot('work', 'card', null, (L, u, t, c) => { const Dm = CUE.work - CUE.medal;
   SPLIT(side => side > 0 ? round2L(L * Dm / (CUE.card - CUE.work), t, n => CUE[n] - CUE.medal) : round2R(L, t, c), { focus: 'R', dim: .55 });

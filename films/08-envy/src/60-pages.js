@@ -21,8 +21,8 @@ shot('page1', 'page40', null, (L, u, t, c) => {
       after: f => { if (L > w3 - .25 && L < dn + .1) windowD(345, lerp(600, 500, open) + down * 170, 150 * (1 - down * .2), 112 * (1 - down * .95), 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t)); else if (L >= dn + .1) windowDown(330, .7); } });
   }, { focus: 'L', dim: .5 });
   counterL('PAGES: 1'); counterR('PAGES: 300');
-  if (L < c('win3')) say('one page a day.', 480, 990, 66, L, c('onePage'), .6);
-  red('they’re years ahead.', 480, 880, 64, L, c('years'), .9);
+  if (L < c('win3')) say('one page a day.', 960, 990, 72, L, c('onePage'), .6);
+  red('they’re years ahead.', 960, 990, 70, L, c('years'), .9);
 });
 // PAGE 40, the slip: the window jumps back to a poster, its arms go round him, his counter sticks at 40
 shot('page40', 'board40', null, (L, u, t, c) => {
@@ -36,7 +36,7 @@ shot('page40', 'board40', null, (L, u, t, c) => {
       after: f => { windowD(wx, wy, ww, wh, 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t), { glow: 1 + jump }); if (L > jp && L < jp + .4) { const k = seg(L, jp, jp + .4); ctx.lineWidth = 8 * (1 - k); ctx.strokeStyle = rgba(GREEN_L, 1 - k); ctx.beginPath(); ctx.roundRect(wx - ww / 2 - k * 60, wy - wh / 2 - k * 50, ww + k * 120, wh + k * 100, 20); ctx.stroke(); } } });
   }, { focus: 'L', dim: .5 });
   counterL('PAGES: 40'); counterR('PAGES: 300');
-  if (L < jp + .3) red('just one look.', 480, 900, 66, L, ol, .8);
+  if (L < jp + .3) red('just one look.', 960, 990, 72, L, ol, .8);
 });
 // his own board, close: page 1 next to page 40
 shot('board40', 'down40', null, (L, u, t, c) => {

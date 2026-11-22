@@ -1,6 +1,6 @@
 {
  "model": "music_v2_5",
- "note": "ENVY | It Showed Him Everyone Else. The devil's tune is a sly little TANGO in A minor at 120 bpm (a bar every 2 s): its window, its rounds, the split. HEAVY is the same tango huge and dark (the show, the worst); DREAD is two crushing hits for the worst and the turn. WORK is his own music, a small warm piano figure (the right side, the practice), and grows into RISE, the comeback anthem; ENDING is the door and the last desk. impact, marker, zoom, whoosh and bloop are film 07's recordings (copied with their .json so the cache hits: nothing is made again). New effects: window (the motif), crumple, tear, munch, pencil, slide, applause, keys, slam.",
+ "note": "ENVY | It Showed Him Everyone Else. The devil's tune is a sly little TANGO in A minor at 120 bpm (a bar every 2 s): its window, its rounds, the split. HEAVY is the same tango huge and dark (the show, the worst); DREAD is two crushing hits for the worst and the turn. WORK is his own music, a small warm piano figure (the right side, the practice), and grows into RISE, the comeback anthem; ENDING is the door and the last desk. impact, marker, zoom, whoosh and bloop are film 07's recordings (copied with their .json so the cache hits: nothing is made again). New effects: window (the motif), crumple, tear, munch, pencil, slide, applause, keys, slam. Version 2 (22 Nov 2026, the owner: the first cut was confusing and its music 'very bad'; 'it should be dramatic'): one boy, one timeline; a new dramatic score: DARK (the devil's theme), TENDER (the friends), SORROW (Max's face, the truth), EPIC (the comeback). TANGO, HEAVY, WORK and RISE are no longer used.",
  "cues": {
   "TANGO": {
    "ms": 36000,
@@ -25,6 +25,22 @@
   "ENDING": {
    "ms": 18000,
    "prompt": "Warm, tender solo piano in C major at 70 BPM joined by soft swelling strings, gentle and full of relief, two old friends laughing together again, rising to one quiet glowing chord and ringing out. No drums, no vocals."
+  },
+  "DARK": {
+   "ms": 40000,
+   "prompt": "Dark, dramatic cinematic orchestral score in D minor at 80 BPM, starting immediately with no intro: low pulsing strings ostinato, a haunting, simple music box melody of five notes on top that repeats, deep taiko hits every four bars, slowly building tension and dread, ominous and seductive, film trailer quality. Instrumental, no vocals, no choir."
+  },
+  "TENDER": {
+   "ms": 14000,
+   "prompt": "Warm, tender, emotional solo piano in D major at 80 BPM, a simple, nostalgic melody about two childhood best friends, soft strings joining after six seconds, intimate and beautiful, cinematic. Instrumental, no vocals, no drums."
+  },
+  "SORROW": {
+   "ms": 18000,
+   "prompt": "Heartbreaking, dramatic cinematic strings in D minor at 70 BPM: a slow solo cello melody over sustained violins, deep and painful, a friendship broken, swelling to a sorrowful peak then falling quiet, film score. Instrumental, no vocals, no drums."
+  },
+  "EPIC": {
+   "ms": 32000,
+   "prompt": "Emotional, epic cinematic comeback score in D major at 90 BPM: starts with a lone, determined piano figure, strings and a steady heartbeat drum join, building bar by bar into soaring full orchestra with big drums and brass, hopeful, powerful and triumphant, film trailer quality. Instrumental, no vocals, no choir."
   }
  },
  "sfx": {

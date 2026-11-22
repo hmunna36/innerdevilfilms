@@ -118,7 +118,10 @@ function fig(o) { if (SIDE > 0) return figure(o); const r = { ...o, x: M(o.x) };
 //   focus 'L' | 'R'  the other half is dimmed, so the eye reads one half per cut
 //   gap  the black between the halves (px)
 const HALF = 480;
-function SPLIT(half, o = {}) { const tear = o.tear ?? 1, g = (o.gap ?? 12) * (1 - (o.stitch || 0)), sl = 1 - (o.slide ?? 1), ln = o.lineX ?? 960, shift = (ln - 960) / 2;
+// SINGLE (version 2, 22 Nov 2026: the owner found the split confusing): one boy, one timeline. The left half's scene is drawn
+// alone, centred on the whole frame; the right half, the tear and the second counter are gone.
+const SINGLE = true;
+function SPLIT(half, o = {}) { if (SINGLE) { ctx.save(); ctx.translate(HALF, 0); SIDE = 1; half(1); ctx.restore(); return; } const tear = o.tear ?? 1, g = (o.gap ?? 12) * (1 - (o.stitch || 0)), sl = 1 - (o.slide ?? 1), ln = o.lineX ?? 960, shift = (ln - 960) / 2;
   const P = Array.from({ length: 23 }, (_, i) => [ln + (rnd(i * 7.7 + 3) - .5) * 26 + Math.sin(i * 1.3) * 8, -20 + i * 51]), ty = -20 + tear * 1140;
   const path = (side, off) => { ctx.beginPath(); ctx.moveTo(side > 0 ? -10 : W + 10, -20); for (const [x, y] of P) ctx.lineTo(x + off, y); ctx.lineTo(side > 0 ? -10 : W + 10, 1140); ctx.closePath(); };
   if (tear < 1 && o.one) { ctx.save(); ctx.beginPath(); ctx.rect(0, ty, W, H + 40); ctx.clip(); o.one(); ctx.restore(); }
@@ -135,8 +138,8 @@ function SPLIT(half, o = {}) { const tear = o.tear ?? 1, g = (o.gap ?? 12) * (1 
 // zoom about a point without moving it (inside a half of the split, camD would re-centre the half on the screen)
 function zoomAt(z, x, y, fn) { ctx.save(); ctx.translate(x, y); ctx.scale(z, z); ctx.translate(-x, -y); fn(); ctx.restore(); }
 // the counters of the split: one at the top of each half (the pages he has drawn)
-const counterL = (text, size = 46) => hw(text, 90, 40 + size * .95, size, 'say', { align: 'left', rot: 0 });
-const counterR = (text, size = 46) => hw(text, W - 90, 40 + size * .95, size, 'say', { align: 'right', rot: 0 });
+const counterL = (text, size = 46) => SINGLE ? hw(text, W - 90, 40 + size * .95, size, 'say', { align: 'right', rot: 0 }) : hw(text, 90, 40 + size * .95, size, 'say', { align: 'left', rot: 0 });
+const counterR = (text, size = 46) => SINGLE ? null : hw(text, W - 90, 40 + size * .95, size, 'say', { align: 'right', rot: 0 });
 // ---- Max's first show: a gallery wall with framed drawings under little spotlights (x0..x1 along the wall) ----
 function galleryD(x0, x1, t, o = {}) { const n = o.n || 4, y = o.y || 300, s = o.s || 150;
   stroke([[x0, 120], [x1, 120]], 4, rgba(D.floor));

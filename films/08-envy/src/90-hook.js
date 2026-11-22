@@ -8,8 +8,8 @@ shot('hk1', 'hk2', null, (L, u, t, c) => {
     devBehind(t, { x: 230, y: 940, h: 640, expr: devEx('grin', L, []), look: [.7, .3], lean: .2, tilt: .1, cap: true, medal: true, heat: 1.2, armR: [f.head[0] - f.hr * .9, f.head[1] + f.hr * .1], armL: [f.head[0] + f.hr * .2, f.head[1] + f.hr * .55], bendR: -.2, bendL: .6 });
     deskD(80, 880, DESK_Y); }, {}));
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); rectf(0, 0, W, H, rgba([0, 0, 0], lerp(.62, .22, lift))); ctx.restore();
-  counterL('PAGES: 0', 110); counterR('PAGES: 300', 110);
-  slam('SAME BOY. SAME DESK.', 960, 1030, 90, L, c('hkSame'), 'say');
+  counterL('PAGES: 0', 90);
+  slam('HE USED TO DRAW EVERY DAY.', 960, 1030, 84, L, c('hkSame'), 'say');
 });
 // 2. close on the left one's face, lit green from below; the devil's grin behind him
 shot('hk2', 'hk3', null, (L, u, t, c) => {

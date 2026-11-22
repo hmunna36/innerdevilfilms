@@ -2,10 +2,10 @@
 // the wall-size window behind his desk (left-half coordinates), what it shows: his own best day. fold 0..1: it falls forward onto the desk
 const WALL = { x: 470, y: 330, w: 840, h: 470 };
 function wallWin(L, t, o = {}) { const fold = o.fold || 0, sway = o.sway || 0;
-  if (fold <= 0) { at(M(WALL.x), WALL.y, 1, sway, () => windowD(0, 0, WALL.w, WALL.h, 1, (x0, y0, w, h) => SHOW.him(x0, y0, w, h, L, t), { glow: 1.6 })); return; }
+  if (fold <= 0) { at(M(WALL.x), WALL.y, 1, sway, () => windowD(0, 0, WALL.w, WALL.h, 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t), { glow: 1.6 })); return; }
   // falling forward: the bottom edge stays on the desk, the top comes down toward us (it gets shorter, then flat)
   const h = WALL.h * Math.cos(fold * Math.PI / 2) * (1 - fold * .1), bottom = DESK_Y + 10 - (1 - fold) * 140, w = WALL.w * (1 + .12 * fold);
-  if (fold < 1) windowD(M(WALL.x), bottom - Math.max(h, 8) / 2, w, Math.max(h, 8), 1, (x0, y0, ww, hh) => SHOW.him(x0, y0, ww, hh, L, t), { back: fold > .5, glow: 1.6 * (1 - fold) });
+  if (fold < 1) windowD(M(WALL.x), bottom - Math.max(h, 8) / 2, w, Math.max(h, 8), 1, (x0, y0, ww, hh) => SHOW.crowd(x0, y0, ww, hh, L, t), { back: fold > .5, glow: 1.6 * (1 - fold) });
 }
 // the torn pages and balls on his floor (left half)
 function litterD(n = 9) { for (let i = 0; i < n; i++) { const x = 60 + rnd(i * 4.3) * 860, y = 905 + rnd(i * 2.1) * 30; if (i % 3) ballD(M(x), y, 18 + rnd(i) * 10, i); else at(M(x), y, 1, (rnd(i * 7) - .5) * 1.4, () => pageD(0, 0, 60, 0, { kind: 'monster', q: .5 })); } }
@@ -26,12 +26,24 @@ shot('worst', 'cover', null, (L, u, t, c) => {
     deskD(80, 880, DESK_Y);
   }, { lineX: lerp(960, 1500, slide), focus: 'L', dim: .55 });
   counterL('PAGES: 0'); counterR('PAGES: 300');
-  slam('LOOK. ISN’T HE AMAZING?', 760, 1038, 76, L, am);
+  slam('LOOK. ISN’T HE AMAZING?', 960, 1038, 80, L, am);
 });
-// close on what the window shows: the young man everyone loves holds up a printed comic; the cover is his monster
+// THE TRUTH (version 2): the window glitches, and for a moment shows what it always hid: Max alone at 2 AM, the
+// rejection letter, the 300 crumpled pages
+function maxNight(x0, y0, w, h, L, t) { rectf(x0, y0, w, h, rgba([10, 22, 18])); const fy = y0 + h * .78, cx = x0 + w * .5;
+  glow(LAMP, cx - w * .18, y0 + h * .42, w * .35, .25);
+  const f = figure({ kind: 'sam', x: cx, y: y0 + h * 1.02, h: h * .62, noLegs: true, expr: { ...FX.tired, lid: .6, bags: true }, look: [0, .8], tilt: .08, armL: [cx - w * .08, fy - h * .02], armR: [cx + w * .07, fy - h * .03], stretch: true, glowOn: [LAMP, .2], glowSide: -1, t, seed: 5 }); capOn(f, 1);
+  outlined(() => { ctx.beginPath(); ctx.rect(x0 + w * .1, fy, w * .8, h * .05); }, rgba(D.wood), 4);
+  for (let i = 0; i < 34; i++) ballD(x0 + w * (.08 + rnd(i * 3.7) * .84), fy + h * (.07 + rnd(i * 1.9) * .2), h * (.025 + rnd(i) * .015), i);
+  const ph = pileD(cx + w * .28, fy, w * .1, 300); pileD(cx - w * .3, fy, w * .09, 200);
+  at(x0 + w * .85, y0 + h * .3, h * .22, .1, () => { pageD(0, 0, 1, 0, { kind: 'scrawl', col: [244, 244, 236] }); rectf(-.46, -.5, .92, .3, rgba([244, 244, 236])); ink('NO,', 0, -.42, .13, [170, 40, 40]); ink('THANK YOU.', 0, -.27, .12, [170, 40, 40]); });
+  at(x0 + w * .14, y0 + h * .2, 1, 0, () => ink('2:00 AM', 0, 0, h * .07, [200, 230, 210])); }
 shot('cover', 'wide', null, (L, u, t, c) => {
-  const k = eio(seg(L, c('coverIn') - .1, c('coverIn') + 1.1));
-  camD(lerp(1.0, 2.0, k), 960, lerp(540, 640, k), () => { rectf(-400, -400, W + 800, H + 800, rgba(D.stage)); windowD(960, 560, 1700, 950, 1, (x0, y0, w, h) => SHOW.him(x0, y0, w, h, L + 24, t), { glow: 1 }); });
+  const g = c('coverIn') + .35, k = eio(seg(L, 0, 2.0)), glitch = L > g && L < g + .3, truth = L >= g + .15;
+  camD(lerp(1.05, 1.18, k), 960, 560, () => { rectf(-400, -400, W + 800, H + 800, rgba(D.stage));
+    windowD(960, 560, 1700, 950, 1, (x0, y0, w, h) => { if (!truth) SHOW.crowd(x0, y0, w, h, L + 24, t); else maxNight(x0, y0, w, h, L, t);
+      if (glitch) for (let i = 0; i < 14; i++) { const yy = y0 + rnd(i * 2.3 + Math.floor(L * 30)) * h; rectf(x0, yy, w, 6 + rnd(i) * 20, rgba(i % 2 ? GREEN_L : [0, 0, 0], .6)); } }, { glow: truth ? .5 : 1 }); });
+  if (truth) say('it never showed the 300 pages.', 960, 1035, 70, L, g + .5, .8);
 });
 // close on his face: he sees it is his monster; the claws on his cheeks
 shot('wide', 'wrench', null, (L, u, t, c) => {

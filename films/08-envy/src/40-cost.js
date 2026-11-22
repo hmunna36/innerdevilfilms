@@ -52,4 +52,5 @@ shot('showL', 'worst', null, (L, u, t, c) => {
       stride: walk > 0 && walk < 1 ? Math.sin(walk * 18) * .8 : 0, t });
   });
   if (L < ta + .5) red('look at all his new friends.', 960, 1000, 72, L, fr, 1.0);
+  if (L > ta + .5) say('he walked out on his best friend.', 960, 1000, 68, L, ta + .5, .8);
 });

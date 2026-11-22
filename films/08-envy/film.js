@@ -119,7 +119,10 @@ function fig(o) { if (SIDE > 0) return figure(o); const r = { ...o, x: M(o.x) };
 //   focus 'L' | 'R'  the other half is dimmed, so the eye reads one half per cut
 //   gap  the black between the halves (px)
 const HALF = 480;
-function SPLIT(half, o = {}) { const tear = o.tear ?? 1, g = (o.gap ?? 12) * (1 - (o.stitch || 0)), sl = 1 - (o.slide ?? 1), ln = o.lineX ?? 960, shift = (ln - 960) / 2;
+// SINGLE (version 2, 22 Nov 2026: the owner found the split confusing): one boy, one timeline. The left half's scene is drawn
+// alone, centred on the whole frame; the right half, the tear and the second counter are gone.
+const SINGLE = true;
+function SPLIT(half, o = {}) { if (SINGLE) { ctx.save(); ctx.translate(HALF, 0); SIDE = 1; half(1); ctx.restore(); return; } const tear = o.tear ?? 1, g = (o.gap ?? 12) * (1 - (o.stitch || 0)), sl = 1 - (o.slide ?? 1), ln = o.lineX ?? 960, shift = (ln - 960) / 2;
   const P = Array.from({ length: 23 }, (_, i) => [ln + (rnd(i * 7.7 + 3) - .5) * 26 + Math.sin(i * 1.3) * 8, -20 + i * 51]), ty = -20 + tear * 1140;
   const path = (side, off) => { ctx.beginPath(); ctx.moveTo(side > 0 ? -10 : W + 10, -20); for (const [x, y] of P) ctx.lineTo(x + off, y); ctx.lineTo(side > 0 ? -10 : W + 10, 1140); ctx.closePath(); };
   if (tear < 1 && o.one) { ctx.save(); ctx.beginPath(); ctx.rect(0, ty, W, H + 40); ctx.clip(); o.one(); ctx.restore(); }
@@ -136,8 +139,8 @@ function SPLIT(half, o = {}) { const tear = o.tear ?? 1, g = (o.gap ?? 12) * (1 
 // zoom about a point without moving it (inside a half of the split, camD would re-centre the half on the screen)
 function zoomAt(z, x, y, fn) { ctx.save(); ctx.translate(x, y); ctx.scale(z, z); ctx.translate(-x, -y); fn(); ctx.restore(); }
 // the counters of the split: one at the top of each half (the pages he has drawn)
-const counterL = (text, size = 46) => hw(text, 90, 40 + size * .95, size, 'say', { align: 'left', rot: 0 });
-const counterR = (text, size = 46) => hw(text, W - 90, 40 + size * .95, size, 'say', { align: 'right', rot: 0 });
+const counterL = (text, size = 46) => SINGLE ? hw(text, W - 90, 40 + size * .95, size, 'say', { align: 'right', rot: 0 }) : hw(text, 90, 40 + size * .95, size, 'say', { align: 'left', rot: 0 });
+const counterR = (text, size = 46) => SINGLE ? null : hw(text, W - 90, 40 + size * .95, size, 'say', { align: 'right', rot: 0 });
 // ---- Max's first show: a gallery wall with framed drawings under little spotlights (x0..x1 along the wall) ----
 function galleryD(x0, x1, t, o = {}) { const n = o.n || 4, y = o.y || 300, s = o.s || 150;
   stroke([[x0, 120], [x1, 120]], 4, rgba(D.floor));
@@ -314,7 +317,7 @@ shot('split', 'medal', null, (L, u, t, c) => {
 });
 // ---- ROUND 2: the left half (its window a poster now; the sketchbook torn, the pencil eaten, the medal taken) ----
 function round2L(L, t, c, o = {}) {
-  const w2 = c('win2'), rp = c('rip'), m2 = c('munch2'), pl = c('pluck'), cr = c('crunch'), mt = c('medalTake'), mo = c('medalOn'), lo = c('lampOff');
+  const w2 = c('win2'), rp = c('rip'), m2 = c('munch2'), pl = 99, cr = 99, mt = c('medalTake'), mo = c('medalOn'), lo = c('lampOff');
   const rip = eo(seg(L, rp - .15, rp + .25)), up = eio(seg(L, rp - 1, rp - .2)), eat = seg(L, m2 - .1, m2 + .5), pluck = eio(seg(L, pl - .3, pl)), toMouth = eio(seg(L, pl + .05, cr)), take = eio(seg(L, mt - .3, mt)), put = eio(seg(L, mt, mo)), lamp = 1 - eo(seg(L, lo, lo + .15));
   const ww = 260, wh = 196, wx = 250, wy = 590;
   deskHalf(t, { lamp: .45 * lamp, pinned: L > rp ? 0 : 2, green: true, glowK: 1.2, pencil: L < pl - .05, pile: 0,
@@ -355,7 +358,8 @@ function round2R(L, t, c, o = {}) {
 shot('medal', 'work', null, (L, u, t, c) => { const Dw = CUE.card - CUE.work;
   SPLIT(side => side > 0 ? round2L(L, t, c) : round2R(L * Dw / (CUE.work - CUE.medal), t, n => CUE[n] - CUE.work), { focus: 'L', dim: .55 });
   counterL(L >= c('rip') ? 'PAGES: 0' : 'PAGES: 29');
-  if (L < c('rip') + .4) red('and he’s only fourteen.', 470, 960, 70, L, c('fourteen'), 1.0);
+  if (L < c('rip') + .4) red('and he’s only fourteen.', 960, 975, 72, L, c('fourteen'), 1.0);
+  if (L > c('rip') + .2) say('every look cost him a page.', 960, 975, 68, L, c('rip') + .2, .7);
 });
 shot('work', 'card', null, (L, u, t, c) => { const Dm = CUE.work - CUE.medal;
   SPLIT(side => side > 0 ? round2L(L * Dm / (CUE.card - CUE.work), t, n => CUE[n] - CUE.medal) : round2R(L, t, c), { focus: 'R', dim: .55 });
@@ -415,15 +419,16 @@ shot('showL', 'worst', null, (L, u, t, c) => {
       stride: walk > 0 && walk < 1 ? Math.sin(walk * 18) * .8 : 0, t });
   });
   if (L < ta + .5) red('look at all his new friends.', 960, 1000, 72, L, fr, 1.0);
+  if (L > ta + .5) say('he walked out on his best friend.', 960, 1000, 68, L, ta + .5, .8);
 });
 // ---- 49-71 THE WORST and THE TURN: the window is the whole wall; his own monster on the prize; the two of him look at each other ----
 // the wall-size window behind his desk (left-half coordinates), what it shows: his own best day. fold 0..1: it falls forward onto the desk
 const WALL = { x: 470, y: 330, w: 840, h: 470 };
 function wallWin(L, t, o = {}) { const fold = o.fold || 0, sway = o.sway || 0;
-  if (fold <= 0) { at(M(WALL.x), WALL.y, 1, sway, () => windowD(0, 0, WALL.w, WALL.h, 1, (x0, y0, w, h) => SHOW.him(x0, y0, w, h, L, t), { glow: 1.6 })); return; }
+  if (fold <= 0) { at(M(WALL.x), WALL.y, 1, sway, () => windowD(0, 0, WALL.w, WALL.h, 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t), { glow: 1.6 })); return; }
   // falling forward: the bottom edge stays on the desk, the top comes down toward us (it gets shorter, then flat)
   const h = WALL.h * Math.cos(fold * Math.PI / 2) * (1 - fold * .1), bottom = DESK_Y + 10 - (1 - fold) * 140, w = WALL.w * (1 + .12 * fold);
-  if (fold < 1) windowD(M(WALL.x), bottom - Math.max(h, 8) / 2, w, Math.max(h, 8), 1, (x0, y0, ww, hh) => SHOW.him(x0, y0, ww, hh, L, t), { back: fold > .5, glow: 1.6 * (1 - fold) });
+  if (fold < 1) windowD(M(WALL.x), bottom - Math.max(h, 8) / 2, w, Math.max(h, 8), 1, (x0, y0, ww, hh) => SHOW.crowd(x0, y0, ww, hh, L, t), { back: fold > .5, glow: 1.6 * (1 - fold) });
 }
 // the torn pages and balls on his floor (left half)
 function litterD(n = 9) { for (let i = 0; i < n; i++) { const x = 60 + rnd(i * 4.3) * 860, y = 905 + rnd(i * 2.1) * 30; if (i % 3) ballD(M(x), y, 18 + rnd(i) * 10, i); else at(M(x), y, 1, (rnd(i * 7) - .5) * 1.4, () => pageD(0, 0, 60, 0, { kind: 'monster', q: .5 })); } }
@@ -444,12 +449,24 @@ shot('worst', 'cover', null, (L, u, t, c) => {
     deskD(80, 880, DESK_Y);
   }, { lineX: lerp(960, 1500, slide), focus: 'L', dim: .55 });
   counterL('PAGES: 0'); counterR('PAGES: 300');
-  slam('LOOK. ISN’T HE AMAZING?', 760, 1038, 76, L, am);
+  slam('LOOK. ISN’T HE AMAZING?', 960, 1038, 80, L, am);
 });
-// close on what the window shows: the young man everyone loves holds up a printed comic; the cover is his monster
+// THE TRUTH (version 2): the window glitches, and for a moment shows what it always hid: Max alone at 2 AM, the
+// rejection letter, the 300 crumpled pages
+function maxNight(x0, y0, w, h, L, t) { rectf(x0, y0, w, h, rgba([10, 22, 18])); const fy = y0 + h * .78, cx = x0 + w * .5;
+  glow(LAMP, cx - w * .18, y0 + h * .42, w * .35, .25);
+  const f = figure({ kind: 'sam', x: cx, y: y0 + h * 1.02, h: h * .62, noLegs: true, expr: { ...FX.tired, lid: .6, bags: true }, look: [0, .8], tilt: .08, armL: [cx - w * .08, fy - h * .02], armR: [cx + w * .07, fy - h * .03], stretch: true, glowOn: [LAMP, .2], glowSide: -1, t, seed: 5 }); capOn(f, 1);
+  outlined(() => { ctx.beginPath(); ctx.rect(x0 + w * .1, fy, w * .8, h * .05); }, rgba(D.wood), 4);
+  for (let i = 0; i < 34; i++) ballD(x0 + w * (.08 + rnd(i * 3.7) * .84), fy + h * (.07 + rnd(i * 1.9) * .2), h * (.025 + rnd(i) * .015), i);
+  const ph = pileD(cx + w * .28, fy, w * .1, 300); pileD(cx - w * .3, fy, w * .09, 200);
+  at(x0 + w * .85, y0 + h * .3, h * .22, .1, () => { pageD(0, 0, 1, 0, { kind: 'scrawl', col: [244, 244, 236] }); rectf(-.46, -.5, .92, .3, rgba([244, 244, 236])); ink('NO,', 0, -.42, .13, [170, 40, 40]); ink('THANK YOU.', 0, -.27, .12, [170, 40, 40]); });
+  at(x0 + w * .14, y0 + h * .2, 1, 0, () => ink('2:00 AM', 0, 0, h * .07, [200, 230, 210])); }
 shot('cover', 'wide', null, (L, u, t, c) => {
-  const k = eio(seg(L, c('coverIn') - .1, c('coverIn') + 1.1));
-  camD(lerp(1.0, 2.0, k), 960, lerp(540, 640, k), () => { rectf(-400, -400, W + 800, H + 800, rgba(D.stage)); windowD(960, 560, 1700, 950, 1, (x0, y0, w, h) => SHOW.him(x0, y0, w, h, L + 24, t), { glow: 1 }); });
+  const g = c('coverIn') + .35, k = eio(seg(L, 0, 2.0)), glitch = L > g && L < g + .3, truth = L >= g + .15;
+  camD(lerp(1.05, 1.18, k), 960, 560, () => { rectf(-400, -400, W + 800, H + 800, rgba(D.stage));
+    windowD(960, 560, 1700, 950, 1, (x0, y0, w, h) => { if (!truth) SHOW.crowd(x0, y0, w, h, L + 24, t); else maxNight(x0, y0, w, h, L, t);
+      if (glitch) for (let i = 0; i < 14; i++) { const yy = y0 + rnd(i * 2.3 + Math.floor(L * 30)) * h; rectf(x0, yy, w, 6 + rnd(i) * 20, rgba(i % 2 ? GREEN_L : [0, 0, 0], .6)); } }, { glow: truth ? .5 : 1 }); });
+  if (truth) say('it never showed the 300 pages.', 960, 1035, 70, L, g + .5, .8);
 });
 // close on his face: he sees it is his monster; the claws on his cheeks
 shot('wide', 'wrench', null, (L, u, t, c) => {
@@ -554,8 +571,8 @@ shot('page1', 'page40', null, (L, u, t, c) => {
       after: f => { if (L > w3 - .25 && L < dn + .1) windowD(345, lerp(600, 500, open) + down * 170, 150 * (1 - down * .2), 112 * (1 - down * .95), 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t)); else if (L >= dn + .1) windowDown(330, .7); } });
   }, { focus: 'L', dim: .5 });
   counterL('PAGES: 1'); counterR('PAGES: 300');
-  if (L < c('win3')) say('one page a day.', 480, 990, 66, L, c('onePage'), .6);
-  red('they’re years ahead.', 480, 880, 64, L, c('years'), .9);
+  if (L < c('win3')) say('one page a day.', 960, 990, 72, L, c('onePage'), .6);
+  red('they’re years ahead.', 960, 990, 70, L, c('years'), .9);
 });
 // PAGE 40, the slip: the window jumps back to a poster, its arms go round him, his counter sticks at 40
 shot('page40', 'board40', null, (L, u, t, c) => {
@@ -569,7 +586,7 @@ shot('page40', 'board40', null, (L, u, t, c) => {
       after: f => { windowD(wx, wy, ww, wh, 1, (x0, y0, w, h) => SHOW.crowd(x0, y0, w, h, L, t), { glow: 1 + jump }); if (L > jp && L < jp + .4) { const k = seg(L, jp, jp + .4); ctx.lineWidth = 8 * (1 - k); ctx.strokeStyle = rgba(GREEN_L, 1 - k); ctx.beginPath(); ctx.roundRect(wx - ww / 2 - k * 60, wy - wh / 2 - k * 50, ww + k * 120, wh + k * 100, 20); ctx.stroke(); } } });
   }, { focus: 'L', dim: .5 });
   counterL('PAGES: 40'); counterR('PAGES: 300');
-  if (L < jp + .3) red('just one look.', 480, 900, 66, L, ol, .8);
+  if (L < jp + .3) red('just one look.', 960, 990, 72, L, ol, .8);
 });
 // his own board, close: page 1 next to page 40
 shot('board40', 'down40', null, (L, u, t, c) => {
@@ -657,8 +674,8 @@ shot('hk1', 'hk2', null, (L, u, t, c) => {
     devBehind(t, { x: 230, y: 940, h: 640, expr: devEx('grin', L, []), look: [.7, .3], lean: .2, tilt: .1, cap: true, medal: true, heat: 1.2, armR: [f.head[0] - f.hr * .9, f.head[1] + f.hr * .1], armL: [f.head[0] + f.hr * .2, f.head[1] + f.hr * .55], bendR: -.2, bendL: .6 });
     deskD(80, 880, DESK_Y); }, {}));
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); rectf(0, 0, W, H, rgba([0, 0, 0], lerp(.62, .22, lift))); ctx.restore();
-  counterL('PAGES: 0', 110); counterR('PAGES: 300', 110);
-  slam('SAME BOY. SAME DESK.', 960, 1030, 90, L, c('hkSame'), 'say');
+  counterL('PAGES: 0', 90);
+  slam('HE USED TO DRAW EVERY DAY.', 960, 1030, 84, L, c('hkSame'), 'say');
 });
 // 2. close on the left one's face, lit green from below; the devil's grin behind him
 shot('hk2', 'hk3', null, (L, u, t, c) => {
@@ -681,46 +698,35 @@ shot('hk3', 'hk4', null, (L, u, t, c) => {
   });
   red('look.', 1660, 520, 130, L, c('hkLook'), .3);
 });
-// ---- THE EDIT: what ships. The shots above are the source, timed by cues.js; cut(shot, { a, b, sp, cam: [zoom, x, y] }) plays
-// seconds a..b of a source shot at speed sp, with an optional punch-in; blink() is a beat of black between chapters.
-// the hook: SAME BOY. SAME DESK. / "why not me?" / "look."
-cut('hk1', { sp: 1.15 }); cut('hk2', { sp: 1.1 }); cut('hk3', { sp: 1.1 });
-// together
-cut('floor', { a: 0, b: 1.5, sp: 1.3 }); cut('floor', { a: 1.5, b: 2.6, sp: 1.3, cam: [1.25, 960, 640] }); cut('floor', { a: 2.6, b: 4.3, sp: 1.25 });
+// ---- THE EDIT, version 2 (22 Nov 2026: one boy, one timeline, dramatic: held longer, fewer punch-ins, a black between chapters).
+// cut(shot, { a, b, sp, cam: [zoom, x, y] }) plays seconds a..b of a source shot at speed sp; blink(d) is a beat of black.
+// the hook: HE USED TO DRAW EVERY DAY. / "why not me?" / "look."
+cut('hk1', { sp: 1.0 }); cut('hk2', { sp: 1.0 }); cut('hk3', { sp: 1.0 });
+blink(.3);
+// two friends
+cut('floor', { a: 0, b: 2.4, sp: 1.1 }); cut('floor', { a: 2.4, b: 4.5, sp: 1.05, cam: [1.25, 960, 640] });
 // the window
-cut('night', { a: 0, b: 1.4, sp: 1.3 }); cut('night', { a: 1.4, b: 2.4, sp: 1.25 }); cut('night', { a: 2.4, b: 3.4, sp: 1.25, cam: [1.9, 600, 450] });
-cut('night', { a: 3.4, b: 4.4, sp: 1.3 }); cut('night', { a: 4.4, b: 5.6, sp: 1.2 }); cut('night', { a: 5.6, b: 6.6, sp: 1.2, cam: [2.1, 950, 520] });
-// round 1: their comic, crumpled and eaten; the window grows; the cap
-cut('crumple', { a: 0, b: 1.3, sp: 1.3 }); cut('crumple', { a: 1.3, b: 2.2, sp: 1.25, cam: [1.8, 980, 520] }); cut('crumple', { a: 2.2, b: 3.6, sp: 1.3 });
-cut('crumple', { a: 3.6, b: 4.6, sp: 1.25 }); cut('crumple', { a: 4.6, b: 6.2, sp: 1.35, cam: [1.6, 660, 480] });
-// the split: the rip, the slide, the mirror, one difference
-cut('split', { a: 0, b: 1.6, sp: 1.4 }); cut('split', { a: 1.6, b: 2.6, sp: 1.0 }); cut('split', { a: 2.6, b: 3.6, sp: 1.0 });
-cut('split', { a: 3.6, b: 4.6, sp: 1.1, cam: [1.5, 560, 560] }); cut('split', { a: 4.6, b: 6.0, sp: 1.1, cam: [1.5, 1360, 600] });
-// round 2: the cuts alternate between the halves
-cut('medal', { a: 0, b: 1.6, sp: 1.2 }); cut('work', { a: 0, b: 1.2, sp: 1.3 }); cut('medal', { a: 1.6, b: 3.0, sp: 1.3 }); cut('work', { a: 1.2, b: 2.5, sp: 1.3 });
-cut('medal', { a: 3.0, b: 4.2, sp: 1.25, cam: [1.7, 380, 500] }); cut('work', { a: 2.5, b: 3.6, sp: 1.3 }); cut('medal', { a: 4.2, b: 5.4, sp: 1.3 }); cut('work', { a: 3.6, b: 5.0, sp: 1.3 });
-cut('medal', { a: 5.4, b: 6.5, sp: 1.3 });
-// the cost: the card, Max's show
-cut('card', { a: 0, b: 1.05, sp: 1.2 }); cut('card', { a: 1.05, b: 2.4, sp: 1.25 }); cut('card', { a: 2.4, b: 3.5, sp: 1.3 });
-cut('showR', { sp: 1.3 });
-cut('showL', { a: 0, b: 1.4, sp: 1.3 }); cut('showL', { a: 1.4, b: 2.0, sp: 1.2, cam: [2.0, 1240, 560] }); cut('showL', { a: 2.0, b: 3.6, sp: 1.3 });
-cut('showL', { a: 3.6, b: 4.8, sp: 1.3 }); cut('showL', { a: 4.8, b: 6.4, sp: 1.1, cam: [1.45, 760, 560] });
-blink();
-// the worst: his own monster on the prize
-cut('worst', { a: 0, b: 1.8, sp: 1.3 }); cut('worst', { a: 1.8, b: 4.0, sp: 1.3 }); cut('cover', { sp: 1.2 }); cut('wide', { sp: 1.1 });
-// the turn
-cut('wrench', { a: 0, b: 1.4, sp: 1.2 }); cut('wrench', { a: 1.4, b: 3.0, sp: 1.2 });
-cut('eyes', { a: 0, b: 1.0, sp: 1.2 }); cut('eyes', { a: 1.0, b: 2.2, sp: 1.0 }); cut('eyes', { a: 2.2, b: 4.0, sp: 1.15 });
-cut('hand', { a: 0, b: 1.2, sp: 1.3 }); cut('hand', { a: 1.2, b: 2.8, sp: 1.2 });
-cut('slam', { a: 0, b: 1.0, sp: 1.2 }); cut('slam', { a: 1.0, b: 2.4, sp: 1.25 });
-blink();
+cut('night', { a: 0, b: 2.4, sp: 1.1 }); cut('night', { a: 2.4, b: 3.6, sp: 1.0, cam: [1.6, 560, 450] }); cut('night', { a: 3.6, b: 6.0, sp: 1.05 }); cut('night', { a: 6.0, b: 7.6, sp: 1.0, cam: [1.9, 950, 520] });
+// round 1: their comic, crumpled and eaten; the cap
+cut('crumple', { a: 0, b: 2.3, sp: 1.1 }); cut('crumple', { a: 2.3, b: 3.9, sp: 1.05 }); cut('crumple', { a: 3.9, b: 6.5, sp: 1.1, cam: [1.5, 660, 480] });
+blink(.25);
+// round 2: the medal, the sketchbook, the lamp goes out
+cut('medal', { a: 0, b: 2.4, sp: 1.05 }); cut('medal', { a: 2.4, b: 4.2, sp: 1.0 }); cut('medal', { a: 4.2, b: 6.5, sp: 1.05 });
+blink(.25);
+// the cost: Max's show
+cut('card', { a: 0, b: 1.05, sp: .85 }); cut('card', { a: 1.05, b: 3.5, sp: 1.1 });
+cut('showL', { a: 0, b: 2.0, sp: 1.05 }); cut('showL', { a: 2.0, b: 3.6, sp: 1.0 }); cut('showL', { a: 3.6, b: 5.0, sp: 1.05 }); cut('showL', { a: 5.0, b: 6.8, sp: .9, cam: [1.45, 760, 560] });
+blink(.3);
+// the worst, and the truth it hid
+cut('worst', { a: 0, b: 1.8, sp: 1.0 }); cut('worst', { a: 1.8, b: 4.0, sp: 1.0 });
+cut('cover', { sp: .7 }); cut('wide', { sp: .9 });
+cut('wrench', { sp: 1.0 }); cut('slam', { sp: 1.05 });
+blink(.3);
 // one page a day
-cut('page1', { a: 0, b: 1.5, sp: 1.3 }); cut('page1', { a: 1.5, b: 2.9, sp: 1.3, cam: [1.6, 360, 520] }); cut('page1', { a: 2.9, b: 4.3, sp: 1.3 });
-cut('page40', { a: 0, b: 1.5, sp: 1.3 }); cut('page40', { a: 1.5, b: 2.6, sp: 1.2 }); cut('page40', { a: 2.6, b: 3.5, sp: 1.2, cam: [2.0, 470, 470] }); cut('page40', { a: 3.5, b: 5.0, sp: 1.3 });
-cut('board40', { sp: 1.2 }); cut('down40', { sp: 1.3 });
-cut('door', { a: 0, b: 1.6, sp: 1.3 }); cut('door', { a: 1.6, b: 2.9, sp: 1.3, cam: [2.0, 1140, 520] }); cut('door', { a: 2.9, b: 4.0, sp: 1.2 });
-cut('door', { a: 4.0, b: 5.0, sp: 1.2, cam: [1.55, 520, 600] }); cut('door', { a: 5.0, b: 6.5, sp: 1.3 });
-cut('stitch', { a: 0, b: 2.0, sp: 1.3 }); cut('stitch', { a: 2.0, b: 5.0, sp: 1.15 });
+cut('page1', { a: 0, b: 4.5, sp: 1.1 }); cut('page40', { a: 0, b: 3.5, sp: 1.1 }); cut('page40', { a: 3.5, b: 5.0, sp: 1.1 });
+cut('board40', { sp: 1.0 }); cut('down40', { sp: 1.1 });
+cut('door', { a: 0, b: 2.9, sp: 1.1 }); cut('door', { a: 2.9, b: 4.0, sp: 1.05 }); cut('door', { a: 4.0, b: 5.2, sp: 1.05, cam: [1.55, 520, 600] }); cut('door', { a: 5.2, b: 6.5, sp: 1.1 });
+cut('stitch', { a: 0, b: 3.0, sp: 1.1 });
 // the last picture, the title
-cut('last', { a: 0, b: 2.4, sp: 1.2 }); cut('last', { a: 2.4, b: 3.6, sp: 1.1, cam: [1.7, 960, 500] }); cut('last', { a: 3.6, b: 5.4, sp: 1.1 }); cut('last', { a: 5.4, b: 7.0, sp: 1.0 });
+cut('last', { a: 0, b: 2.6, sp: 1.0 }); cut('last', { a: 2.6, b: 4.4, sp: 1.0, cam: [1.5, 960, 520] }); cut('last', { a: 4.4, b: 7.0, sp: 1.0 });
 cut('title', { sp: 1.0 });

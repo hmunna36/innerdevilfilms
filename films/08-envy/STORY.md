@@ -144,3 +144,13 @@ Hook 8, devil 8, cost by 0:20 8, new every 2 s 8, turn 8, comeback 8, last line 
 slide and the mirror each get their own cut, taken from the comeback); at the turn the tear slides back to the middle
 as their eyes meet, so looking away from the window opens the other half and shows the work it hid; the Shorts stage
 the stack (the top boy looks down, the bottom one up; at the worst the tear slides down).
+
+## Version 2 (22 Nov 2026, after the owner watched it)
+
+The owner: "this is very confusing", "music is also very bad", "the video flow is very confusing and i couldn't understand
+what it's saying", "it should be dramatic". The first cut was made private before it went public. Version 2 is ONE boy and
+ONE timeline (the split is gone: `SINGLE` in `src/00-props.js` draws the fed side alone), held longer (46 cuts in 86 s,
+a beat of black between chapters), with plain white lines that say what happens ("every look cost him a page.", "he walked
+out on his best friend.", "it never showed the 300 pages."), and a new dramatic score (DARK, TENDER, SORROW, EPIC). The
+turn is clearer: the window glitches and shows what it hid, Max alone at 2 AM with a rejection letter and 300 crumpled
+pages. The hook: "HE USED TO DRAW EVERY DAY." / "why not me?" / "look."

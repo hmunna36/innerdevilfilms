@@ -89,7 +89,7 @@ this channel") and approved ours in that genre look:
 - **The cloud** (a routine): a fresh Linux machine with a full clone; nothing survives but what you push. Read
   `reference/cloud.md` before the first command. The repo is the only memory: `topics.md`, `shorts.md`,
   `reference/log.md`, `films/`, `shorts/`.
-- **The Mac**: a light sparse clone at `~/Desktop/innerdevilfilms`. Before touching a folder, `git sparse-checkout add
+- **The Mac**: a light sparse clone at `~/Desktop/nightly routines/innerdevilfilms`. Before touching a folder, `git sparse-checkout add
   <path>` (`stage`, the film, the Short): `push.sh` rebases, and a rebase removes tracked files outside the sparse set
   from the folder. The toolchain is in `~/.cache/cp`; `. .claude/skills/idf/bin/env.sh` finds it. Push, then leave the
   clone light. The Mac has 8 GB: two browsers at most.

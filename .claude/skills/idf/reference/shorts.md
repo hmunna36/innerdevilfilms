@@ -63,7 +63,7 @@ counter top right at y 446, the end card's arrow at x 485). Faces should sit bet
    opening or of an earlier Short.
 5. Sound (`short_mix.py`'s report): -16 LUFS ±1, true peak at most -2.5 dBTP in the mix (at most -1 in the MP4), a sound
    on every cut, **no stretch of 1 s or more under -38 dB in the phone band** before the last fade (on the Mac also
-   `~/.cache/music-analysis/venv/bin/python ~/Desktop/wojak-story/scripts/silence-check.py shorts/NN-slug/mix.wav`).
+   `~/.cache/music-analysis/venv/bin/python ~/Desktop/nightly routines/wojak-story/scripts/silence-check.py shorts/NN-slug/mix.wav`).
 6. The end card names the film and points to it.
 7. Mechanics: `engine/qa.mjs` all ok (H.264 yuv420p 1080x1920 30 fps, AAC 48 kHz).
 

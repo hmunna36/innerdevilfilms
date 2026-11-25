@@ -83,7 +83,7 @@ edge, and the hook is small and always "IT …".
 
 ### `/idf thumb NN` on the Mac
 
-1. `git -C ~/Desktop/innerdevilfilms pull`, `git sparse-checkout add films/NN-slug stage`, `. .claude/skills/idf/bin/env.sh`.
+1. `git -C ~/Desktop/nightly routines/innerdevilfilms pull`, `git sparse-checkout add films/NN-slug stage`, `. .claude/skills/idf/bin/env.sh`.
 2. Three reference frames from the film (`node stage/render.mjs films/NN-slug still <t> ref_a` …): the devil at its
    biggest or most telling, his (or her) face in its hardest emotion, and the object of the vice. Keep them in
    `films/NN-slug/thumb/`.

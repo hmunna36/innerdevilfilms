@@ -88,7 +88,7 @@ figure must not be a one-off list of coordinates per picture. Faces take an expr
 
 ## How to work
 
-    cd ~/Desktop/innerdevilfilms/design/cast-2026-11-17
+    cd ~/Desktop/nightly routines/innerdevilfilms/design/cast-2026-11-17
     node render.mjs <letter>            # all four stills -> out/<letter>_<still>.jpg
     node render.mjs <letter> m2         # one still
 

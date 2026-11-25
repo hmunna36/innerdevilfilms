@@ -105,7 +105,7 @@ moment short, show it as where the harm starts, and say so in the report.
 - **The report must show**: about -18 LUFS, true peak at most -2 dBTP, `sub_share_pct` under 30, sound events placed at
   1 a second or more in the first 40 s, the phone band within about 13 dB from its 10th to 90th percentile, and **no
   stretch of 1 s or more under -38 dB** before the last fade. On the Mac also run
-  `~/.cache/music-analysis/venv/bin/python ~/Desktop/wojak-story/scripts/silence-check.py films/NN-slug/audio/mix.wav`
+  `~/.cache/music-analysis/venv/bin/python ~/Desktop/nightly routines/wojak-story/scripts/silence-check.py films/NN-slug/audio/mix.wav`
   (the first mix of THE BOTTLE had 9.5 s nearly silent on a phone, its opening included).
 - Nobody listens to the mix in an unattended run: say so in the report, with the numbers.
 

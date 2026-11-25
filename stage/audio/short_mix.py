@@ -26,7 +26,9 @@ fm = load(film_mix); P = ED['pieces']; endAt = ED['endAt']
 # 1. the film's own sound under every piece
 for p in P:
     x = fm[int(p['a'] * SR):int(p['b'] * SR)]
-    if abs(p['sp'] - 1) > 1e-3: x = np.stack([varispeed(x[:, ch], p['sp'], p['sp']) for ch in (0, 1)], axis=1)   # slower = lower, like tape
+    if abs(p['sp'] - 1) > 1e-3:                                    # slower = lower, like tape, and as long as the piece is on screen
+        pos = np.arange(int(round(len(x) / p['sp']))) * p['sp']; pos = pos[pos < len(x) - 1]   # (varispeed() keeps the length: a hole at the end)
+        x = np.stack([np.interp(pos, np.arange(len(x)), x[:, ch]) for ch in (0, 1)], axis=1)
     put(music, p['t0'], fade(x, .008, .015), 0)
 
 # 4. the end card
